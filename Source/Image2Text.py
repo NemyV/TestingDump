@@ -1,7 +1,7 @@
 
 
 
-
+12f12g1g
 #Image2text
 
 #Take screenshot file
