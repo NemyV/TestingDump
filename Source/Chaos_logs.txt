@@ -291,4 +291,14 @@
  Clears :1
  Potions :126
  Failed stages :1
- Time to enter PORTAL in seconds:0.000997781753540039
+ Time to enter PORTAL in seconds:0.000997781753540039
+ WORKER name :Ggwarlord
+ Deaths :2
+ Clears :0
+ Potions :42
+ Failed stages :1
+ WORKER name :Sheeeshaa
+ Deaths :1
+ Clears :0
+ Potions :12
+ Failed stages :1

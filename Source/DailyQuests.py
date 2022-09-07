@@ -4,6 +4,7 @@ import keyboard
 import pydirectinput
 from METHODS_OLD_BACKUP import searchimageinarea
 from METHODS_OLD_BACKUP import Searchimage_return_position
+from METHODS import im_search_until_found
 from METHODS import im_search_in_area
 from METHODS import search_click_image
 from METHODS import focus_window
@@ -167,7 +168,7 @@ def daily_state_check():
             minimize_chat = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Minimize_chat.png"
             search_click_image(minimize_chat, action="left",
                                x1=0, y1=500, x2=700, y2=500, precision=0.6)
-            print("chat minimized")
+            print("Chat minimized")
         # Opening ESC Game menu
         pydirectinput.press('ESC')
         time.sleep(0.5)
@@ -179,14 +180,25 @@ def daily_state_check():
                 time.sleep(0.7)
                 i += 1
                 pydirectinput.press('ESC')
-
-        text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7')
-        print(text)
-        generator_expression = (x for x in np.unique(list_of_workers) if x in text)
-        print(list_of_workers)
-        print(finished_char)
+        # IMPORT for using 2 methods/colors to find match with tesseract
+        text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7', colors="threshold")
+        found_it = False
+        while not found_it:
+            for y in np.unique(list_of_workers):
+                if y in text:
+                    found_it = True
+                    print("FOUND IT USING THRESHOLD")
+                    break
+            if not found_it:
+                text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7')
+                for y in np.unique(list_of_workers):
+                    if y in text:
+                        found_it = True
+                        print("FOUND IT USING rgb")
+                        break
         # CLOSING ESC MENU
         pydirectinput.press('ESC')
+        generator_expression = (x for x in np.unique(list_of_workers) if x in text)
         for x in generator_expression:
             print("Found ", x, "")
             if x not in finished_char:
@@ -385,22 +397,41 @@ def swamp_daily():
     # TESTING While loop for searching of the giant
     switch = 0
     while switch == 0:
-        for f in DailySwamp:
-            # Tossing at Sentinel
-            complete_quest = Daily + "Walling Swamp\\Finished\\Completed_quest.png"
-            print(f)
-            ready = imagesearch_fast_area(f, precision=0.65)
-            complete = Searchimage_return_position(complete_quest, 1, precision=0.87)
-            if ready != [-1, -1]:
-                pydirectinput.moveTo(ready[0],
-                                     ready[1])
-                pydirectinput.press('F5')
-                time.sleep(0.7)
-                pydirectinput.press('F5')
-            if complete != [-1, -1]:
-                print("finished quest")
-                switch = 1
-                break
+        pydirectinput.moveTo(round(Resolution[0] / 2),
+                             round(Resolution[1] / 4 * 3))
+        pydirectinput.press('F5')
+        time.sleep(0.7)
+        pydirectinput.press('F5')
+        complete_quest = Daily + "Walling Swamp\\Finished\\Completed_quest.png"
+        complete = Searchimage_return_position(complete_quest, 1, precision=0.87)
+        if complete != [-1, -1]:
+            print("finished quest")
+            switch = 1
+            break
+    # OLD METHOD
+    # while switch == 0:
+    #     pydirectinput.moveTo(Resolution[0]/2,
+    #                          Resolution[1]/4*3)
+    #     pydirectinput.press('F5')
+    #     time.sleep(0.7)
+    #     pydirectinput.press('F5')
+    #
+    #     for f in DailySwamp:
+    #         # Tossing at Sentinel
+    #         complete_quest = Daily + "Walling Swamp\\Finished\\Completed_quest.png"
+    #         print(f)
+    #         ready = imagesearch_fast_area(f, precision=0.65)
+    #         complete = Searchimage_return_position(complete_quest, 1, precision=0.87)
+    #         if ready != [-1, -1]:
+    #             pydirectinput.moveTo(ready[0],
+    #                                  ready[1])
+    #             pydirectinput.press('F5')
+    #             time.sleep(0.7)
+    #             pydirectinput.press('F5')
+    #         if complete != [-1, -1]:
+    #             print("finished quest")
+    #             switch = 1
+    #             break
     # AFTER the quest is finished
     teleported = "no"
     while teleported != "yes":
@@ -1778,7 +1809,7 @@ class ChaosDungeon:
                                     self.restating_stopped(countingportattempt)
                                     break_switch = 1
                                     break
-                                port_pos = im_search_until_found(p, max_samples=1, time_sample=0.1, precision=0.7)
+                                port_pos = im_search_until_found(p, time_sample=0.1, precision=0.7)
                                 if port_pos != [-1, -1]:
                                     print("Entering portal")
                                     pydirectinput.rightClick()
@@ -1828,8 +1859,8 @@ class ChaosDungeon:
                         process_search_inc = 20
                         x1_tower, y1_tower = self.process_search(search, process_search_inc)
 
-                        sim_x1 = abs(x1 - last_cords[0])
-                        sim_y1 = abs(y1 - last_cords[1])
+                        sim_x1 = abs(x1_tower - last_cords[0])
+                        sim_y1 = abs(y1_tower - last_cords[1])
                         print("SIMILARITIES", sim_y1, sim_y1)
                         if sim_x1 < 25 and sim_y1 < 25:
                         # if [x1, y1] == last_cords:
@@ -1915,7 +1946,7 @@ class ChaosDungeon:
             self.restating_stopped(counting)
 
     def repairing(self):
-        pet_status = "no"
+        pet_status = "yes"
         repair_all = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\ChaosMisc\\Repair all.png'
         repair_icon = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Pet_repairing.png"
         if pet_status == "yes":
@@ -2257,7 +2288,9 @@ if __name__ == '__main__':
 
     # stronghold_daily()
     daily_state_check()
-    # stronghold_daily()
+    # ChaosDungeon().minimap_detection()
+    # ChaosDungeon().centeral_detection()
+
     # waiting_for_loading_screen()
     # accepting_quest(name="ALL", target="guild_request")
 

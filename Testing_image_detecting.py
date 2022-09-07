@@ -98,7 +98,7 @@ fail_proof_faiton = [x for x in glob.glob(feiton_fail_check + "**/*.png")]
 def r(num, rand):
     return num + rand * random.random()
 
-def im_screenshot(filename='.png', x1=0, y1=0, x2=Resolution[0], y2=Resolution[1]):
+def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Resolution[1]):
     with mss.mss() as sct:
         # The screen part to capture
         region = {'left': x1, 'top': y1, 'width': x2, 'height': y2}
@@ -106,14 +106,16 @@ def im_screenshot(filename='.png', x1=0, y1=0, x2=Resolution[0], y2=Resolution[1
         image_screenshot = mss.mss().grab(region)
         # try to remove
         try:
-            os.remove('Screenshot' + filename)
+            os.remove('Temp_files\\Screenshot[' + filename + '].png')
+            time.sleep(0.5)
         except IOError:
             123
         # Save to the picture file
-        mss.tools.to_png(image_screenshot.rgb, image_screenshot.size, output=('Temp_files\\Screenshot' + filename))
+        mss.tools.to_png(image_screenshot.rgb, image_screenshot.size,
+                         output=('Temp_files\\Screenshot[' + filename + '].png'))
     #  VERY IMPORTANT so that multiple process don't conflict on same file name
     # NEW SOLUTION DELETE IF IT DOESNT WORK  = , cv2.IMREAD_UNCHANGED)
-    img_rgb = cv2.imread('Temp_files\\Screenshot' + filename, cv2.IMREAD_UNCHANGED)
+    img_rgb = cv2.imread('Temp_files\\Screenshot[' + filename + '].png', cv2.IMREAD_UNCHANGED)
     return img_rgb
 
 
@@ -282,22 +284,9 @@ def search_click_image(image, action, x1=0, y1=0, x2=Resolution[0], y2=Resolutio
         return pos
 
 
-def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 --psm 7'):
-    count = 0
-    # BaseCoord = imagesearcharea( 1182, 324, 1357, 381, precision=0.95)
-    # image_screenshot = pyautogui.screenshot("Screenshot.png", region=(x1, y1, x2, y2))
-    with mss.mss() as sct:
-
-        # The screen part to capture
-        region = {'left': x1, 'top': y1, 'width': x2, 'height': y2}
-
-        # Grab the data
-        image_screenshot = mss.mss().grab(region)
-
-        # Save to the picture file
-        mss.tools.to_png(image_screenshot.rgb, image_screenshot.size, output='Screenshot.png')
-
-    image = cv2.imread('Screenshot.png')
+def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 --psm 7', colors="normal"):
+    file_name = "image2text"
+    img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
 
     # get grayscale image
     def get_grayscale(image):
@@ -309,14 +298,13 @@ def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 
 
     def get_weird(image):
         return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-    gray = get_grayscale(image)
+    # DEBUGGING
+    gray = get_grayscale(img_rgb)
     thresh = thresholding(gray)
-    weird = get_weird(image)
-    images = [image, gray, thresh,weird]
+    weird = get_weird(img_rgb)
+    images = [img_rgb, gray, thresh,weird]
     titles = ['Original Image', 'gray',
               'thresh', 'weird']
-
     # # displaying image on screen for debuging
     # from matplotlib import pyplot as plt
     # for i in range(4):
@@ -325,8 +313,17 @@ def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 
     #     plt.xticks([]), plt.yticks([])
     # plt.show()
 
-    # image_screenshot.save('ItemName' + str(count) + '.png')
-    text = pytesseract.image_to_string(image, config=method)  # change parameters in default
+    if colors == "gray":
+        color_method = get_grayscale(img_rgb)
+    elif colors == "threshold":
+        gray = get_grayscale(img_rgb)
+        color_method = thresholding(gray)
+    elif colors == "weird":
+        color_method = get_weird(img_rgb)
+    else:
+        color_method = img_rgb
+        # image_screenshot.save('ItemName' + str(count) + '.png')
+    text = pytesseract.image_to_string(color_method, config=method)  # change parameters in default
     # print(text)
     return text
 
@@ -529,9 +526,62 @@ if __name__ == '__main__':
     # waiting_for_loading_screen()
 
     # # testing TEXT DETECTION
-    # text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7')
-    # print(text)
+    text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7', colors="threshold")
 
+    # count = 0
+    # esc_menu = Daily + "Misc\\Game_menu.png"
+    # char_loop = 9
+    #
+    # switch_stepx = 258
+    # switch_stepy = 117
+    #
+    # first_x = 692
+    # first_y = 400
+    #
+    # box_size_x = 165
+    # box_size_y = 23
+    # # entering switch char menu
+    # for i in range(1, 10, 1):
+    #     ready = Searchimage_return_position(esc_menu, 1, precision=0.84)
+    #     if ready != [-1, -1]:
+    #         break
+    #     else:
+    #         time.sleep(0.7)
+    #         i += 1
+    #         pydirectinput.press('ESC')
+    #
+    # button = Daily + "Misc\\Switching\\switch_character.png"
+    # search_click_image(button, "left", x2=1800)
+    # went_down = 0
+    # went_up = 0
+    # while went_up == 0:
+    #     button = Daily + "Misc\\Switching\\button_down.png"
+    #     search_click_image(button, "left", x2=1800)
+    #
+    #     if went_down == 1:
+    #         button = Daily + "Misc\\Switching\\button_up.png"
+    #         search_click_image(button, "left")
+    #         first_x = 692
+    #         first_y = 400
+    #     # formula for going through all 9 characters
+    #     for i in range(0, char_loop, 1):
+    #         count = count + 1
+    #         # print(count)
+    #         # print(char_loop)
+    #         # count devideable by 3
+    #         first_x = first_x + switch_stepx
+    #         text = image2text(x1=first_x, y1=first_y,
+    #                           x2=box_size_x, y2=box_size_y)
+    #         print(text)
+    #         if went_up == 1:
+    #             break
+    #         if count % 3 == 0:
+    #             print("count is DEVIDABLE", count)
+    #             first_y = first_y + switch_stepy
+    #             first_x = 945 - switch_stepx
+    #     if went_down == 1:
+    #         went_up = 1
+    #     went_down = 1
     # # Testing WEEKLIES
     # Weekly = Daily + "\\Weeklies"
     # weekly_tasks = [x for x in glob.glob(Weekly + '\\Weekly tasks' + "**/*.png")]
@@ -667,7 +717,6 @@ if __name__ == '__main__':
     #
     # with Listener(on_press=on_press, on_release=on_release) as listener:
     #     listener.join()
-    im_screenshot()
     # for y in check_if_failed:
     #     position, count_images = im_search_count(y, precision=0.3)
     #     print(position)

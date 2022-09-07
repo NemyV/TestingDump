@@ -186,3 +186,11 @@ C:\Users\Ggjustice\Pictures\Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ
  position :(842, 546)
 C:\Users\Ggjustice\Pictures\Buttons\Daily Quest\Misc\Feiton door\LOSTARK_1Z9LXPOcPt.png
  Good ones: 
+
+ Good ones: 
+
+ position :(581, 592)
+C:\Users\Ggjustice\Pictures\Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ7I44.png
+ position :(841, 587)
+C:\Users\Ggjustice\Pictures\Buttons\Daily Quest\Misc\Feiton door\LOSTARK_1Z9LXPOcPt.png
+ Good ones: 

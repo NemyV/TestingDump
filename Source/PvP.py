@@ -1,8 +1,8 @@
 import multiprocessing
 import keyboard
 from threading import Thread
-
-
+from METHODS import im_search_until_found
+from METHODS import search_click_image
 
 class ChaosDungeon:
 
@@ -33,6 +33,7 @@ class ChaosDungeon:
         123
 
     def dimensional_cube(self, search, process_search_inc):
+        123
         #BIFROST TO the boss rush/cube spot?
         # ACcepting quests?
         # press G
@@ -44,8 +45,9 @@ class ChaosDungeon:
         # Casting skills while positioning to the middle!
 
     def boss_rush(self, search, process_search_inc):
+        123
         #BIFROST TO the boss rush/cube spot?
-        # ACcepting quests?
+        # Accepting quests?
         # press G
         # matchmaking or enter?
         # WAIT FOR THE QUE !CAN TAKE LOONG TIME!
@@ -54,14 +56,38 @@ class ChaosDungeon:
         # Walking upstairs to the light!
         # Casting skills while positioning to the middle!
 
-    def do_pvp(self, search, process_search_inc):
+    def do_pvp(self):
+        order = "3rd"
+        PVP_type = 3
         # Enter PVP\
         image = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_icon.png"
         search_click_image(image, "left")
+        # Type of match
+        if PVP_type == 3:
+            type_match = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Team_elimination.png"
+        if PVP_type == 2:
+            type_match = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_deathmatch.png"
+        if PVP_type == 1:
+            type_match = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_TEAM_deathmatch.png"
+        im_search_until_found(type_match, click="left", precision=0.6)
+        # Que for match
+        que_for_match = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Queue_for_Match.png"
+        search_click_image(que_for_match, "left")
         # WAIT FOR THE QUE !CAN TAKE LOONG TIME!
-        # DID QUE GO THROUGH
+        ok_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Accept_PVP_match.png"
+        im_search_until_found(ok_button, click="left")
         # Pick order?
-        # Detect HP bar from PVP Use skills
+        if PVP_type == 3:
+            if order == "3rd":
+                pick_order = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_3rd.png"
+            im_search_until_found(pick_order, click="left")
+        # # Detect HP bar from PVP Use skills
+        # char_name, my_class, work = "something", "Paladin", "123"
+        # self.start(char_name, my_class, work)
+
+        leave_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Pvp_leave.png"
+        im_search_until_found(leave_button, click="left")
+        # loading screen
         # Re enter PVP
 
     def centeral_detection(self):
@@ -553,3 +579,7 @@ class ChaosDungeon:
             if key != '_processes':
                 state[key] = value
         return state
+
+
+if __name__ == '__main__':
+    ChaosDungeon().do_pvp()

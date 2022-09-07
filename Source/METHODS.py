@@ -15,6 +15,7 @@ import mss
 import mss.tools
 import win32gui
 import re
+import matplotlib.pyplot as plt
 
 # from skimage import io
 from multiprocessing import Manager, Process, Pool
@@ -116,7 +117,7 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
         image_screenshot = mss.mss().grab(region)
         # try to remove
         try:
-            os.remove('Temp_files\\Screenshot[' + filename + ']')
+            os.remove('Temp_files\\Screenshot[' + filename + '].png')
             time.sleep(0.5)
         except IOError:
             123
@@ -125,7 +126,7 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
                          output=('Temp_files\\Screenshot[' + filename + '].png'))
     #  VERY IMPORTANT so that multiple process don't conflict on same file name
     # NEW SOLUTION DELETE IF IT DOESNT WORK  = , cv2.IMREAD_UNCHANGED)
-    img_rgb = cv2.imread('Temp_files\\Screenshot[' + filename + ']', cv2.IMREAD_UNCHANGED)
+    img_rgb = cv2.imread('Temp_files\\Screenshot[' + filename + '].png', cv2.IMREAD_UNCHANGED)
     return img_rgb
 
 '''
@@ -136,7 +137,7 @@ top left corner coordinates of the element if found as an array [x,y] or [-1,-1]
 '''
 
 
-def im_search(image, return_value="center", precision=0.8):
+def im_search(image, return_value="center", precision=0.7):
     file_name = "im_search"
     img_rgb = im_screenshot(file_name)
     number_of_channels, w, h = img_rgb.shape[::-1]
@@ -144,11 +145,9 @@ def im_search(image, return_value="center", precision=0.8):
     y1 = h
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(image, 0)
-
     w, h = template.shape[::-1]
     res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
     if max_val < precision:
         return [-1, -1]
     if return_value == "top_left":
@@ -156,9 +155,10 @@ def im_search(image, return_value="center", precision=0.8):
     if return_value == "center":
         top_left = max_loc  # can change to min_loc or max_loc
         bottom_right = (top_left[0] + w, top_left[1] + h)
-        avg_x = (bottom_right[0] + top_left[0]) / 2
-        avg_y = (bottom_right[1] + top_left[1]) / 2
-        average = [x1 + avg_x, y1 + avg_y]
+        avg_x = round((bottom_right[0] + top_left[0]) / 2)
+        avg_y = round((bottom_right[1] + top_left[1]) / 2)
+        average = [avg_x, avg_y]
+
         return average
 
 
@@ -183,25 +183,6 @@ def imagesearch_fast_area(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1],
         return [-1, -1]
     # return max_loc
     return max_loc
-
-
-'''
-Searchs for an image on screen continuously until it's found or max number of samples reached.
-returns : the top left corner coordinates of the element if found as an array [x,y]
-'''
-def imagesearch_numLoop(image, timesample, maxSamples, precision=0.8):
-    pos = im_search(image, precision)
-    count = 0
-    while pos[0] == -1:
-        print(image + " not found, waiting")
-        time.sleep(timesample)
-        pos = im_search(image, precision)
-        count = count + 1
-        if count > maxSamples:
-            break
-    return pos
-
-
 
 '''
 Searches for an image on the screen and counts the number of occurrences.
@@ -228,29 +209,34 @@ def im_search_count(image, precision=0.9):
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
     if max_val < precision:
-        return [-1, -1] , count
+        return [-1, -1], count
     return max_loc, count
 
 
-def im_search_until_found(image, time_sample=0.5, max_samples=5, return_value="center", precision=0.8):
-    pos = im_search(image, return_value, precision)
+def im_search_until_found(image, time_sample=0.5, click="left", return_value="", precision=0.8):
+    pos = im_search(image, precision=precision)
     count = 0
-    while pos[0] == -1:
+    while pos == [-1, -1]:
         # print(image + " not found, waiting ")
         time.sleep(time_sample)
-        pos = im_search(image, return_value, precision)
+        pos = im_search(image, precision=precision)
         count = count + 1
-        if count > max_samples:
-            break
+        # if count > max_samples:
+        #     break
     if return_value == "count":
         return count
     else:
+        if click == "left":
+            pydirectinput.leftClick(pos[0], pos[1])
+        elif click == "right":
+            pydirectinput.rightClick(pos[0], pos[1])
         return pos
 
 
 def im_processing(template_image, file_name, look_for,
                   x1, y1, rgb_screenshot, return_value="center", precision=0.7):
     img_rgb = rgb_screenshot
+    file_name = file_name + ".png"
     if look_for == "None":
         print("without mask mask")
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
@@ -311,7 +297,7 @@ def im_processing(template_image, file_name, look_for,
             path1 = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\Testing\\'
             raw_path = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\Testing\\No filter\\'
             cv2.imwrite(raw_path + "MASK" + file_name, img_gray)  # uncomment FOR MASKS
-            cv2.imwrite(raw_path + file_name,img_rgb)  # Uncomment to write output image with boxes drawn around occurances
+            cv2.imwrite(raw_path + file_name, img_rgb)  # Uncomment to write output image with boxes drawn around occurances
             if "Tower" in file_name:
                 # print("drawing boxes", name)
                 cv2.imwrite(path2 + "\\Mask" + file_name, img_gray)
@@ -409,20 +395,10 @@ def PressKey_image(image):
     pyautogui.press('' + x)
 
 
-def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 --psm 7'):
-    count = 0
-    filename = "image2text"
-    # BaseCoord = imagesearcharea( 1182, 324, 1357, 381, precision=0.95)
-    # image_screenshot = pyautogui.screenshot("Screenshot.png", region=(x1, y1, x2, y2))
-    with mss.mss() as sct:
-        # The screen part to capture
-        region = {'left': x1, 'top': y1, 'width': x2, 'height': y2}
-        # Grab the data
-        image_screenshot = mss.mss().grab(region)
-        # Save to the picture file
-        mss.tools.to_png(image_screenshot.rgb, image_screenshot.size, output='Temp_files\\Screenshot[' + filename + ']')
-    image = cv2.imread('Temp_files\\Screenshot[' + filename + ']')
-
+def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 --psm 7', colors="normal"):
+    file_name = "image2text"
+    img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
+    # print(colors)
     # get grayscale image
     def get_grayscale(image):
         return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -434,13 +410,12 @@ def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 
     def get_weird(image):
         return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-    gray = get_grayscale(image)
-    thresh = thresholding(gray)
-    weird = get_weird(image)
-    images = [image, gray, thresh,weird]
-    titles = ['Original Image', 'gray',
-              'thresh', 'weird']
-
+    # gray = get_grayscale(img_rgb)
+    # thresh = thresholding(gray)
+    # weird = get_weird(img_rgb)
+    # images = [img_rgb, gray, thresh,weird]
+    # titles = ['Original Image', 'gray',
+    #           'thresh', 'weird']
     # # displaying image on screen for debuging
     # from matplotlib import pyplot as plt
     # for i in range(4):
@@ -449,9 +424,18 @@ def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 
     #     plt.xticks([]), plt.yticks([])
     # plt.show()
 
-    # image_screenshot.save('ItemName' + str(count) + '.png')
-    text = pytesseract.image_to_string(image, config=method)  # change parameters in default
-    # print(text)
+    if colors == "gray":
+        color_method = get_grayscale(img_rgb)
+    elif colors == "threshold":
+        gray = get_grayscale(img_rgb)
+        color_method = thresholding(gray)
+    elif colors == "weird":
+        color_method = get_weird(img_rgb)
+    else:
+        color_method = img_rgb
+        # image_screenshot.save('ItemName' + str(count) + '.png')
+    text = pytesseract.image_to_string(color_method, config=method)  # change parameters in default
+    # print(color_method, "=METHOD /TEXT2IMAGE found this text:", text)
     return text
 
 
