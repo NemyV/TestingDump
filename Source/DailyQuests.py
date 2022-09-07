@@ -180,22 +180,20 @@ def daily_state_check():
                 time.sleep(0.7)
                 i += 1
                 pydirectinput.press('ESC')
-        # IMPORT for using 2 methods/colors to find match with tesseract
+        # IMPORTANT for using 2 methods/colors to find match with tesseract
         text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7', colors="threshold")
         found_it = False
-        while not found_it:
+        for y in np.unique(list_of_workers):
+            if y in text:
+                found_it = True
+                print("FOUND IT USING THRESHOLD")
+                break
+        if not found_it:
+            text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7')
             for y in np.unique(list_of_workers):
                 if y in text:
-                    found_it = True
-                    print("FOUND IT USING THRESHOLD")
+                    print("FOUND IT USING rgb")
                     break
-            if not found_it:
-                text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7')
-                for y in np.unique(list_of_workers):
-                    if y in text:
-                        found_it = True
-                        print("FOUND IT USING rgb")
-                        break
         # CLOSING ESC MENU
         pydirectinput.press('ESC')
         generator_expression = (x for x in np.unique(list_of_workers) if x in text)
@@ -2287,7 +2285,7 @@ if __name__ == '__main__':
     ERRORS: Swamp keeps finding complete quest and instantly starts teleporting"""
 
     # stronghold_daily()
-    daily_state_check()
+    # daily_state_check()
     # ChaosDungeon().minimap_detection()
     # ChaosDungeon().centeral_detection()
 
