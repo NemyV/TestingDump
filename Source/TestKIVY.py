@@ -888,22 +888,26 @@ class DailyQuests(Screen):
         self.stronghold_grid.add_widget(self.stronghold_grid.all_stronghold)
 
         # GRID LAYOUT [ Exchange pirate ]
-        self.exchange_grid = GridLayout(cols=2,
+        self.misc_grid = GridLayout(cols=2,
                                         row_force_default=True, row_default_height=60, col_default_width=60)
-        self.MAIN_GRID.add_widget(self.exchange_grid)
+        self.MAIN_GRID.add_widget(self.misc_grid)
 
-        self.exchange_lbl = Label(text='Exchange pirate:',
+        self.exchange_lbl = Label(text='Misc:',
                                   pos_hint={'x': base_label_x + grid_step_x * 3, 'y': +0.45})
-        self.exchange_grid.add_widget(self.exchange_lbl)
+        self.misc_grid.add_widget(self.exchange_lbl)
 
         self.exchange_image = Image(source=LoAImages + 'Weekly_icon.png', size_hint=(0.5, 0.5),
                                     pos_hint={'x': base_image_x + grid_step_x * 3, 'y': +0.70})
-        self.exchange_grid.add_widget(self.exchange_image)
+        self.misc_grid.add_widget(self.exchange_image)
         # Checkbox
-        self.exchange_grid.ALL = Label(text='Accept ALL favorites')
-        self.exchange_grid.add_widget(self.exchange_grid.ALL)
-        self.exchange_grid.ALL = CheckBox(ids=({'name': 'all_exchange'}))
-        self.exchange_grid.add_widget(self.exchange_grid.ALL)
+        self.misc_grid.ALL = Label(text='Exchange pirate')
+        self.misc_grid.add_widget(self.misc_grid.ALL)
+        self.misc_grid.ALL = CheckBox(ids=({'name': 'all_exchange'}))
+        self.misc_grid.add_widget(self.misc_grid.ALL)
+        self.misc_grid.ALL = Label(text='Pet status')
+        self.misc_grid.add_widget(self.misc_grid.ALL)
+        self.misc_grid.ALL = CheckBox(ids=({'name': 'pet_status'}))
+        self.misc_grid.add_widget(self.misc_grid.ALL)
 
         # GRID LAYOUT [ CHAOS DUNGEON ]
         self.chaos_grid = GridLayout(cols=2,
@@ -1151,7 +1155,9 @@ class DailyQuests(Screen):
     def save_settings(self, *args):
         checkbox_instances = [self.silver_grid, self.leapstone_grid, self.guild_grid,
                               self.presets_grid, self.weekly_grid, self.stronghold_grid,
-                              self.chaos_grid, self.worker_grid]
+                              self.chaos_grid, self.worker_grid, self.misc_grid]
+        # ADD CODE HERE IF SELECTED CHARACTER IS "ALL" then change value for all characters in database to the
+        # checkbox values of "ALL"
         if selected_character != '':
             for box_instance in checkbox_instances:
                 # For Work grid
@@ -1211,7 +1217,7 @@ class DailyQuests(Screen):
         print("SELECTED CHARACTER : ", selected_character)
         checkbox_instances = [self.silver_grid, self.leapstone_grid, self.guild_grid,
                               self.presets_grid, self.weekly_grid, self.stronghold_grid,
-                              self.chaos_grid, self.worker_grid]
+                              self.chaos_grid, self.worker_grid, self.misc_grid]
         for box_instance in checkbox_instances:
             # READING STATUS FROM CONFIG
             for section_name in configparser.sections():

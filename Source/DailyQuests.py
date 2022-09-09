@@ -12,6 +12,7 @@ from METHODS import image2text
 from METHODS import imagesearch_fast_area
 from METHODS import casting_skills
 from METHODS import im_search_until_found
+from Lifeskills import fishing
 
 from kivy.config import ConfigParser
 import numpy as np
@@ -103,7 +104,8 @@ misc_dictionary = {"loading": "no"}
 process_search_inc = 2
 last_cords = [0, 0]
 potions_used = 0
-
+global pet_status
+pet_status = 0
 global combat
 combat = ''
 global list_of_workers
@@ -194,11 +196,14 @@ def daily_state_check():
                 if y in text:
                     print("FOUND IT USING rgb")
                     break
+        print("I was here")
         # CLOSING ESC MENU
         pydirectinput.press('ESC')
         generator_expression = (x for x in np.unique(list_of_workers) if x in text)
         for x in generator_expression:
             print("Found ", x, "")
+            global pet_status
+            pet_status = "no"
             if x not in finished_char:
                 # WHAT CLASS AM I? checking image and then XXX
                 for f in Class_checker:
@@ -269,6 +274,9 @@ def daily_state_check():
                         gen_expression = (x for x in work_array if "all_stronghold" in x)
                         for g in gen_expression:
                             stronghold_daily()
+                        gen_expression = (x for x in work_array if "pet_status" in x)
+                        for g in gen_expression:
+                            pet_status = "yes"
                         gen_expression = (x for x in work_array if "preset" in x)
                         for g in gen_expression:
                             found = re.findall(r'\d+', g)
@@ -289,6 +297,9 @@ def daily_state_check():
                             hope_daily()
                             swamp_daily()
                             nameless_daily()
+                        gen_expression = (x for x in work_array if "fishing" in x)
+                        for g in gen_expression:
+                            fishing()
                         gen_expression = (x for x in work_array if "2_daily_chaos" in x)
                         for g in gen_expression:
                             ChaosDungeon().start(x, combat, work="2_daily_chaos")
@@ -1128,9 +1139,6 @@ def accepting_quest(name, target="daily"):
                 pydirectinput.click(ready[0] + 855,
                                     ready[1] + 18)
     elif target == "weekly":
-        for x in weekly_tasks:
-            weekly_task_pos = Searchimage_return_position(x, 1, precision=0.95)
-            weekly_task_pos[0]
         daily_button = Daily + "Misc\\Weekly_button.png"
         search_click_image(daily_button, "left")
         time.sleep(1)
@@ -1151,9 +1159,10 @@ def accepting_quest(name, target="daily"):
         for x in range(0, 2, 1):
             for w in weekly_tasks:
                 guild_req_right = Daily + "Misc\\Guild_request_far_right.png"
-                search_click_image(guild_req_right, "left")
+                search_click_image(guild_req_right, "left", precision=0.8)
                 position = Searchimage_return_position(w, 1, precision=0.90)
                 if position != [-1, -1]:
+                    print("THIS IS POSITION ", position)
                     pydirectinput.leftClick(position[0] + 550,
                                             position[1] + 10)
                     time.sleep(1)
@@ -1408,30 +1417,30 @@ def waiting_for_loading_screen(tries=100):
         r, g, b = im.getpixel((1772 - 1652, 272 - 168))
         if r == 0 and g == 0 and b == 0:
             break
+        time.sleep(0.07)
+    # if count_loading == tries:
+    #     print("Loading screen not found")
+    # else:
+    # print("Loading screen found")
+    # looking for light
+    for i in range(0, 20, 1):
+        print("looking for ARROW")
+        loading_arrow = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Loading_screen_arrow.png"
+        position = searchimageinarea(loading_arrow, "TESTING.png", precision=0.85)
+        if position != [-1, -1]:
+            break
+        time.sleep(0.3)
+    teleport = "yes"
+    for i in range(0, 700, 1):
+        print("looking for black")
+        im = pyautogui.screenshot(region=(1652, 168, 240, 210))
+        r, g, b = im.getpixel((1772 - 1652, 272 - 168))
+        if r == 0 and g == 0 and b == 0:
+            print("finished loading screen")
+            break
         time.sleep(0.15)
-    if count_loading == tries:
-        print("Loading screen not found")
-    else:
-        print("Loading screen found")
-        # looking for light
-        for i in range(0, 20, 1):
-            print("looking for ARROW")
-            loading_arrow = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Loading_screen_arrow.png"
-            position = searchimageinarea(loading_arrow, "TESTING.png", precision=0.85)
-            if position != [-1, -1]:
-                break
-            time.sleep(0.3)
-        teleport = "yes"
-        for i in range(0, 700, 1):
-            print("looking for black")
-            im = pyautogui.screenshot(region=(1652, 168, 240, 210))
-            r, g, b = im.getpixel((1772 - 1652, 272 - 168))
-            if r == 0 and g == 0 and b == 0:
-                print("finished loading screen")
-                break
-            time.sleep(0.15)
-        time.sleep(4)
-        return teleport
+    time.sleep(4)
+    return teleport
 
 
 def stronghold_daily():
@@ -1807,7 +1816,8 @@ class ChaosDungeon:
                                     self.restating_stopped(countingportattempt)
                                     break_switch = 1
                                     break
-                                port_pos = im_search_until_found(p, time_sample=0.1, precision=0.7)
+                                port_pos = im_search_until_found(p, time_sample=0.1, max_samples=2, precision=0.7)
+                                print("PORTAL POSITION", port_pos)
                                 if port_pos != [-1, -1]:
                                     print("Entering portal")
                                     pydirectinput.rightClick()
@@ -1944,7 +1954,7 @@ class ChaosDungeon:
             self.restating_stopped(counting)
 
     def repairing(self):
-        pet_status = "yes"
+        # pet_status = "no"
         repair_all = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\ChaosMisc\\Repair all.png'
         repair_icon = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Pet_repairing.png"
         if pet_status == "yes":
@@ -1994,6 +2004,11 @@ class ChaosDungeon:
                 counting_state += 1
                 position = imagesearch_fast_area(y, precision=0.7)
                 if position != [-1, -1]:
+                    try:
+                        self.stop_combat()
+                        self.stop_normal()
+                    except:
+                        print("Error stopping combat in state_check chaos dungeon")
                     # checking for % in top left corner
                     stage_percent = image2text(x1=107, y1=186, x2=55, y2=19,
                                                method='--psm 7 --oem 3 -c tessedit_char_whitelist=%0123456789')
@@ -2040,7 +2055,7 @@ class ChaosDungeon:
                         search_click_image(u, "left")
                     # print("APPENDED switch to ", switch)
                     # add loading screen function
-                    time.sleep(10)
+                    time.sleep(5)
                     self.restating_stopped(counting_state)
             # turn on for INFINITE chaos
             # self.repair_and_enter(counting_state)
@@ -2127,6 +2142,8 @@ class ChaosDungeon:
                 break
 
     def start(self, char_name, my_class, work):
+        # DISMANTLE GEAR level 4 = Legendary equipment
+        self.dismantle(4)
         self.current_class = my_class
         self.current_work = work
         print("VARIABLES ARE : ", char_name, my_class, work)
@@ -2147,7 +2164,7 @@ class ChaosDungeon:
                                 'a': "combo", 's': "normal", 'd': "holding", 'f': "holding"}
         if self.current_class == "Sorceress":
             self.skills_dict = {'q': "normal", 'w': "combo", 'e': "normal", 'r': "normal",  # Sorceress image casting
-                                'a': "normal", 's': "normal", 'd': "normal", 'f': "normal"}
+                                'a': "normal", 's': "normal", 'd': "normal", 'f': "holding"}
         if self.current_class == "Gunlancer":
             self.skills_dict = {'q': "normal", 'w': "combo", 'e': "normal", 'r': "normal",  # Gunlancer image casting
                                 'a': "combo", 's': "holding", 'd': "combo", 'f': "holding"}
@@ -2248,6 +2265,24 @@ class ChaosDungeon:
         #     #     print("CLICKING LEFT ", key, self.combat_event.is_set())
         #     #     pydirectinput.leftClick()
 
+    def dismantle(self, dismantle_level):
+        dismantle_level = 4
+        basex = 1480
+        basey = 745
+        pydirectinput.press("i")
+        dismantle_icon = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_icon.png"
+        search_click_image(dismantle_icon, action="left")
+        for x in range(0, dismantle_level, 1):
+            pydirectinput.leftClick(basex, basey)
+            basex += 107
+            print(basex)
+        dismantle_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_button.png"
+        search_click_image(dismantle_button, action="left")
+        # ok = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\First_loging_guild.png"
+        # search_click_image(ok, action="left", precision=0.7)
+        pydirectinput.press("ENTER")
+        pydirectinput.press("i")
+
     def __getstate__(self):
         state = {}
         for key, value in vars(self).items():
@@ -2291,6 +2326,7 @@ if __name__ == '__main__':
 
     # waiting_for_loading_screen()
     # accepting_quest(name="ALL", target="guild_request")
+    accepting_quest(name="ALL", target="weekly")
 
     # list_of_workers = ["Sheeeshaa", "Ggwarlord", "Ggsorc"]
     # finished_char = []

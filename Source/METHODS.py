@@ -119,9 +119,12 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
         try:
             os.remove('Temp_files\\Screenshot[' + filename + '].png')
             time.sleep(0.5)
+            print("REMOVED FILE")
         except IOError:
+            print("DIDN T REMOVE FILE")
             123
         # Save to the picture file
+        print("AND I CONTINUED")
         mss.tools.to_png(image_screenshot.rgb, image_screenshot.size,
                          output=('Temp_files\\Screenshot[' + filename + '].png'))
     #  VERY IMPORTANT so that multiple process don't conflict on same file name
@@ -213,7 +216,7 @@ def im_search_count(image, precision=0.9):
     return max_loc, count
 
 
-def im_search_until_found(image, time_sample=0.5, click="left", return_value="", precision=0.8):
+def im_search_until_found(image, time_sample=0.5, click="left", return_value="", max_samples=0, precision=0.8):
     pos = im_search(image, precision=precision)
     count = 0
     while pos == [-1, -1]:
@@ -221,15 +224,17 @@ def im_search_until_found(image, time_sample=0.5, click="left", return_value="",
         time.sleep(time_sample)
         pos = im_search(image, precision=precision)
         count = count + 1
-        # if count > max_samples:
-        #     break
+        if max_samples >= 1:
+            if count > max_samples:
+                break
     if return_value == "count":
         return count
     else:
-        if click == "left":
-            pydirectinput.leftClick(pos[0], pos[1])
-        elif click == "right":
-            pydirectinput.rightClick(pos[0], pos[1])
+        if pos != [-1, -1]:
+            if click == "left":
+                pydirectinput.leftClick(pos[0], pos[1])
+            elif click == "right":
+                pydirectinput.rightClick(pos[0], pos[1])
         return pos
 
 
@@ -538,6 +543,8 @@ def casting_skills(skill_dictionary, my_class):
                 time.sleep(0.2)
                 pydirectinput.press(dictionary_keys[count])
             if dictionary_values[count] == "holding" and ready != "no":
+                pydirectinput.keyDown(dictionary_keys[count])
+                time.sleep(0.1)
                 pydirectinput.keyDown(dictionary_keys[count])
                 time.sleep(2)
                 pydirectinput.keyUp(dictionary_keys[count])

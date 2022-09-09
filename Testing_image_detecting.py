@@ -526,7 +526,22 @@ if __name__ == '__main__':
     # waiting_for_loading_screen()
 
     # # testing TEXT DETECTION
-    text = image2text(x1=630, y1=655, x2=200, y2=30, method=' --oem 3 --psm 7', colors="threshold")
+    dismantle = 4
+    basex = 1480
+    basey = 745
+    pydirectinput.press("i")
+    dismantle_icon = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_icon.png"
+    search_click_image(dismantle_icon, action="left")
+    for x in range(0, dismantle, 1):
+        pydirectinput.leftClick(basex, basey)
+        basex += 107
+        print(basex)
+    dismantle_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_button.png"
+    search_click_image(dismantle_button, action="left")
+    # ok = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\First_loging_guild.png"
+    # search_click_image(ok, action="left", precision=0.7)
+    pydirectinput.press("ENTER")
+    pydirectinput.press("i")
 
     # count = 0
     # esc_menu = Daily + "Misc\\Game_menu.png"
