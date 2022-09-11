@@ -66,7 +66,7 @@ NumberofChar = 0
 PirateGold = 0
 sm = ScreenManager()
 LoAImages = 'Buttons\\'
-# Source = 'D:\\BLostArk\\LOSTARKB\\Source\\'
+Source = 'D:\\BLostArk\\LOSTARKB\\Source\\'
 
 # These changes need to be present !!!!BEFORE you import Window!!!!
 
