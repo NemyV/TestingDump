@@ -3,7 +3,8 @@ import keyboard
 from threading import Thread
 from METHODS import im_search_until_found
 from METHODS import search_click_image
-
+from METHODS import imagesearch_fast_area
+import time
 class ChaosDungeon:
 
     def __init__(self):
@@ -58,8 +59,8 @@ class ChaosDungeon:
 
     def do_pvp(self):
         order = "3rd"
-        PVP_type = 3
-        # Enter PVP\
+        PVP_type = 2
+        # QUE PART HERE
         image = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_icon.png"
         search_click_image(image, "left")
         # Type of match
@@ -76,17 +77,40 @@ class ChaosDungeon:
         # WAIT FOR THE QUE !CAN TAKE LOONG TIME!
         ok_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Accept_PVP_match.png"
         im_search_until_found(ok_button, click="left")
+        # Wait for loading screen if not then wait to accept again
         # Pick order?
         if PVP_type == 3:
             if order == "3rd":
                 pick_order = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_3rd.png"
             im_search_until_found(pick_order, click="left")
-        # # Detect HP bar from PVP Use skills
+        #PVP PART HERE
+        # Detect HP bar from PVP Use skills
+        # my_turn = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_myturn_HPBAR.png"
+        # im_search_until_found(my_turn, click="left", precision=0.7)
+        # print("ITS MY TURN!")
+        # while True:
+        #     my_turn = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_myturn_HPBAR.png"
+        #     position = imagesearch_fast_area(my_turn, x1=700, y1=300, x2=1500, y2=780, precision=0.8)
+        #     print("looking for OWN hp bar")
+        #     if position != [-1, -1]:
+        #         # im_search_until_found(pvp_hp_bar, click="right", precision=0.6)
+        #         print("ITS MY TURN!")
+        #         break
+        #     print("looking for enemy hp bar")
+        #     pvp_hp_bar = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_enemy_hpbar.png"
+        #     position = imagesearch_fast_area(pvp_hp_bar, x1=700, y1=300, x2=1500, y2=780, precision=0.7)
+        #     time.sleep(1)
+        #     if position != [-1, -1]:
+        #         # im_search_until_found(pvp_hp_bar, click="right", precision=0.6)
+        #         print("FOUND ENEMY HP BAR")
+        #         # break
+        # Cast summon skills harp turrets...
+        # WAIT FOR HP BAR TO BE CLOSE ENOUGH THEN ULT
         # char_name, my_class, work = "something", "Paladin", "123"
         # self.start(char_name, my_class, work)
-
-        leave_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Pvp_leave.png"
-        im_search_until_found(leave_button, click="left")
+        # leave_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Pvp_leave.png"
+        # im_search_until_found(leave_button, click="left")
+        # print("leaving...")
         # loading screen
         # Re enter PVP
 

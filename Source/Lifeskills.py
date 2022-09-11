@@ -7,7 +7,7 @@ import time
 import glob
 import datetime
 
-Buttons = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\"
+Buttons = "Buttons\\"
 
 FishingCATCH = Buttons + 'FISHING\\EXCLAMATION'
 repair = Buttons + 'FISHING\\BrokenTool'
@@ -78,7 +78,8 @@ def Statecheck():
 
 def fishing():
     count_good = 0
-    while True:
+    switch = 0
+    while switch == 0:
         Statecheck()
 
         for f in Emptyenergy:
@@ -91,14 +92,8 @@ def fishing():
                 end = time.time()
                 print(f"Runtime of the program is {end - start}")
                 # after quiting reloging into the other account and doing the same thing....
-
-                # pydirectinput.press('narakabladepoint10000')
-                # pydirectinput.press('grimreaper0')
-
-                # pydirectinput.press('jibrillev')
-                # pydirectinput.press('Rally901121!')
-                time.sleep(1)
-                exit()
+                switch = 1
+                # exit()
         # cast W at position START
         time.sleep(1)
         # # right side

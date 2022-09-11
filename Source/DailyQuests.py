@@ -43,7 +43,7 @@ MiniMCOORD = [round(Resolution[0] / 100 * 87.25),
               round(Resolution[1] / 4.25)]
 configparser = ConfigParser()
 
-Buttons = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\"
+Buttons = "Buttons\\"
 Daily = Buttons + 'Daily Quest\\'
 
 # IMPORTANT MISC [ESC MENU]
@@ -110,6 +110,10 @@ global combat
 combat = ''
 global list_of_workers
 list_of_workers = []
+global current_work
+current_work = "Chilling with da boiz..."
+global execution_time
+execution_time = "Run time..."
 # x1 = round(Resolution[0]*46.9/100)
 # y1 = round(Resolution[1]*38.9/100)
 #
@@ -121,8 +125,7 @@ list_of_workers = []
 
 def daily_state_check():
     # starting time MESURING
-    start = time.time()
-
+    stopwatch_start = time.time()
     # TASKS -> LOGIN -> CHECKLIST ->
     switch = 0
     finished_char = []
@@ -346,8 +349,11 @@ def daily_state_check():
         # FINiSHED ALL IF statement
 
     print("Finished Daily maybe waiting for chaos...")
-    # end = time.time()
-    # print(f"Runtime of the program is {end - start}")
+    stopwatch_end = time.time()
+    global execution_time
+    execution_time = stopwatch_end - stopwatch_start
+
+    print(f"Runtime of the program is {execution_time}")
 
 
 def integrated_presets(chosen_preset=1):
@@ -1410,6 +1416,7 @@ def switching_char(finished_char, list_of_workers):
 
 def waiting_for_loading_screen(tries=100):
     count_loading = 0
+    teleport = "no"
     for i in range(0, tries, 1):
         print("looking for black")
         count_loading = count_loading + 1
@@ -1428,17 +1435,18 @@ def waiting_for_loading_screen(tries=100):
         loading_arrow = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Loading_screen_arrow.png"
         position = searchimageinarea(loading_arrow, "TESTING.png", precision=0.85)
         if position != [-1, -1]:
+            teleport = "yes"
             break
         time.sleep(0.3)
-    teleport = "yes"
-    for i in range(0, 700, 1):
-        print("looking for black")
-        im = pyautogui.screenshot(region=(1652, 168, 240, 210))
-        r, g, b = im.getpixel((1772 - 1652, 272 - 168))
-        if r == 0 and g == 0 and b == 0:
-            print("finished loading screen")
-            break
-        time.sleep(0.15)
+    if teleport == "yes":
+        for i in range(0, 700, 1):
+            print("looking for black")
+            im = pyautogui.screenshot(region=(1652, 168, 240, 210))
+            r, g, b = im.getpixel((1772 - 1652, 272 - 168))
+            if r == 0 and g == 0 and b == 0:
+                print("finished loading screen")
+                break
+            time.sleep(0.15)
     time.sleep(4)
     return teleport
 
@@ -1693,7 +1701,7 @@ class ChaosDungeon:
                 print(round(result, 2))
             except:
                 print("Error with HP potion number")
-            if result <= 0.70:
+            if 0.70 >= result > 0:
                 global potions_used
                 potions_used += 1
                 pydirectinput.press('F1')
@@ -2326,7 +2334,7 @@ if __name__ == '__main__':
 
     # waiting_for_loading_screen()
     # accepting_quest(name="ALL", target="guild_request")
-    accepting_quest(name="ALL", target="weekly")
+    # accepting_quest(name="ALL", target="weekly")
 
     # list_of_workers = ["Sheeeshaa", "Ggwarlord", "Ggsorc"]
     # finished_char = []

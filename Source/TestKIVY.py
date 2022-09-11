@@ -65,8 +65,8 @@ CurrentCoins = 0
 NumberofChar = 0
 PirateGold = 0
 sm = ScreenManager()
-LoAImages = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\'
-Source = 'D:\\BLostArk\\LOSTARKB\\Source\\'
+LoAImages = 'Buttons\\'
+# Source = 'D:\\BLostArk\\LOSTARKB\\Source\\'
 
 # These changes need to be present !!!!BEFORE you import Window!!!!
 
@@ -358,45 +358,51 @@ class Minimalistic(Screen):
         SizeW = 0.33
         PosX = -0.04
 
-        ##GRID LAYOUT
-        self.layoutImage = GridLayout(pos_hint={'x': PosX, 'y': .0}, cols=5, size_hint=(1, 1),
-                                      row_force_default=True, row_default_height=120, col_default_width=120)
-        self.add_widget(self.layoutImage)
-        self.layoutCheckbox = GridLayout(pos_hint={'x': PosX, 'y': 0.45}, cols=5, size_hint=(0.01, 0.01),
-                                         row_force_default=True, row_default_height=77, col_default_width=150)
-        self.add_widget(self.layoutCheckbox)
+        # INFO GRID
+        self.info_grid = GridLayout(pos_hint={'x': 0, 'y': 0}, rows=4, cols=2,
+                                    # size_hint=(0.01, 0.01),
+                                    row_force_default=True, row_default_height=30, col_default_width=60)
+        self.add_widget(self.info_grid)
 
-        # Adding Labels
-        self.layoutCheckbox.lbl_statEnemy = Label()
-        self.layoutCheckbox.add_widget(self.layoutCheckbox.lbl_statEnemy)
-        self.layoutCheckbox.lbl_statElite = Label()
-        self.layoutCheckbox.add_widget(self.layoutCheckbox.lbl_statElite)
-        self.layoutCheckbox.lbl_statPort = Label()
-        self.layoutCheckbox.add_widget(self.layoutCheckbox.lbl_statPort)
-        self.layoutCheckbox.lbl_statTower = Label()
-        self.layoutCheckbox.add_widget(self.layoutCheckbox.lbl_statTower)
-        self.layoutCheckbox.lbl_statBoss = Label()
-        self.layoutCheckbox.add_widget(self.layoutCheckbox.lbl_statBoss)
+        self.run_time = Label(text='Work time will be displayed here')
+        self.info_grid.add_widget(self.run_time)
+        self.Return = Button(background_normal=LoAImages + 'Pink.png', border=(0, 0, 0, 0),
+                             background_down=LoAImages + 'Pressed_Button.png',
+                             text="Return",
+                             on_press=callbackTo2)
+        self.info_grid.add_widget(self.Return)
+        self.current_working = Label(text='Work work...')
+        self.info_grid.add_widget(self.current_working)
+        self.start_work = Button(background_normal=LoAImages + 'Pink.png', border=(0, 0, 0, 0),
+                                 background_down=LoAImages + 'Pressed_Button.png',
+                                 text="start_work", on_press=start_work)
+        self.info_grid.add_widget(self.start_work)
+
+        # self.Return = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
+        #                      text="Return",
+        #                      size_hint=(SizeW, SizeH / 3), pos_hint={'x': .75, 'y': 0.7},
+        #                      on_press=callbackTo2)
+        # self.add_widget(self.Return)
+        #
+        # self.start_work = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
+        #                          text="start_work",
+        #                          size_hint=(SizeW, SizeH / 2), pos_hint={'x': .45, 'y': 0.60},
+        #                          on_press=start_work)
+        # self.add_widget(self.start_work)
+        # self.chaos_image = Image(source=LoAImages + 'Chaos_dungeon.png', size_hint=(0.5, 0.5),
+        #                          pos_hint={'x': 0, 'y': +0.70})
+        # self.info_grid.add_widget(self.chaos_image)
+
+        # Checkbox
+        # self.info_grid.Infinite_Chaos = Label(text='Infinite Chaos')
+        # self.info_grid.add_widget(self.info_grid.Infinite_Chaos)
 
         # Adding IMAGES
         # self.layoutImage.Enemy = Image(source=Source + '1 Enemy count.png')
         # self.layoutImage.add_widget(self.layoutImage.Enemy)
 
-        # Buttons
-        self.Return = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
-                             text="Return",
-                             size_hint=(SizeW, SizeH / 3), pos_hint={'x': .75, 'y': 0.7},
-                             on_press=callbackTo2)
-        self.add_widget(self.Return)
-
-        self.start_work = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
-                                 text="start_work",
-                                 size_hint=(SizeW, SizeH/2), pos_hint={'x': .25, 'y': 0.60},
-                                 on_press=start_work)
-        self.add_widget(self.start_work)
-
         # Misc/AUTOMATED THINGS TO START
-        # Clock.schedule_interval(self.update, 2)
+        Clock.schedule_interval(self.update, 2)
         self.on_start()
 
     def on_start(self, *args):
@@ -426,19 +432,24 @@ class Minimalistic(Screen):
         from METHODS_OLD_BACKUP import Towers
         from METHODS_OLD_BACKUP import Enemies
         from METHODS_OLD_BACKUP import Portals
+        from DailyQuests import execution_time
+        from DailyQuests import current_work
         global Enemies
         global Portals
         global Elites
         global Bosses
         global Towers
+        global execution_time
+        global current_work
         # TURN DEBUGING ON IF YOU WANT TO CHECK STUFF ON SCREEN
         # debugging()
-        self.layoutImage.Enemy.reload()
-        self.layoutCheckbox.lbl_statTower.text = "Towers :" + str(Towers)
-        self.layoutCheckbox.lbl_statBoss.text = "Bosses :" + str(Bosses)
-        self.layoutCheckbox.lbl_statEnemy.text = "Enemies :" + str(Enemies)
-        self.layoutCheckbox.lbl_statPort.text = "Portals :" + str(Portals)
-        self.layoutCheckbox.lbl_statElite.text = "Elites :" + str(Elites)
+        # self.layoutImage.Enemy.reload()
+        self.run_time.text = str(execution_time)
+        self.current_working.text = str(current_work)
+        # self.layoutCheckbox.lbl_statBoss.text = "Bosses :" + str(Bosses)
+        # self.layoutCheckbox.lbl_statEnemy.text = "Enemies :" + str(Enemies)
+        # self.layoutCheckbox.lbl_statPort.text = "Portals :" + str(Portals)
+        # self.layoutCheckbox.lbl_statElite.text = "Elites :" + str(Elites)
 
         # self.lbl_stat.text = str(GlobalLabel2)
         # print("this is global labe", GlobalLabel, "test")
