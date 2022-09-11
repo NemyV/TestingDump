@@ -5,6 +5,8 @@ from METHODS import im_search_until_found
 from METHODS import search_click_image
 from METHODS import imagesearch_fast_area
 import time
+
+Buttons = "Buttons\\"
 class ChaosDungeon:
 
     def __init__(self):
@@ -61,35 +63,35 @@ class ChaosDungeon:
         order = "3rd"
         PVP_type = 2
         # QUE PART HERE
-        image = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_icon.png"
+        image = Buttons + "Daily Quest\\Misc\\PVP_icon.png"
         search_click_image(image, "left")
         # Type of match
         if PVP_type == 3:
-            type_match = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Team_elimination.png"
+            type_match = Buttons + "Daily Quest\\Misc\\Team_elimination.png"
         if PVP_type == 2:
-            type_match = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_deathmatch.png"
+            type_match = Buttons + "Daily Quest\\Misc\\PVP_deathmatch.png"
         if PVP_type == 1:
-            type_match = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_TEAM_deathmatch.png"
+            type_match = Buttons + "Daily Quest\\Misc\\PVP_TEAM_deathmatch.png"
         im_search_until_found(type_match, click="left", precision=0.6)
         # Que for match
-        que_for_match = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Queue_for_Match.png"
+        que_for_match = Buttons + "Daily Quest\\Misc\\Queue_for_Match.png"
         search_click_image(que_for_match, "left")
         # WAIT FOR THE QUE !CAN TAKE LOONG TIME!
-        ok_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Accept_PVP_match.png"
+        ok_button = Buttons + "Daily Quest\\Misc\\Accept_PVP_match.png"
         im_search_until_found(ok_button, click="left")
         # Wait for loading screen if not then wait to accept again
         # Pick order?
         if PVP_type == 3:
             if order == "3rd":
-                pick_order = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_3rd.png"
+                pick_order = Buttons + "Daily Quest\\Misc\\PVP_3rd.png"
             im_search_until_found(pick_order, click="left")
         #PVP PART HERE
         # Detect HP bar from PVP Use skills
-        # my_turn = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_myturn_HPBAR.png"
+        # my_turn = Buttons + "Daily Quest\\Misc\\PVP_myturn_HPBAR.png"
         # im_search_until_found(my_turn, click="left", precision=0.7)
         # print("ITS MY TURN!")
         # while True:
-        #     my_turn = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_myturn_HPBAR.png"
+        #     my_turn = Buttons + "Daily Quest\\Misc\\PVP_myturn_HPBAR.png"
         #     position = imagesearch_fast_area(my_turn, x1=700, y1=300, x2=1500, y2=780, precision=0.8)
         #     print("looking for OWN hp bar")
         #     if position != [-1, -1]:
