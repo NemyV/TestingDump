@@ -6,10 +6,11 @@ from Source.METHODS import im_screenshot
 
 
 def matching_keypoints():
+    stopwatch_start = time.time()
     time.sleep(2)
-    matchmaking_method = 3
-    img2 = im_screenshot()
+    matchmaking_method = 2
     img1 = cv.imread('Source\\Buttons\\Class\\Gunslinger.png', cv.IMREAD_GRAYSCALE)  # queryImage
+    img2 = im_screenshot()
     # img2 = cv.imread('box_in_scene.png',cv.IMREAD_GRAYSCALE) # trainImage
     if matchmaking_method == 1:
         # FIRST METHOD
@@ -29,6 +30,7 @@ def matching_keypoints():
                               flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
         plt.imshow(img3), plt.show()
     if matchmaking_method == 2:
+        # print("WADAFAK")
         # SECOND METHOD
         # Initiate SIFT detector
         sift = cv.SIFT_create()
@@ -38,13 +40,34 @@ def matching_keypoints():
         # BFMatcher with default params
         bf = cv.BFMatcher()
         matches = bf.knnMatch(des1, des2, k=2)
+
+        list_kp2 = []
+
         # Apply ratio test
         good = []
         for m, n in matches:
             if m.distance < 0.75 * n.distance:
+                # Get the matching keypoints for each of the images
+                img2_idx = m.trainIdx
+
+                # x - columns
+                # y - rows
+                # Get the coordinates
+                (x2, y2) = kp2[img2_idx].pt
+
+                # Append to each list
+                list_kp2.append((x2, y2))
+                # THESE ARE COORDINATES OF KEYPOINTS
+                print(list_kp2)
                 good.append([m])
+                print("found match", m, n)
+            else:
+                print("no match")
+
         # cv.drawMatchesKnn expects list of lists as matches.
-        img3 = cv.drawMatchesKnn(img1, kp1, img2, kp2, good, None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+
+        img3 = cv.drawMatchesKnn(img1, kp1,
+                                 img2, kp2, good, None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
         plt.imshow(img3), plt.show()
     if matchmaking_method == 3:
         # THIRD METHOD
@@ -79,5 +102,9 @@ def matching_keypoints():
         img3 = cv.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
         plt.imshow(img3, ), plt.show()
 
+
+    stopwatch_end = time.time()
+    execution_time = stopwatch_end - stopwatch_start
+    print(execution_time)
 
 matching_keypoints()
