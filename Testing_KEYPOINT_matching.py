@@ -9,7 +9,7 @@ def matching_keypoints():
     stopwatch_start = time.time()
     time.sleep(2)
     matchmaking_method = 2
-    img1 = cv.imread('Source\\Buttons\\Class\\Gunslinger.png', cv.IMREAD_GRAYSCALE)  # queryImage
+    img1 = cv.imread('Source\\Buttons\\Class\\Bard.png', cv.IMREAD_GRAYSCALE)  # queryImage
     img2 = im_screenshot()
     # img2 = cv.imread('box_in_scene.png',cv.IMREAD_GRAYSCALE) # trainImage
     if matchmaking_method == 1:

@@ -28,6 +28,7 @@ pytesseract.tesseract_cmd = path_to_tesseract
 
 sys.path.insert(0, 'E:\Hello wolrd Python\LOSTARKB')
 
+Buttons = "Buttons\\"
 Resolution = [2560, 1080]
 MiniMCOORD = [Resolution[0] / 100 * 86,
               Resolution[1] / 100 * 4.17,
@@ -129,6 +130,8 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
     #  VERY IMPORTANT so that multiple process don't conflict on same file name
     # NEW SOLUTION DELETE IF IT DOESNT WORK  = , cv2.IMREAD_UNCHANGED)
     img_rgb = cv2.imread('Temp_files\\Screenshot[' + filename + '].png', cv2.IMREAD_UNCHANGED)
+    if img_rgb is None:
+        print("ERROR READING IMAGE FROM SCREENSHOT")
     return img_rgb
 
 '''
@@ -139,9 +142,9 @@ top left corner coordinates of the element if found as an array [x,y] or [-1,-1]
 '''
 
 
-def im_search(image, return_value="center", precision=0.7):
+def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_value="center", precision=0.7):
     file_name = "im_search"
-    img_rgb = im_screenshot(file_name)
+    img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
     number_of_channels, w, h = img_rgb.shape[::-1]
     x1 = w
     y1 = h
@@ -170,10 +173,8 @@ def imagesearch_fast_area(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1],
     img_rgb = im_screenshot(file_name, x1, y1, x2, y2)
 
     img_rgb = np.array(img_rgb)
-    try:
-        img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-    except:
-        print("ERROR READING IMAGE!")
+    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+
     template = cv2.imread(image, 0)
     template.shape[::-1]
 
@@ -299,10 +300,10 @@ def im_processing(template_image, file_name, look_for,
             avg_y = (bottom_right[1] + top_left[1]) / 2
             average = [x1 + avg_x, y1 + avg_y]
 
-            path = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\Testing\\HPbars\\'
-            path2 = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\Testing\\Towers\\'
-            path1 = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\Testing\\'
-            raw_path = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\Testing\\No filter\\'
+            path = Buttons + 'Testing\\HPbars\\'
+            path2 = Buttons + 'Testing\\Towers\\'
+            path1 = Buttons + 'Testing\\'
+            raw_path = Buttons + 'Testing\\No filter\\'
             cv2.imwrite(raw_path + "MASK" + file_name, img_gray)  # uncomment FOR MASKS
             cv2.imwrite(raw_path + file_name, img_rgb)  # Uncomment to write output image with boxes drawn around occurances
             if "Tower" in file_name:
@@ -447,7 +448,7 @@ def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 
 
 
 def casting_skills(skill_dictionary, my_class):
-    template_1 = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\skill_S.png"
+    template_1 = Buttons + "skill_S.png"
     x1_base = 960
     x1 = x1_base
     y1 = 980
@@ -457,7 +458,6 @@ def casting_skills(skill_dictionary, my_class):
     print(skill_dictionary)
     dictionary_values = list(skill_dictionary.values())
     dictionary_keys = list(skill_dictionary.keys())
-    print(dictionary_keys)
     precision = 0.8
     identity = 'none'
     if my_class == "Bard":
@@ -475,7 +475,7 @@ def casting_skills(skill_dictionary, my_class):
     elif my_class == "Arcana":
         identity = "Arcana"
     elif my_class == "Artillerist":
-        picture = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Class\\Identity\\Artillerist_identity.png"
+        picture = Buttons + "Class\\Identity\\Artillerist_identity.png"
         position = imagesearch_fast_area(picture, x1=1100, y1=800, x2=300, y2=200, precision=0.9)
         print(position)
         if position != [-1, -1]:
@@ -494,6 +494,65 @@ def casting_skills(skill_dictionary, my_class):
             pydirectinput.press("e")
             time.sleep(6)
             pydirectinput.press("z")
+    elif my_class == "Gunslinger":
+        gunslinger_stance = Buttons + "Class\\Identity\\Gunlsinger"
+        stances = [x for x in glob.glob(gunslinger_stance + "**/*.png")]
+        print(my_class, "CASTING IDENTITY")
+        pydirectinput.press("z")
+        middle_x = round(Resolution[0] / 2)
+        middle_y = round(Resolution[1] / 10 * 8.5)
+        for x in stances:
+            print(x)
+            what_stance = imagesearch_fast_area(x, x1=middle_x - 25, y1=middle_y, x2=50, y2=75, precision=0.9)
+            if what_stance != [-1, -1]:
+                print(x)
+                split_string = x.rsplit('\\')[4]
+                print("My stance is: " + split_string)
+                if "Pistol" in split_string:
+                    pydirectinput.press("d")
+                    time.sleep(0.4)
+                    pydirectinput.press("a")
+                    time.sleep(0.4)
+                    pydirectinput.press("q")
+                    time.sleep(0.4)
+                    pydirectinput.keyDown("w")
+                    time.sleep(0.1)
+                    pydirectinput.keyDown("w")
+                    time.sleep(2)
+                    pydirectinput.keyUp("w")
+                    time.sleep(0.1)
+                    pydirectinput.press("e")
+                    time.sleep(0.1)
+                    pydirectinput.press("s")
+                    time.sleep(0.3)
+                    pydirectinput.press("s")
+                    time.sleep(0.3)
+                    pydirectinput.press("f")
+                    time.sleep(0.3)
+                    pydirectinput.press("f")
+                    break
+                if "Shotgun" in split_string:
+                    pydirectinput.press("e")
+                    time.sleep(2.7)
+                    pydirectinput.press("q")
+                    time.sleep(0.5)
+                    pydirectinput.press("w")
+                    time.sleep(0.5)
+                    pydirectinput.press("r")
+                    time.sleep(0.7)
+                    pydirectinput.press("r")
+                    break
+                if "Sniper" in split_string:
+                    pydirectinput.press("a")
+                    time.sleep(0.5)
+                    pydirectinput.press("s")
+                    time.sleep(0.4)
+                    pydirectinput.click()
+                    time.sleep(2)
+                    pydirectinput.press("d")
+                    time.sleep(2.5)
+                    pydirectinput.press("f")
+                    break
     else:
         identity = "none"
         print("IDENTITY IS NONE")
@@ -508,52 +567,58 @@ def casting_skills(skill_dictionary, my_class):
         pydirectinput.press("z")
         time.sleep(0.1)
         pydirectinput.press("x")
+    if my_class == "Gunslinger":
+        123
+    else:
+        for x in range(0, 8, 1):
+            x1 = x1 + 47
+            if count == 4:
+                y1 = y1 + 50
+                x1 = x1_base + 67
+            file_name = str(count) + "casting_skills"
+            # Take screenshot
+            img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
+            try:
+                img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+            except:
+                print("ERROR READING this image")
+            # plt.imshow(img_rgb)
+            # plt.show()
+            template = cv2.imread(template_1, 0)
+            w, h = template.shape[::-1]
 
-    for x in range(0, 8, 1):
-        x1 = x1 + 47
-        if count == 4:
-            y1 = y1 + 50
-            x1 = x1_base + 67
-        file_name = str(count) + "casting_skills"
-        # Take screenshot
-        img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
-        img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+            res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+            loc = np.where(res >= precision)
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
-        # plt.imshow(img_rgb)
-        # plt.show()
-        template = cv2.imread(template_1, 0)
-        w, h = template.shape[::-1]
-
-        res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-        loc = np.where(res >= precision)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
-        if max_val < precision:
-            ready = "yes"
-            if dictionary_values[count] == "normal" and ready != "no":
-                print(dictionary_keys[count])
-                pydirectinput.press(dictionary_keys[count])
-                pydirectinput.press(dictionary_keys[count])
-                time.sleep(0.1)
-                pydirectinput.press(dictionary_keys[count])
-            if dictionary_values[count] == "combo" and ready != "no":
-                pydirectinput.press(dictionary_keys[count])
-                time.sleep(0.2)
-                pydirectinput.press(dictionary_keys[count])
-                time.sleep(0.2)
-                pydirectinput.press(dictionary_keys[count])
-                time.sleep(0.2)
-                pydirectinput.press(dictionary_keys[count])
-            if dictionary_values[count] == "holding" and ready != "no":
-                pydirectinput.keyDown(dictionary_keys[count])
-                time.sleep(0.1)
-                pydirectinput.keyDown(dictionary_keys[count])
-                time.sleep(2)
-                pydirectinput.keyUp(dictionary_keys[count])
-        else:
-            print("DONT CAST")
-        pydirectinput.mouseDown(button='right')
-        time.sleep(0.5)
-        pydirectinput.mouseUp(button='right')
-        count += 1
+            if max_val < precision:
+                ready = "yes"
+                if dictionary_values[count] == "normal" and ready != "no":
+                    print(dictionary_keys[count])
+                    pydirectinput.press(dictionary_keys[count])
+                    pydirectinput.press(dictionary_keys[count])
+                    time.sleep(0.1)
+                    pydirectinput.press(dictionary_keys[count])
+                if dictionary_values[count] == "combo" and ready != "no":
+                    print(dictionary_keys[count])
+                    pydirectinput.press(dictionary_keys[count])
+                    time.sleep(0.2)
+                    pydirectinput.press(dictionary_keys[count])
+                    time.sleep(0.2)
+                    pydirectinput.press(dictionary_keys[count])
+                    time.sleep(0.2)
+                    pydirectinput.press(dictionary_keys[count])
+                if dictionary_values[count] == "holding" and ready != "no":
+                    print(dictionary_keys[count])
+                    pydirectinput.keyDown(dictionary_keys[count])
+                    time.sleep(0.1)
+                    pydirectinput.keyDown(dictionary_keys[count])
+                    time.sleep(2)
+                    pydirectinput.keyUp(dictionary_keys[count])
+            else:
+                print("DONT CAST")
+            pydirectinput.mouseDown(button='right')
+            time.sleep(0.5)
+            pydirectinput.mouseUp(button='right')
+            count += 1
     print("FINISHED")

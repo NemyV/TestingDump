@@ -59,6 +59,13 @@ class ChaosDungeon:
         # Walking upstairs to the light!
         # Casting skills while positioning to the middle!
 
+    def porceed_dungeon(self):
+        # wait until accept proceed button appears
+        while True:
+            proceed_button = Buttons + "Daily Quest\\Misc\\Proceed_Dungeon_button.png"
+            im_search_until_found(proceed_button, click="left", precision=0.75)
+            print("FOUND IT")
+
     def do_pvp(self):
         order = "3rd"
         PVP_type = 2
@@ -608,4 +615,5 @@ class ChaosDungeon:
 
 
 if __name__ == '__main__':
-    ChaosDungeon().do_pvp()
+    ChaosDungeon().porceed_dungeon()
+    # ChaosDungeon().do_pvp()

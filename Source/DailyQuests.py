@@ -12,6 +12,7 @@ from METHODS import image2text
 from METHODS import imagesearch_fast_area
 from METHODS import casting_skills
 from METHODS import im_search_until_found
+from METHODS import im_search
 from Lifeskills import fishing
 
 from kivy.config import ConfigParser
@@ -114,6 +115,8 @@ global current_work
 current_work = "Chilling with da boiz..."
 global execution_time
 execution_time = "Run time..."
+global total_time
+total_time = "0"
 # x1 = round(Resolution[0]*46.9/100)
 # y1 = round(Resolution[1]*38.9/100)
 #
@@ -165,15 +168,21 @@ def daily_state_check():
 
     # character list
     while switch == 0:
-        # Closing chat
-        minimzed = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Chat_minimized.png"
-        pos = search_click_image(minimzed, action="left",
-                                 x1=0, y1=500, x2=700, y2=500, precision=0.6)
-        if pos == [-1, -1]:
-            minimize_chat = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Minimize_chat.png"
-            search_click_image(minimize_chat, action="left",
-                               x1=0, y1=500, x2=700, y2=500, precision=0.6)
-            print("Chat minimized")
+        unmounting = Buttons + "\\Daily Quest\\Misc\\Mounted_icon.png"
+        pos = im_search(unmounting,
+                        x1=round(Resolution[0]/3), y1=680, x2=607, y2=400, precision=0.7)
+        if pos != [-1, -1]:
+            pydirectinput.press("r")
+            print("UNMOUNTED!")
+        # # Closing chat
+        # minimzed = Buttons + "\\Daily Quest\\Misc\\Chat_minimized.png"
+        # pos = search_click_image(minimzed, action="left",
+        #                          x1=0, y1=500, x2=700, y2=500, precision=0.6)
+        # if pos == [-1, -1]:
+        #     minimize_chat = Buttons + "\\Daily Quest\\Misc\\Minimize_chat.png"
+        #     search_click_image(minimize_chat, action="left",
+        #                        x1=0, y1=500, x2=700, y2=500, precision=0.6)
+        #     print("Chat minimized")
         # Opening ESC Game menu
         pydirectinput.press('ESC')
         time.sleep(0.5)
@@ -215,8 +224,8 @@ def daily_state_check():
                     # Tossing at Sentinel
                     what_class = Searchimage_return_position(f, 1, precision=0.85)
                     if what_class != [-1, -1]:
-                        split_string = f.rsplit('\\')[6]
-                        # print(split_string)
+                        split_string = f.rsplit('\\')[2]
+                        print(split_string)
                         print("My CLASS is " + split_string)
                         if "Bard" in split_string:
                             combat = "Bard"
@@ -352,8 +361,9 @@ def daily_state_check():
     stopwatch_end = time.time()
     global execution_time
     execution_time = stopwatch_end - stopwatch_start
-
-    print(f"Runtime of the program is {execution_time}")
+    global total_time
+    total_time += execution_time
+    print(f"Runtime of the program is {execution_time} and TOTAL is {total_time}")
 
 
 def integrated_presets(chosen_preset=1):
@@ -534,7 +544,7 @@ def hypnos_daily():
     time.sleep(1)
     pydirectinput.press('g')
     time.sleep(1)
-    hypno_ready = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Hypnos\\im_ready.png"
+    hypno_ready = Buttons + "\\Daily Quest\\Hypnos\\im_ready.png"
     ready = Searchimage_return_position(hypno_ready, 1, precision=0.9)
     pydirectinput.click(ready[0],
                         ready[1])
@@ -565,7 +575,7 @@ def hypnos_daily():
                         436, button="right")
     time.sleep(2)
     # STATE CHECK
-    hypno_enter = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Hypnos\\Enter.png"
+    hypno_enter = Buttons + "\\Daily Quest\\Hypnos\\Enter.png"
     enter = Searchimage_return_position(hypno_enter, 1, precision=0.9)
     pydirectinput.click(enter[0],
                         enter[1])
@@ -582,7 +592,7 @@ def hypnos_daily():
     time.sleep(0.7)
     pydirectinput.press('g')
     # STATE CHECK
-    hypno_accept = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Hypnos\\Accept.png"
+    hypno_accept = Buttons + "\\Daily Quest\\Hypnos\\Accept.png"
     accept = Searchimage_return_position(hypno_accept, 1, precision=0.9)
     pydirectinput.click(accept[0],
                         accept[1])
@@ -915,7 +925,7 @@ def guild_daily():
     search_click_image(guild_donation, "left")
     time.sleep(0.2)
     # Donating silver
-    silver = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Guild\\Donate_silver.png"
+    silver = Buttons + "\\Daily Quest\\Guild\\Donate_silver.png"
     ready = Searchimage_return_position(silver, 1, precision=0.82)
     if ready != [-1, -1]:
         pydirectinput.click(ready[0]+25,
@@ -1432,7 +1442,7 @@ def waiting_for_loading_screen(tries=100):
     # looking for light
     for i in range(0, 20, 1):
         print("looking for ARROW")
-        loading_arrow = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Loading_screen_arrow.png"
+        loading_arrow = Buttons + "\\Daily Quest\\Misc\\Loading_screen_arrow.png"
         position = searchimageinarea(loading_arrow, "TESTING.png", precision=0.85)
         if position != [-1, -1]:
             teleport = "yes"
@@ -1718,7 +1728,7 @@ class ChaosDungeon:
             for g in ChaosDung:
                 # Get last 10 character
                 # last_chars = g[-20:]
-                split_string = g.rsplit('\\')[6]
+                split_string = g.rsplit('\\')[2]
                 # print(split_string)
                 startx = round(Resolution[0] / 100 * 16)
                 starty = round(Resolution[1] / 100 * 1)
@@ -1759,7 +1769,7 @@ class ChaosDungeon:
                 elif "Tower" in g:
                     looking_for = "Tower"
                 # Get last 10 character
-                split_string = g.rsplit('\\')[6]
+                split_string = g.rsplit('\\')[2]
                 # print(split_string)
                 # print(g)
                 count_occurrance = count_occurrance + 1
@@ -1906,7 +1916,7 @@ class ChaosDungeon:
             count_occurrance = 0
             for f in minimap_red:
                 # print("Doing reds ", f)
-                split_string = f.rsplit('\\')[6]
+                split_string = f.rsplit('\\')[2]
                 count_occurrance = count_occurrance + 1
                 occurances = str(count_occurrance) + str(split_string)
 
@@ -1924,10 +1934,10 @@ class ChaosDungeon:
                     break
 
     def repair_and_enter(self, counting):
-        repair_gear = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\ChaosMisc\\Repair_gear.png'
-        leave = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\ChaosMisc\\Leave.png'
-        ok_button = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\ChaosMisc\\ok_button.png'
-        repair_all = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\ChaosMisc\\Repair all.png'
+        repair_gear = Buttons + "\\ChaosMisc\\Repair_gear.png"
+        leave = Buttons + '\\ChaosMisc\\Leave.png'
+        ok_button = Buttons + '\\ChaosMisc\\ok_button.png'
+        repair_all = Buttons + '\\ChaosMisc\\Repair all.png'
 
         position = imagesearch_fast_area(repair_gear, precision=0.7)
         print("Repairing stuff", position)
@@ -1963,8 +1973,8 @@ class ChaosDungeon:
 
     def repairing(self):
         # pet_status = "no"
-        repair_all = 'C:\\Users\\Ggjustice\\Pictures\\Buttons\\ChaosMisc\\Repair all.png'
-        repair_icon = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Pet_repairing.png"
+        repair_all = Buttons + '\\ChaosMisc\\Repair all.png'
+        repair_icon = Buttons + "\\Daily Quest\\Misc\\Pet_repairing.png"
         if pet_status == "yes":
             pydirectinput.keyDown('alt')
             time.sleep(0.3)
@@ -2094,7 +2104,7 @@ class ChaosDungeon:
         self.combat_event.set()
         if self.combat_event.is_set():
             print("RESTARTING COMBAT and HPbars ", count)
-            pydirectinput.press('-')  # Stopping combat
+            self.stop_combat()
             self.combat_event.clear()
             # NEW APROACH COMBAT
             name = str(count)
@@ -2125,6 +2135,7 @@ class ChaosDungeon:
 
         if self.normal_event.is_set():
             print("RESTARTING NORMAL")
+            self.stop_normal()
             pydirectinput.press('=')  # Stopping normal
             self.normal_event.clear()
             count = count + 1
@@ -2274,22 +2285,29 @@ class ChaosDungeon:
         #     #     pydirectinput.leftClick()
 
     def dismantle(self, dismantle_level):
-        dismantle_level = 4
-        basex = 1480
-        basey = 745
         pydirectinput.press("i")
-        dismantle_icon = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_icon.png"
+        dismantle_icon = Buttons + "\\Daily Quest\\Misc\\Dismantle_icon.png"
         search_click_image(dismantle_icon, action="left")
-        for x in range(0, dismantle_level, 1):
-            pydirectinput.leftClick(basex, basey)
-            basex += 107
-            print(basex)
-        dismantle_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_button.png"
+        dismantle_dir = Buttons + "Daily Quest\\Misc\\Dismantling"
+        dismantle_this = [m for m in glob.glob(dismantle_dir + "**/*.png")]
+        count = 0
+        for x in dismantle_this:
+            if count == dismantle_level:
+                break
+            else:
+                search_click_image(x, action="left")
+            count += 1
+        # for x in range(0, dismantle_level, 1):
+        #     pydirectinput.leftClick(basex, basey)
+        #     basex += 107
+        #     print(basex)
+        dismantle_button = Buttons + "\\Daily Quest\\Misc\\Dismantle_button.png"
         search_click_image(dismantle_button, action="left")
-        # ok = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\First_loging_guild.png"
+        # ok = Buttons + "\\Daily Quest\\Misc\\First_loging_guild.png"
         # search_click_image(ok, action="left", precision=0.7)
         pydirectinput.press("ENTER")
         pydirectinput.press("i")
+        print("gear dismantled")
 
     def __getstate__(self):
         state = {}
