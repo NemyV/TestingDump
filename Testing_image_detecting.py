@@ -32,7 +32,7 @@ txtfiles = []
 for file in glob.glob("*.bmp"):
     txtfiles.append(file)
 
-Buttons = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\"
+Buttons = "Source\\Buttons\\"
 CDung = Buttons + "ChaosDungeon\\"
 Dead = Buttons + "Dead\\"
 passing = Buttons + "Passing\\"
@@ -525,24 +525,47 @@ if __name__ == '__main__':
 
     # waiting_for_loading_screen()
 
-    # # testing TEXT DETECTION
-    dismantle = 4
-    basex = 1480
-    basey = 745
+    # # # testing TEXT DETECTION
+    # dismantle = 4
+    # basex = 1480
+    # basey = 745
+    # pydirectinput.press("i")
+    # dismantle_icon = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_icon.png"
+    # search_click_image(dismantle_icon, action="left")
+    # for x in range(0, dismantle, 1):
+    #     pydirectinput.leftClick(basex, basey)
+    #     basex += 107
+    #     print(basex)
+    # dismantle_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_button.png"
+    # search_click_image(dismantle_button, action="left")
+    # # ok = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\First_loging_guild.png"
+    # # search_click_image(ok, action="left", precision=0.7)
+    # pydirectinput.press("ENTER")
+    # pydirectinput.press("i")
+    dismantle_level = 4
     pydirectinput.press("i")
-    dismantle_icon = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_icon.png"
+    dismantle_icon = Buttons + "\\Daily Quest\\Misc\\Dismantle_icon.png"
     search_click_image(dismantle_icon, action="left")
-    for x in range(0, dismantle, 1):
-        pydirectinput.leftClick(basex, basey)
-        basex += 107
-        print(basex)
-    dismantle_button = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\Dismantle_button.png"
+    dismantle_dir = Buttons + "Daily Quest\\Misc\\Dismantling"
+    dismantle_this = [m for m in glob.glob(dismantle_dir + "**/*.png")]
+    count = 0
+    for x in dismantle_this:
+        if count == dismantle_level:
+            break
+        else:
+            search_click_image(x, action="left")
+        count += 1
+    # for x in range(0, dismantle_level, 1):
+    #     pydirectinput.leftClick(basex, basey)
+    #     basex += 107
+    #     print(basex)
+    dismantle_button = Buttons + "\\Daily Quest\\Misc\\Dismantle_button.png"
     search_click_image(dismantle_button, action="left")
-    # ok = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\First_loging_guild.png"
+    # ok = Buttons + "\\Daily Quest\\Misc\\First_loging_guild.png"
     # search_click_image(ok, action="left", precision=0.7)
     pydirectinput.press("ENTER")
     pydirectinput.press("i")
-
+    print("gear dismantled")
     # count = 0
     # esc_menu = Daily + "Misc\\Game_menu.png"
     # char_loop = 9

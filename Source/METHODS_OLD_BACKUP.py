@@ -242,7 +242,7 @@ def Searchimage_return_position(image, maxSamples=1, precision=0.8):
     pos = imagesearch(image, precision)
     count = 0
     while pos == [-1, -1]:
-        splitstring = image.rsplit('\\')[6]
+        splitstring = image.rsplit('\\')[2]
         # print(splitstring)
         # print(image + " not found, waiting")
         pos = imagesearch(image, precision)

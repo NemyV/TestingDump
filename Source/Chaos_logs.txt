@@ -909,4 +909,238 @@
  Deaths :2
  Clears :1
  Potions :29
- Failed stages :1
+ Failed stages :1
+ WORKER name :Ggsor
+ Deaths :0
+ Clears :0
+ Potions :41
+ Failed stages :1
+ Time to enter PORTAL in seconds:4.7049596309661865
+ Time to enter PORTAL in seconds:12.381227970123291
+ WORKER name :Mesmashy
+ Deaths :0
+ Clears :0
+ Potions :22
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.000997781753540039
+ Time to enter PORTAL in seconds:12.359968662261963
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Mesmashy
+ Deaths :0
+ Clears :1
+ Potions :52
+ Failed stages :1
+ WORKER name :Ggwarlord
+ Deaths :4
+ Clears :0
+ Potions :134
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:12.063398599624634
+ Time to enter PORTAL in seconds:14.402952432632446
+ WORKER name :Ggwarlord
+ Deaths :8
+ Clears :0
+ Potions :200
+ Failed stages :2
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.001001119613647461
+ Time to enter PORTAL in seconds:12.730717658996582
+ WORKER name :Stringsy
+ Deaths :1
+ Clears :1
+ Potions :227
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0009996891021728516
+ Time to enter PORTAL in seconds:0.0049817562103271484
+ Time to enter PORTAL in seconds:25.580211877822876
+ WORKER name :Stringsy
+ Deaths :1
+ Clears :2
+ Potions :280
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.000997781753540039
+ Time to enter PORTAL in seconds:11.643644332885742
+ WORKER name :Gladiatrix
+ Deaths :4
+ Clears :0
+ Potions :416
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0009968280792236328
+ Time to enter PORTAL in seconds:7.424950122833252
+ WORKER name :Gladiatrix
+ Deaths :8
+ Clears :0
+ Potions :506
+ Failed stages :2
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Ggbard
+ Deaths :0
+ Clears :0
+ Potions :570
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0009968280792236328
+ WORKER name :Ggbard
+ Deaths :2
+ Clears :1
+ Potions :587
+ Failed stages :1
+ Time to enter PORTAL in seconds:6.077322721481323
+ WORKER name :Sheeeshaa
+ Deaths :1
+ Clears :1
+ Potions :27
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.013962984085083008
+ WORKER name :Sheeeshaa
+ Deaths :3
+ Clears :1
+ Potions :134
+ Failed stages :1
+ Time to enter PORTAL in seconds:11.465277433395386
+ WORKER name :Speedpuncher
+ Deaths :1
+ Clears :0
+ Potions :12
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0009975433349609375
+ WORKER name :Speedpuncher
+ Deaths :3
+ Clears :0
+ Potions :44
+ Failed stages :2
+ Time to enter PORTAL in seconds:0.0009984970092773438
+ Time to enter PORTAL in seconds:4.257786750793457
+ Time to enter PORTAL in seconds:19.026448011398315
+ Time to enter PORTAL in seconds:18.96896743774414
+ Time to enter PORTAL in seconds:11.299659967422485
+ Time to enter PORTAL in seconds:12.30808162689209
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:25.032686233520508
+ WORKER name :Arccards
+ Deaths :0
+ Clears :1
+ Potions :7
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.001998424530029297
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:12.11422324180603
+ Time to enter PORTAL in seconds:11.956821203231812
+ WORKER name :Arccards
+ Deaths :0
+ Clears :2
+ Potions :19
+ Failed stages :0
+ Time to enter PORTAL in seconds:18.519275665283203
+ Time to enter PORTAL in seconds:4.303147792816162
+ WORKER name :Ggdin
+ Deaths :1
+ Clears :1
+ Potions :46
+ Failed stages :0
+ Time to enter PORTAL in seconds:4.699563503265381
+ Time to enter PORTAL in seconds:5.536699533462524
+ WORKER name :Ggdin
+ Deaths :2
+ Clears :2
+ Potions :83
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.000997781753540039
+ WORKER name :Mesmashy
+ Deaths :1
+ Clears :0
+ Potions :91
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:4.23871636390686
+ Time to enter PORTAL in seconds:28.50458860397339
+ WORKER name :Mesmashy
+ Deaths :2
+ Clears :0
+ Potions :117
+ Failed stages :2
+ Time to enter PORTAL in seconds:0.0009970664978027344
+ Time to enter PORTAL in seconds:18.87796711921692
+ WORKER name :Ggwarlord
+ Deaths :2
+ Clears :0
+ Potions :153
+ Failed stages :1
+ Time to enter PORTAL in seconds:4.790891885757446
+ WORKER name :Ggwarlord
+ Deaths :4
+ Clears :0
+ Potions :180
+ Failed stages :2
+ Time to enter PORTAL in seconds:4.700518369674683
+ Time to enter PORTAL in seconds:10.953022718429565
+ WORKER name :Ggsor
+ Deaths :2
+ Clears :0
+ Potions :219
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0009937286376953125
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.000997781753540039
+ WORKER name :Ggsor
+ Deaths :3
+ Clears :1
+ Potions :249
+ Failed stages :1
+ Time to enter PORTAL in seconds:5.385871648788452
+ Time to enter PORTAL in seconds:17.182226419448853
+ WORKER name :Pureluck
+ Deaths :1
+ Clears :1
+ Potions :9
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0009958744049072266
+ WORKER name :Pureluck
+ Deaths :5
+ Clears :2
+ Potions :36
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0010018348693847656
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Stringsy
+ Deaths :1
+ Clears :1
+ Potions :74
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Stringsy
+ Deaths :2
+ Clears :2
+ Potions :107
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0049860477447509766
+ WORKER name :Gladiatrix
+ Deaths :6
+ Clears :0
+ Potions :124
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.000997304916381836
+ WORKER name :Gladiatrix
+ Deaths :11
+ Clears :0
+ Potions :145
+ Failed stages :2
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:18.847063541412354
+ Time to enter PORTAL in seconds:5.1829211711883545
+ Time to enter PORTAL in seconds:11.12306523323059
+ WORKER name :Ggbard
+ Deaths :1
+ Clears :1
+ Potions :169
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:13.694996118545532
