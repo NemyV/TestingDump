@@ -4,6 +4,9 @@ import pyautogui
 import pydirectinput
 import random
 import time
+import numpy as np, win32gui, win32ui, win32con, win32com
+from PIL import ImageGrab
+from datetime import datetime
 from numpy import asarray
 from os import path
 import threading
@@ -47,6 +50,19 @@ Enemies = 0
 Bosses = 0
 Portals = 0
 Towers = 0
+global w, h
+w = Resolution[0]
+h = Resolution[1]
+hwnd = None
+window_name = "LOST ARK (64-bit, DX9) v.2.7.0.1"
+hwnd = win32gui.FindWindow(None, window_name)
+if not hwnd:
+    raise Exception('Window not found: {}'.format(window_name))
+
+cropped_x = 0
+cropped_y = 0
+offset_x = 0
+offset_y = 0
 
 
 def r(num, rand):
@@ -121,40 +137,92 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
     """
     Taking screenshots in specific folder
         """
-    with mss.mss() as sct:
-        # The screen part to capture
-        region = {'left': x1, 'top': y1, 'width': x2, 'height': y2}
-        # Grab the data
-        image_screenshot = mss.mss().grab(region)
-        # try to remove
-        try:
-            os.remove(r'Temp_files\\Screenshot[' + filename + '].png')
-            time.sleep(0.5)
-            # print("REMOVED FILE")
-        except IOError:
-            # print("DIDN T REMOVE FILE")
-            123
-        # Save to the picture file
-        mss.tools.to_png(image_screenshot.rgb, image_screenshot.size,
-                         output=(r'Temp_files\\Screenshot[' + filename + '].png'))
+    im = ImageGrab.grab(bbox=(x1, y1, x1+x2, y1+y2))
+    file_path = r'Temp_files/Screenshot[' + filename + '].jpg'
+    im.save(file_path)
+    # with mss.mss() as sct:
+    #     # The screen part to capture
+    #     region = {'left': x1, 'top': y1, 'width': x2, 'height': y2}
+    #     # Grab the data
+    #     image_screenshot = mss.mss().grab(region)
+    #     # try to remove
+    #     try:
+    #         os.remove(r'Temp_files\Screenshot[' + filename + '].png')
+    #         time.sleep(0.5)
+    #         print("REMOVED FILE")
+    #         test = "REMOVED"
+    #     except IOError:
+    #         print("DIDN T REMOVE FILE")
+    #         test = "NO REMOVE"
+    #     # Save to the picture file
+    #     mss.tools.to_png(image_screenshot.rgb, image_screenshot.size,
+    #                      output=(r'Temp_files\Screenshot[' + filename + '].png'))
+
     #  VERY IMPORTANT so that multiple process don't conflict on same file name
     # NEW SOLUTION DELETE IF IT DOESNT WORK  = , cv2.IMREAD_UNCHANGED)
-    img_rgb = cv2.imread('Temp_files\\Screenshot[' + filename + '].png', cv2.IMREAD_UNCHANGED)
+
+    img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
+    img_rgb = img_rgb[..., :3]  # POSSIBLY FIX ERRORS
     if img_rgb is None:
+        # print(test)
         print("ERROR READING IMAGE FROM SCREENSHOT")
+        print("FILE PATCH is:" + file_path)
     return img_rgb
+    # # get the window image data
+    # global w, h
+    # w = x2 - x1
+    # h = y2 - y1
+    # print(x1, y1, x2, y2)
+    # print(h, w)
+    # wDC = win32gui.GetWindowDC(hwnd)
+    # dcObj = win32ui.CreateDCFromHandle(wDC)
+    # cDC = dcObj.CreateCompatibleDC()
+    # dataBitMap = win32ui.CreateBitmap()
+    # dataBitMap.CreateCompatibleBitmap(dcObj, w, h)
+    # cDC.SelectObject(dataBitMap)
+    # cDC.BitBlt((0, 0), (x2, y2), dcObj, (x1, y1), win32con.SRCCOPY)
+    #
+    # # convert the raw data into a format opencv can read
+    # dataBitMap.SaveBitmapFile(cDC, 'debug.bmp')
+    # signedIntsArray = dataBitMap.GetBitmapBits(True)
+    # img = np.fromstring(signedIntsArray, dtype='uint8')
+    # img.shape = (h, w, 4)
+    #
+    # # free resources
+    # dcObj.DeleteDC()
+    # cDC.DeleteDC()
+    # win32gui.ReleaseDC(hwnd, wDC)
+    # win32gui.DeleteObject(dataBitMap.GetHandle())
+    #
+    # # drop the alpha channel, or cv.matchTemplate() will throw an error like:
+    # #   error: (-215:Assertion failed) (depth == CV_8U || depth == CV_32F) && type == _templ.type()
+    # #   && _img.dims() <= 2 in function 'cv::matchTemplate'
+    # img = img[..., :3]
+    #
+    # # make image C_CONTIGUOUS to avoid errors that look like:
+    # #   File ... in draw_rectangles
+    # #   TypeError: an integer is required (got type tuple)
+    # # see the discussion here:
+    # # https://github.com/opencv/opencv/issues/14866#issuecomment-580207109
+    # img = np.ascontiguousarray(img)
+    #
+    # # cropped_image = img[cropped_x:cropped_y, offset_x:offset_y]
+    # # cv2.imwrite(img, cropped_image)
+    # # img = cropped_image
+    return img
 
 
-def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_value="center", precision=0.7):
+def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_value="top_left",
+              click=None, action="left", offset=3, delay=0.2, precision=0.7):
     """
         Searches for an image on the screen
         Return = coordinates
     """
     file_name = "im_search"
     img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
-    number_of_channels, w, h = img_rgb.shape[::-1]
-    x1 = w
-    y1 = h
+    # number_of_channels, w, h = img_rgb.shape[::-1]
+    # x1 = w
+    # y1 = h
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(image, 0)
     w, h = template.shape[::-1]
@@ -162,12 +230,21 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
     res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
-    if return_value == "count":
+    if return_value == "count" or click == "all":
         count = 0
         loc = np.where(res >= precision)
         for pt in zip(*loc[::-1]):  # Swap columns and rows
             cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
                           2)  # // Uncomment to draw boxes around found occurances
+            if click == "all":
+                print("CLICKING ALL")
+                img = cv2.imread(image)
+                height, width, channels = img.shape
+                pyautogui.moveTo(pt[0] + r(width / 2, offset) + x1,
+                                 pt[1] + r(height / 2, offset) + y1,
+                                 duration=0.2)
+                pyautogui.click(button=action)
+                time.sleep(delay)
             count = count + 1
             cv2.imwrite('RESULT' + image + '.png',
                         img_rgb)  # // Uncomment to write output image with boxes drawn around occurances
@@ -175,6 +252,14 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
     if max_val < precision:
         return [-1, -1]
     if return_value == "top_left":
+        if click == "yes":
+            img = cv2.imread(image)
+            height, width, channels = img.shape
+            pyautogui.moveTo(max_loc[0] + r(width / 2, offset) + x1,
+                             max_loc[1] + r(height / 2, offset) + y1,
+                             duration=0.4)
+            pyautogui.click(button=action)
+            time.sleep(delay)
         return max_loc
     if return_value == "center":
         top_left = max_loc  # can change to min_loc or max_loc
@@ -183,6 +268,14 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
         avg_y = round((bottom_right[1] + top_left[1]) / 2)
         average = [avg_x, avg_y]
 
+        if click == "yes":
+            img = cv2.imread(image)
+            height, width, channels = img.shape
+            pyautogui.moveTo(average[0] + r(width / 2, offset) + x1,
+                             average[1] + r(height / 2, offset) + y1,
+                             duration=0.4)
+            pyautogui.click(button=action)
+            time.sleep(delay)
         return average
 
 
@@ -201,6 +294,7 @@ def search_click_image(image, action, x1=0, y1=0, x2=Resolution[0], y2=Resolutio
         if click_all == "yes":
             img = cv2.imread(image)
             height, width, channels = img.shape
+
             pyautogui.moveTo(pos[0] + r(width / 2, offset) + x1,
                              pos[1] + r(height / 2, offset) + y1)
             pyautogui.click(button=action)
@@ -214,6 +308,7 @@ def search_click_image(image, action, x1=0, y1=0, x2=Resolution[0], y2=Resolutio
                              pos[1] + r(height / 2, offset) + y1,
                              timestamp)
             pyautogui.click(button=action)
+            time.sleep(0.4)
         return pos
 
 
@@ -576,7 +671,7 @@ def casting_skills(skill_dictionary, my_class):
 def im_search_keypoint(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1],
                        matchmaking_method=3, precision=0.7):
     file_name = "im_search_keypoint"
-    img1 = cv2.imread(image, cv2.IMREAD_UNCHANGED)
+    img1 = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
     img2 = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)  # trainImage
     # img_gray = cv2.imread('Temp_files\\Screenshot[' + file_name + '].png', cv2.IMREAD_GRAYSCALE)
     # plt.imshow(img2)

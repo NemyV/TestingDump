@@ -7,7 +7,6 @@ import os
 import mss
 import keyboard
 import random
-from Source.METHODS import im_search_in_area
 import cv2
 import numpy as np
 import pyautogui
@@ -283,6 +282,89 @@ def search_click_image(image, action, x1=0, y1=0, x2=Resolution[0], y2=Resolutio
         pyautogui.click(button=action)
         return pos
 
+def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_value="top_left",
+              click=None, action="left", offset=3, precision=0.7):
+    """
+        Searches for an image on the screen
+        Return = coordinates
+    """
+    file_name = "im_search"
+    img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
+    # number_of_channels, w, h = img_rgb.shape[::-1]
+    # x1 = w
+    # y1 = h
+    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+    template = cv2.imread(image, 0)
+    w, h = template.shape[::-1]
+
+    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+
+    if return_value == "count" or click == "all":
+        count = 0
+        loc = np.where(res >= precision)
+        for pt in zip(*loc[::-1]):  # Swap columns and rows
+            cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
+                          2)  # // Uncomment to draw boxes around found occurances
+            if click == "all":
+                print("CLICKING ALL")
+                img = cv2.imread(image)
+                height, width, channels = img.shape
+                pyautogui.moveTo(pt[0] + r(width / 2, offset) + x1,
+                                 pt[1] + r(height / 2, offset) + y1,
+                                 duration=0.2)
+                pyautogui.click(button=action)
+            count = count + 1
+            cv2.imwrite('RESULT' + image + '.png',
+                        img_rgb)  # // Uncomment to write output image with boxes drawn around occurances
+        return count
+    if max_val < precision:
+        return [-1, -1]
+    if return_value == "top_left":
+        if click == "yes":
+            img = cv2.imread(image)
+            height, width, channels = img.shape
+            pyautogui.moveTo(max_loc[0] + r(width / 2, offset) + x1,
+                             max_loc[1] + r(height / 2, offset) + y1,
+                             duration=0.4)
+            pyautogui.click(button=action)
+        return max_loc
+    if return_value == "center":
+        top_left = max_loc  # can change to min_loc or max_loc
+        bottom_right = (top_left[0] + w, top_left[1] + h)
+        avg_x = round((bottom_right[0] + top_left[0]) / 2)
+        avg_y = round((bottom_right[1] + top_left[1]) / 2)
+        average = [avg_x, avg_y]
+
+        if click == "yes":
+            img = cv2.imread(image)
+            height, width, channels = img.shape
+            pyautogui.moveTo(average[0] + r(width / 2, offset) + x1,
+                             average[1] + r(height / 2, offset) + y1,
+                             duration=0.4)
+            pyautogui.click(button=action)
+        return average
+
+def im_search_until_found(image, time_sample=0.5, click="left", return_value="", max_samples=0, precision=0.8):
+    pos = im_search(image, precision=precision)
+    count = 0
+    while pos == [-1, -1]:
+        # print(image + " not found, waiting ")
+        time.sleep(time_sample)
+        pos = im_search(image, precision=precision)
+        count = count + 1
+        if max_samples >= 1:
+            if count > max_samples:
+                break
+    if return_value == "count":
+        return count
+    else:
+        if pos != [-1, -1]:
+            if click == "left":
+                pydirectinput.leftClick(pos[0], pos[1])
+            elif click == "right":
+                pydirectinput.rightClick(pos[0], pos[1])
+        return pos
 
 def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 --psm 7', colors="normal"):
     file_name = "image2text"
@@ -542,30 +624,12 @@ if __name__ == '__main__':
     # # search_click_image(ok, action="left", precision=0.7)
     # pydirectinput.press("ENTER")
     # pydirectinput.press("i")
-    dismantle_level = 4
-    pydirectinput.press("i")
-    dismantle_icon = Buttons + "\\Daily Quest\\Misc\\Dismantle_icon.png"
-    search_click_image(dismantle_icon, action="left")
-    dismantle_dir = Buttons + "Daily Quest\\Misc\\Dismantling"
-    dismantle_this = [m for m in glob.glob(dismantle_dir + "**/*.png")]
-    count = 0
-    for x in dismantle_this:
-        if count == dismantle_level:
-            break
-        else:
-            search_click_image(x, action="left")
-        count += 1
-    # for x in range(0, dismantle_level, 1):
-    #     pydirectinput.leftClick(basex, basey)
-    #     basex += 107
-    #     print(basex)
-    dismantle_button = Buttons + "\\Daily Quest\\Misc\\Dismantle_button.png"
-    search_click_image(dismantle_button, action="left")
-    # ok = Buttons + "\\Daily Quest\\Misc\\First_loging_guild.png"
-    # search_click_image(ok, action="left", precision=0.7)
-    pydirectinput.press("ENTER")
-    pydirectinput.press("i")
-    print("gear dismantled")
+    lopang = Daily + "Lopang\\Bifrost\\BIFROST_lopang.png"
+    ready = im_search(lopang, 1, precision=0.91)  # 95 HAD SOME ERRORS teleporting to wrong
+    if ready != [-1, -1]:
+        # Clicking position to the right of it where Move button is
+        pydirectinput.click(ready[0] + 400,
+                            ready[1])
     # count = 0
     # esc_menu = Daily + "Misc\\Game_menu.png"
     # char_loop = 9

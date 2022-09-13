@@ -2,9 +2,6 @@ import multiprocessing
 from threading import Thread
 import keyboard
 import pydirectinput
-from METHODS_OLD_BACKUP import searchimageinarea
-from METHODS_OLD_BACKUP import Searchimage_return_position
-from METHODS import im_search_until_found
 from METHODS import im_processing
 from METHODS import search_click_image
 from METHODS import focus_window
@@ -120,7 +117,7 @@ current_work = "Chilling with da boiz..."
 global execution_time
 execution_time = "Run time..."
 global total_time
-total_time = "0"
+total_time = 0.0
 # x1 = round(Resolution[0]*46.9/100)
 # y1 = round(Resolution[1]*38.9/100)
 #
@@ -189,13 +186,13 @@ def daily_state_check():
         #     print("Chat minimized")
         # Opening ESC Game menu
         pydirectinput.press('ESC')
-        time.sleep(0.5)
+        time.sleep(1)
         for i in range(1, 10, 1):
-            ready = Searchimage_return_position(esc_menu, 1, precision=0.84)
+            ready = im_search(esc_menu, 1, precision=0.84)
             if ready != [-1, -1]:
                 break
             else:
-                time.sleep(0.7)
+                time.sleep(1)
                 i += 1
                 pydirectinput.press('ESC')
         # IMPORTANT for using 2 methods/colors to find match with tesseract
@@ -226,7 +223,7 @@ def daily_state_check():
                     # print(f)
                     global combat
                     # Tossing at Sentinel
-                    what_class = Searchimage_return_position(f, 1, precision=0.85)
+                    what_class = im_search(f, 1, precision=0.85)
                     if what_class != [-1, -1]:
                         split_string = f.rsplit('\\')[2]
                         print(split_string)
@@ -382,13 +379,13 @@ def integrated_presets(chosen_preset=1):
         time.sleep(0.2)
         pydirectinput.keyUp('alt')
 
-        ready = Searchimage_return_position(presets, 1, precision=0.84)
+        ready = im_search(presets, 1, precision=0.84)
         if ready != [-1, -1]:
             if chosen_preset == 1:
                 pydirectinput.click(ready[0] - 50,
                                     ready[1] + 57)
                 time.sleep(1)
-                apply_preset = Searchimage_return_position(apply, 1, precision=0.84)
+                apply_preset = im_search(apply, 1, precision=0.84)
                 pydirectinput.click(apply_preset[0],
                                     apply_preset[1])
                 break
@@ -396,7 +393,7 @@ def integrated_presets(chosen_preset=1):
                 pydirectinput.click(ready[0],
                                     ready[1] + 57)
                 time.sleep(1)
-                apply_preset = Searchimage_return_position(apply, 1, precision=0.84)
+                apply_preset = im_search(apply, 1, precision=0.84)
                 pydirectinput.click(apply_preset[0]+10,
                                     apply_preset[1]+3)
                 break
@@ -432,7 +429,7 @@ def swamp_daily():
         time.sleep(0.7)
         pydirectinput.press('F5')
         complete_quest = Daily + "Walling Swamp\\Finished\\Completed_quest.png"
-        complete = Searchimage_return_position(complete_quest, 1, precision=0.87)
+        complete = im_search(complete_quest, 1, precision=0.87)
         if complete != [-1, -1]:
             print("finished quest")
             switch = 1
@@ -450,7 +447,7 @@ def swamp_daily():
     #         complete_quest = Daily + "Walling Swamp\\Finished\\Completed_quest.png"
     #         print(f)
     #         ready = im_search(f, precision=0.65)
-    #         complete = Searchimage_return_position(complete_quest, 1, precision=0.87)
+    #         complete = im_search(complete_quest, 1, precision=0.87)
     #         if ready != [-1, -1]:
     #             pydirectinput.moveTo(ready[0],
     #                                  ready[1])
@@ -472,12 +469,12 @@ def swamp_daily():
                             round(Resolution[1] / 2), button="right")
         time.sleep(0.7)
         turn_in = Daily + "Walling Swamp\\Navigation\\Kalaja.png"
-        turning = Searchimage_return_position(turn_in, 1, precision=0.86)
+        turning = im_search(turn_in, 1, precision=0.86)
         pydirectinput.click(turning[0],
                             turning[1])
         time.sleep(0.7)
         turn_in = Daily + "Walling Swamp\\Navigation\\Teleport.png"
-        turning = Searchimage_return_position(turn_in, 1, precision=0.90)
+        turning = im_search(turn_in, 1, precision=0.90)
         pydirectinput.click(turning[0] + 10,
                             turning[1] + 10)
         time.sleep(0.7)
@@ -549,7 +546,7 @@ def hypnos_daily():
     pydirectinput.press('g')
     time.sleep(1)
     hypno_ready = Buttons + "\\Daily Quest\\Hypnos\\im_ready.png"
-    ready = Searchimage_return_position(hypno_ready, 1, precision=0.9)
+    ready = im_search(hypno_ready, 1, precision=0.9)
     pydirectinput.click(ready[0],
                         ready[1])
     pydirectinput.press('g')
@@ -580,7 +577,7 @@ def hypnos_daily():
     time.sleep(2)
     # STATE CHECK
     hypno_enter = Buttons + "\\Daily Quest\\Hypnos\\Enter.png"
-    enter = Searchimage_return_position(hypno_enter, 1, precision=0.9)
+    enter = im_search(hypno_enter, 1, precision=0.9)
     pydirectinput.click(enter[0],
                         enter[1])
     pydirectinput.press('ENTER')
@@ -597,7 +594,7 @@ def hypnos_daily():
     pydirectinput.press('g')
     # STATE CHECK
     hypno_accept = Buttons + "\\Daily Quest\\Hypnos\\Accept.png"
-    accept = Searchimage_return_position(hypno_accept, 1, precision=0.9)
+    accept = im_search(hypno_accept, 1, precision=0.9)
     pydirectinput.click(accept[0],
                         accept[1])
     time.sleep(2)
@@ -652,7 +649,7 @@ def nameless_daily():
     pydirectinput.press('m')
     time.sleep(0.7)
     turn_in = Daily + "Nameless Valley\\Navigation\\Teleport_nameless_valley.png"
-    turning = Searchimage_return_position(turn_in, 1, precision=0.90)
+    turning = im_search(turn_in, 1, precision=0.90)
     pydirectinput.click(turning[0] + 15,
                         turning[1] + 15)
     time.sleep(0.7)
@@ -698,13 +695,13 @@ def nameless_daily():
     time.sleep(1.2)
     # Killing mobs
     step_1 = Daily + "Nameless Valley\\Finished\\1_out_of_2.png"
-    step = Searchimage_return_position(step_1, 1, precision=0.90)
+    step = im_search(step_1, 1, precision=0.90)
     while step == [-1, -1]:
         fight_mobs(combat)
         time.sleep(1)
         pydirectinput.press('g')
         time.sleep(3)
-        step = Searchimage_return_position(step_1, 1, precision=0.90)
+        step = im_search(step_1, 1, precision=0.90)
     pydirectinput.click(1733,
                         913, button="right")
     time.sleep(1.2)
@@ -719,13 +716,13 @@ def nameless_daily():
     time.sleep(1.2)
     # Killing mobs
     step_2 = Daily + "Nameless Valley\\Finished\\Finally_complete.png"
-    step = Searchimage_return_position(step_2, 1, precision=0.90)
+    step = im_search(step_2, 1, precision=0.90)
     while step == [-1, -1]:
         fight_mobs(combat)
         time.sleep(1)
         pydirectinput.press('g')
         time.sleep(3)
-        step = Searchimage_return_position(step_2, 1, precision=0.90)
+        step = im_search(step_2, 1, precision=0.90)
     teleported = "no"
     while teleported != "yes":
         fight_mobs(combat)
@@ -738,12 +735,12 @@ def nameless_daily():
                             round(Resolution[1] / 2), button="right")
         time.sleep(0.7)
         turn_in = Daily + "Walling Swamp\\Navigation\\Kalaja.png"
-        turning = Searchimage_return_position(turn_in, 1, precision=0.86)
+        turning = im_search(turn_in, 1, precision=0.86)
         pydirectinput.click(turning[0],
                             turning[1])
         time.sleep(0.7)
         turn_in = Daily + "Walling Swamp\\Navigation\\Teleport.png"
-        turning = Searchimage_return_position(turn_in, 1, precision=0.90)
+        turning = im_search(turn_in, 1, precision=0.90)
         pydirectinput.click(turning[0] + 10,
                             turning[1] + 10)
         time.sleep(0.7)
@@ -918,7 +915,9 @@ def guild_daily():
     time.sleep(2)
     arrow_tab_left = Daily + "Misc\\Guild_tabs_left.png"
     search_click_image(arrow_tab_left, "left")
+    time.sleep(0.2)
     search_click_image(arrow_tab_left, "left")
+    time.sleep(0.4)
     overview_tab = Daily + "Misc\\Guild_overview.png"
     search_click_image(overview_tab, "left")
     # Getting rid of first time notification
@@ -927,23 +926,25 @@ def guild_daily():
     # Guild donations
     guild_donation = Daily + "Guild\\Guild_donation.png"
     search_click_image(guild_donation, "left")
-    time.sleep(0.2)
+    time.sleep(0.4)
     # Donating silver
     silver = Buttons + "\\Daily Quest\\Guild\\Donate_silver.png"
-    ready = Searchimage_return_position(silver, 1, precision=0.82)
+    ready = im_search(silver, 1, precision=0.82)
     if ready != [-1, -1]:
         pydirectinput.click(ready[0]+25,
                             ready[1]+150)
         time.sleep(0.4)
-        small_close = Daily + "Misc\\Guild_small_close.png"
-        search_click_image(small_close, "left")
-    time.sleep(0.2)
+    small_close = Daily + "Misc\\Guild_small_close.png"
+    search_click_image(small_close, "left", x1=Resolution[0]/2, y1=150, x2=500, y2=200)
+    time.sleep(0.4)
     # Research normal SUPPORT
     support_research = Daily + "Guild\\Support_research.png"
     research = Daily + "Guild\\Normal.png"
     ok = Daily + "Guild\\ok.png"
     search_click_image(support_research, "left")
+    time.sleep(0.2)
     search_click_image(research, "left")
+    time.sleep(3.5)
     search_click_image(ok, "left")
     time.sleep(0.2)
     pydirectinput.keyDown('alt')
@@ -1048,7 +1049,7 @@ def hope_daily():
         for f in DailySwamp:
             # Tossing at Sentinel
             complete_quest = Daily + "Hope Island\\Finished\\Hope_complete.png"
-            complete = Searchimage_return_position(complete_quest, 1, precision=0.90)
+            complete = im_search(complete_quest, 1, precision=0.90)
             fight_mobs(combat)
             if complete != [-1, -1]:
                 print("finished quest")
@@ -1103,9 +1104,9 @@ def hope_daily():
                         334, button="right")
     # quest_giver = Daily + "Hope Island\\Finished\\quest_giver.png"
     # # search_click_image(quest_giver, "right", precision=0.6)
-    # ready = Searchimage_return_position(quest_giver, 1, precision=0.9)
+    # ready = im_search(quest_giver, 1, precision=0.9)
     # if ready != [-1, -1]:
-    #     # ready = Searchimage_return_position(quest_giver, 1, precision=0.8)
+    #     # ready = im_search(quest_giver, 1, precision=0.8)
     #     # print(quest_giver)
     #     pydirectinput.rightClick(ready[0],
     #                              ready[1])
@@ -1120,7 +1121,7 @@ def hope_daily():
 
 
 def accepting_quest(name, target="daily"):
-    focus_window('LOST ARK')
+    # focus_window('LOST ARK')
     time.sleep(1)
     pydirectinput.keyDown('alt')
     time.sleep(0.2)
@@ -1138,23 +1139,23 @@ def accepting_quest(name, target="daily"):
         search_click_image(favorites, "left")
         if name == "ALL":
             accept_all = Daily + "Misc\\Accept_quest.png"
-            search_click_image(accept_all, "left", click_all="yes")
+            im_search(accept_all, action="left", click="all")
 
         if name == "Wailling Swamp":
             swamp = Daily + "Walling Swamp\\Accepting\\Accepting_swamp.png"
-            ready = Searchimage_return_position(swamp, 1, precision=0.82)
+            ready = im_search(swamp, 1, precision=0.82)
             if ready != [-1, -1]:
                 pydirectinput.click(ready[0] + 855,
                                     ready[1] + 18)
         elif name == "Nameless Valley":
             nameless = Daily + "Nameless Valley\\Accepting\\Accepting_nameless.png"
-            ready = Searchimage_return_position(nameless, 1, precision=0.82)
+            ready = im_search(nameless, 1, precision=0.82)
             if ready != [-1, -1]:
                 pydirectinput.click(ready[0] + 855,
                                     ready[1] + 18)
         elif name == "Hope Island":
             hope = Daily + "Hope Island\\Accepting\\Accepting_Hope.png"
-            ready = Searchimage_return_position(hope, 1, precision=0.82)
+            ready = im_search(hope, 1, precision=0.82)
             if ready != [-1, -1]:
                 pydirectinput.click(ready[0] + 855,
                                     ready[1] + 18)
@@ -1180,7 +1181,7 @@ def accepting_quest(name, target="daily"):
             for w in weekly_tasks:
                 guild_req_right = Daily + "Misc\\Guild_request_far_right.png"
                 search_click_image(guild_req_right, "left", precision=0.8)
-                position = Searchimage_return_position(w, 1, precision=0.90)
+                position = im_search(w, 1, precision=0.90)
                 if position != [-1, -1]:
                     print("THIS IS POSITION ", position)
                     pydirectinput.leftClick(position[0] + 550,
@@ -1190,7 +1191,7 @@ def accepting_quest(name, target="daily"):
         for w in weekly_tasks:
             guild_req_left = Daily + "Misc\\Guild_request_far_left.png"
             search_click_image(guild_req_left, "left")
-            position = Searchimage_return_position(w, 1, precision=0.90)
+            position = im_search(w, 1, precision=0.90)
             if position != [-1, -1]:
                 pydirectinput.leftClick(position[0] + 550,
                                         position[1] + 10)
@@ -1209,7 +1210,7 @@ def bifrost_teleportation(name):
     time.sleep(1)
     # Looks for Bifrost button
     bifrost = Daily + "Misc\\BIFROST.png"
-    bifrost_pos = Searchimage_return_position(bifrost, 1, precision=0.95)
+    bifrost_pos = im_search(bifrost, 1, precision=0.87)
     if bifrost_pos != [-1, -1]:
         pydirectinput.click(bifrost_pos[0],
                             bifrost_pos[1])
@@ -1217,45 +1218,46 @@ def bifrost_teleportation(name):
         print("cannot find BIFROST button")
         exit()
     precision = 0.90
+    time.sleep(1)
     # Looks for name of map of Bifrost
     if name == "Wailling Swamp":
         swamp = Daily + "Walling Swamp\\Bifrost\\Swamp.png"
-        ready = Searchimage_return_position(swamp, 1, precision=precision)
+        ready = im_search(swamp, 1, precision=precision)
         if ready != [-1, -1]:
             # Clicking position to the right of it where Move button is
             pydirectinput.click(ready[0] + 400,
                                 ready[1])
     elif name == "Hope island":
         hope = Daily + "Hope island\\Bifrost\\BIFROST_hope.png"
-        ready = Searchimage_return_position(hope, 1, precision=precision)
+        ready = im_search(hope, 1, precision=precision)
         if ready != [-1, -1]:
             # Clicking position to the right of it where Move button is
             pydirectinput.click(ready[0] + 400,
                                 ready[1])
     elif name == "lopang":
         lopang = Daily + "Lopang\\Bifrost\\BIFROST_lopang.png"
-        ready = Searchimage_return_position(lopang, 1, precision=0.95)  # 95 HAD SOME ERRORS teleporting to wrong
+        ready = im_search(lopang, 1, precision=0.91)  # 95 HAD SOME ERRORS teleporting to wrong
         if ready != [-1, -1]:
             # Clicking position to the right of it where Move button is
             pydirectinput.click(ready[0] + 400,
                                 ready[1])
     elif name == "lopang_arthentine":
         lopang_art = Daily + "Lopang\\Bifrost\\BIFROST_Arthentine.png"
-        ready = Searchimage_return_position(lopang_art, 1, precision=precision)
+        ready = im_search(lopang_art, 1, precision=precision)
         if ready != [-1, -1]:
             # Clicking position to the right of it where Move button is
             pydirectinput.click(ready[0] + 400,
                                 ready[1])
     elif name == "lopang_vern":
         lopang_vern = Daily + "Lopang\\Bifrost\\BIFROST_Vern.png"
-        ready = Searchimage_return_position(lopang_vern, 1, precision=precision)
+        ready = im_search(lopang_vern, 1, precision=precision)
         if ready != [-1, -1]:
             # Clicking position to the right of it where Move button is
             pydirectinput.click(ready[0] + 400,
                                 ready[1])
     elif name == "lopang_shushire":
         lopang_shushire = Daily + "Lopang\\Bifrost\\BIFROST_Shushire.png"
-        ready = Searchimage_return_position(lopang_shushire, 1, precision=precision)
+        ready = im_search(lopang_shushire, 1, precision=precision)
         if ready != [-1, -1]:
             # Clicking position to the right of it where Move button is
             pydirectinput.click(ready[0] + 400,
@@ -1265,8 +1267,8 @@ def bifrost_teleportation(name):
 
     # checking if its asking for crystals to teleport
     crystalcheck = Daily + "Misc\\Cost_for_BIFROST.png"
-    pos_crystal = Searchimage_return_position(crystalcheck, 1, precision=precision)
-    time.sleep(0.7)
+    pos_crystal = im_search(crystalcheck, 1, precision=precision)
+    time.sleep(1)
     # print(pos_crystal)
     if pos_crystal == [-1, -1]:
         print("Teleporting...")
@@ -1362,13 +1364,13 @@ def switching_char(finished_char, list_of_workers):
     box_size_y = 23
     # entering switch char menu
     for i in range(1, 10, 1):
-        ready = Searchimage_return_position(esc_menu, 1, precision=0.84)
+        ready = im_search(esc_menu, 1, precision=0.84)
         if ready != [-1, -1]:
             break
         else:
-            time.sleep(0.7)
             i += 1
             pydirectinput.press('ESC')
+            time.sleep(1)
 
     button = Daily + "Misc\\Switching\\switch_character.png"
     search_click_image(button, "left", x2=1800)
@@ -1447,7 +1449,7 @@ def waiting_for_loading_screen(tries=100):
     for i in range(0, 20, 1):
         print("looking for ARROW")
         loading_arrow = Buttons + "\\Daily Quest\\Misc\\Loading_screen_arrow.png"
-        position = searchimageinarea(loading_arrow, "TESTING.png", precision=0.85)
+        position = im_search(loading_arrow, precision=0.85)
         if position != [-1, -1]:
             teleport = "yes"
             break
@@ -1492,7 +1494,7 @@ def stronghold_daily():
     for i in range(0, 4, 1):
         time.sleep(1)
         mission_complete = Daily + "Stronghold\\mission_complete.png"
-        search_click_image(mission_complete, "left", precision=0.8)
+        search_click_image(mission_complete, "left", precision=0.77)
         time.sleep(1)
         mission_results = Daily + "Stronghold\\Mission_result.png"
         search_click_image(mission_results, "left", precision=0.8)
@@ -1531,7 +1533,7 @@ def stronghold_daily():
     for k in range(0, 2, 1):
         time.sleep(1)
         mission_complete = Daily + "Stronghold\\mission_complete.png"
-        pos = Searchimage_return_position(mission_complete)
+        pos = im_search(mission_complete)
         if pos != [-1, -1]:
             search_click_image(mission_complete, "left")
             time.sleep(1)
@@ -1579,10 +1581,24 @@ def stronghold_daily():
     ok_button = Daily + "Stronghold\\ok_button.png"
     search_click_image(ok_button, "left", precision=0.8)
     time.sleep(4)
-
+    # Repairing tools
+    if pet_status == "yes":
+        pydirectinput.keyDown('alt')
+        time.sleep(0.3)
+        pydirectinput.press('p')
+        time.sleep(0.2)
+        pydirectinput.keyUp('alt')
+        repair_tools = [x for x in glob.glob(stronghold + '\\Repairing_tools' + "**/*.png")]
+        for j in repair_tools:
+            search_click_image(j, "left")
+            time.sleep(1)
+        time.sleep(1)
+        pydirectinput.press('ESC')
+        time.sleep(0.7)
+        pydirectinput.press('ESC')
     # Pet farm
     for c in pet_ranch:
-        search_click_image(c, "left")
+        search_click_image(c, "left", precision=0.8)
         time.sleep(1)
 
     # Closing menus
@@ -1740,8 +1756,8 @@ class ChaosDungeon:
                 occurances = str(count_occurrance) + str(split_string)
                 # print(g)
                 # RESOLUTION Searching
-                search = im_processing(g, occurances, look_for="HPbar", precision=0.86,
-                                           x1=startx, y1=starty, y2=round(Resolution[1] / 100 * 83))  # - 180)
+                search = im_processing(g, count=occurances, look_for="HPbar", precision=0.86,
+                                       x1=startx, y1=starty, y2=round(Resolution[1] / 100 * 83))  # - 180)
                 if search == [-1, -1]:
                     123
                 elif search is None:
@@ -1779,9 +1795,9 @@ class ChaosDungeon:
                 count_occurrance = count_occurrance + 1
                 occurances = str(count_occurrance) + str(split_string)
                 # MINIMAP Searching
-                search = im_processing(g, occurances, looking_for,
-                                           x1=MiniMCOORD[0], y1=MiniMCOORD[1],
-                                           x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.65)
+                search = im_processing(g, count=occurances, look_for=looking_for,
+                                       x1=MiniMCOORD[0], y1=MiniMCOORD[1],
+                                       x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.65)
                 # print(count_occurrance, search, g)
                 if search == [-1, -1] or None:
                     123
@@ -1854,9 +1870,9 @@ class ChaosDungeon:
                                     # Counts attempts it tried to enter in portal
                                     countingportattempt = countingportattempt + 1
                                     fportal = (countingportattempt, " Found portal")
-                                    search = im_processing(g, str(fportal), look_for=looking_for,
-                                                               x1=MiniMCOORD[0], y1=MiniMCOORD[1],
-                                                               x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.7)
+                                    search = im_processing(g, count=countingportattempt, look_for=looking_for,
+                                                           x1=MiniMCOORD[0], y1=MiniMCOORD[1],
+                                                           x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.7)
                                     print("Searching for portal", search)
                                     # print(MiniMCOORD[0], MiniMCOORD[1])
                                     if search != [-1, -1]:
@@ -1924,7 +1940,7 @@ class ChaosDungeon:
                 count_occurrance = count_occurrance + 1
                 occurances = str(count_occurrance) + str(split_string)
 
-                search = im_processing(f, occurances, look_for="Red",
+                search = im_processing(f, count=occurances, look_for="Red",
                                        x1=MiniMCOORD[0], y1=MiniMCOORD[1],
                                        x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.6)
 
@@ -1998,7 +2014,7 @@ class ChaosDungeon:
     def state_check(self, current_worker, *args):
         print(*args)
         print("i was here", current_worker)
-        #Misc
+        # Misc
         counting_state = 0
         count_death = 0
         count_stage_clear = 0
@@ -2007,6 +2023,7 @@ class ChaosDungeon:
         focus_window('LOST ARK')
         # Begining on the program REPAIRING
         self.repairing()
+        time.sleep(0.3)
         pydirectinput.keyDown('alt')
         time.sleep(0.3)
         pydirectinput.press('q')
@@ -2306,10 +2323,13 @@ class ChaosDungeon:
         #     basex += 107
         #     print(basex)
         dismantle_button = Buttons + "\\Daily Quest\\Misc\\Dismantle_button.png"
-        search_click_image(dismantle_button, action="left")
+        im_search_until_found(dismantle_button, max_samples=5, precision=0.75)
         # ok = Buttons + "\\Daily Quest\\Misc\\First_loging_guild.png"
         # search_click_image(ok, action="left", precision=0.7)
-        pydirectinput.press("ENTER")
+        time.sleep(0.2)
+        dismantle_button = Buttons + "\\Daily Quest\\Misc\\OK_button.png"
+        im_search_until_found(dismantle_button, max_samples=5, precision=0.8)
+        time.sleep(0.3)
         pydirectinput.press("i")
         print("gear dismantled")
 

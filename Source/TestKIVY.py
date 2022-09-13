@@ -34,7 +34,7 @@ from LostARKFOCUS import GlobalLabel
 from STARTlookfor import startlookfor
 from Lifeskills import fishing
 from STATEcheck import debugging
-from METHODS_OLD_BACKUP import focus_window
+from METHODS import focus_window
 from DailyQuests import daily_state_check
 
 # Imports from DailyQuests

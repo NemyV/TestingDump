@@ -70,13 +70,12 @@ def Statecheck():
 
     for f in Lifeskillopen:
         print(f)
-        time.sleep(2.5)
         while pos == [-1, -1]:
             focus_window('LOST ARK')
             time.sleep(2.5)
             pos = im_search_keypoint(f,
                                      x1=round(Resolution[0] * 44 / 100),
-                                     y1=round(Resolution[1] * 83.5 / 100), x2=250, y2=50, precision=0.3)
+                                     y1=round(Resolution[1] * 83.5 / 100), x2=250, y2=50, precision=0.5)
             if pos != [-1, -1]:
                 break
             print("Opening skills bar")
@@ -122,7 +121,7 @@ def fishing():
         # pydirectinput.moveTo(int(pos[0]),int(pos[1]))
         if pos == [-1, -1]:
             pydirectinput.press('w')
-            time.sleep(8.5)
+            time.sleep(8.7)
         else:
             pydirectinput.press('r')
             time.sleep(4)
@@ -148,7 +147,7 @@ def fishing():
         for f in FINDFishingCATCH:
             # search for exclamation mark
             pos = im_search(f, x1=x1, y1=y1, x2=x2-x1, y2=y2-y1, precision=0.8)
-            time.sleep(0.1)
+            time.sleep(0.13)
             print(pos)
             if pos != [-1, -1]:
                 count_good = count_good + 1
