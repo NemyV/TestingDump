@@ -1,78 +1,68 @@
 import numpy as np
-import cv2 as cv
+import cv2
 import matplotlib.pyplot as plt
 import time
 from Source.METHODS import im_screenshot
 
+img1 = cv2.imread('Source\\Buttons\\Class\\keypoint_BARD.png', cv2.IMREAD_GRAYSCALE)  # queryImage
+# img1 = cv2.imread('Source\\Buttons\\Daily Quest\\Misc\\PVP_myturn_HPBAR.png', cv2.IMREAD_GRAYSCALE)  # queryImage
 
-def matching_keypoints():
-    stopwatch_start = time.time()
-    time.sleep(2)
-    matchmaking_method = 2
-    img1 = cv.imread('Source\\Buttons\\Class\\Bard.png', cv.IMREAD_GRAYSCALE)  # queryImage
-    img2 = im_screenshot()
-    # img2 = cv.imread('box_in_scene.png',cv.IMREAD_GRAYSCALE) # trainImage
+
+def im_search_keypoint(image, matchmaking_method):
+    img1 = image
+    img2 = im_screenshot()  # trainImage
     if matchmaking_method == 1:
-        # FIRST METHOD
         # Initiate ORB detector
-        orb = cv.ORB_create()
+        orb = cv2.ORB_create()
         # find the keypoints and descriptors with ORB
         kp1, des1 = orb.detectAndCompute(img1, None)
         kp2, des2 = orb.detectAndCompute(img2, None)
         # create BFMatcher object
-        bf = cv.BFMatcher(cv.NORM_HAMMING, crossCheck=True)
+        bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
         # Match descriptors.
         matches = bf.match(des1, des2)
         # Sort them in the order of their distance.
         matches = sorted(matches, key=lambda x: x.distance)
         # Draw first 10 matches.
-        img3 = cv.drawMatches(img1, kp1, img2, kp2, matches[:10], None,
-                              flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+        img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], None,
+                               flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
         plt.imshow(img3), plt.show()
     if matchmaking_method == 2:
-        # print("WADAFAK")
-        # SECOND METHOD
+        list_of_cords = []
         # Initiate SIFT detector
-        sift = cv.SIFT_create()
+        sift = cv2.SIFT_create()
         # find the keypoints and descriptors with SIFT
         kp1, des1 = sift.detectAndCompute(img1, None)
         kp2, des2 = sift.detectAndCompute(img2, None)
         # BFMatcher with default params
-        bf = cv.BFMatcher()
+        bf = cv2.BFMatcher()
         matches = bf.knnMatch(des1, des2, k=2)
-
-        list_kp2 = []
-
         # Apply ratio test
         good = []
         for m, n in matches:
             if m.distance < 0.75 * n.distance:
                 # Get the matching keypoints for each of the images
                 img2_idx = m.trainIdx
-
-                # x - columns
-                # y - rows
-                # Get the coordinates
+                # Get the coordinates x - columns y - rows
                 (x2, y2) = kp2[img2_idx].pt
-
                 # Append to each list
-                list_kp2.append((x2, y2))
+                list_of_cords.append((x2, y2))
                 # THESE ARE COORDINATES OF KEYPOINTS
-                print(list_kp2)
                 good.append([m])
-                print("found match", m, n)
             else:
-                print("no match")
-
-        # cv.drawMatchesKnn expects list of lists as matches.
-
-        img3 = cv.drawMatchesKnn(img1, kp1,
-                                 img2, kp2, good, None, flags=cv.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
-        plt.imshow(img3), plt.show()
+                123
+        print("Number of good matches:", len(good))
+        # cv2.drawMatchesKnn expects list of lists as matches.
+        # DEBUGGING
+        # img3 = cv2.drawMatchesKnn(img1, kp1,
+        #                           img2, kp2, good, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+        # plt.imshow(img3), plt.show()
+        average = [sum(x) / len(x) for x in zip(*list_of_cords)]
+        return average
     if matchmaking_method == 3:
-        # THIRD METHOD
+        list_of_cords = []
         # Initiate SIFT detector
-        sift = cv.SIFT_create()
+        sift = cv2.SIFT_create()
         # find the keypoints and descriptors with SIFT
         kp1, des1 = sift.detectAndCompute(img1, None)
         kp2, des2 = sift.detectAndCompute(img2, None)
@@ -87,24 +77,30 @@ def matching_keypoints():
         #                     multi_probe_level=1)  # 2
 
         search_params = dict(checks=50)  # or pass empty dictionary
-        flann = cv.FlannBasedMatcher(index_params, search_params)
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
         matches = flann.knnMatch(des1, des2, k=2)
         # Need to draw only good matches, so create a mask
-        matchesMask = [[0, 0] for i in range(len(matches))]
+        matches_Mask = [[0, 0] for i in range(len(matches))]
         # ratio test as per Lowe's paper
         for i, (m, n) in enumerate(matches):
             if m.distance < 0.7 * n.distance:
-                matchesMask[i] = [1, 0]
+                # Get the matching keypoints for each of the images
+                img2_idx = m.trainIdx
+                # Get the coordinates x - columns y - rows
+                (x2, y2) = kp2[img2_idx].pt
+                # Append to each list
+                list_of_cords.append((x2, y2))
+                matches_Mask[i] = [1, 0]
+        print("Number of good matches:", len(matches))
+        #Debugging
         draw_params = dict(matchColor=(0, 255, 0),
                            singlePointColor=(255, 0, 0),
-                           matchesMask=matchesMask,
-                           flags=cv.DrawMatchesFlags_DEFAULT)
-        img3 = cv.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
+                           matchesMask=matches_Mask,
+                           flags=cv2.DrawMatchesFlags_DEFAULT)
+        img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
         plt.imshow(img3, ), plt.show()
 
+        average = [sum(x) / len(x) for x in zip(*list_of_cords)]
+        return average
 
-    stopwatch_end = time.time()
-    execution_time = stopwatch_end - stopwatch_start
-    print(execution_time)
-
-matching_keypoints()
+print(im_search_keypoint(img1,3))

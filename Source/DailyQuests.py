@@ -5,11 +5,10 @@ import pydirectinput
 from METHODS_OLD_BACKUP import searchimageinarea
 from METHODS_OLD_BACKUP import Searchimage_return_position
 from METHODS import im_search_until_found
-from METHODS import im_search_in_area
+from METHODS import im_processing
 from METHODS import search_click_image
 from METHODS import focus_window
 from METHODS import image2text
-from METHODS import imagesearch_fast_area
 from METHODS import casting_skills
 from METHODS import im_search_until_found
 from METHODS import im_search
@@ -33,7 +32,12 @@ import signal
 global loading_screen_time
 loading_screen_time = 30
 
-Resolution = [2560, 1080]
+configparser = ConfigParser()
+configparser.read("myapp.ini")
+string = configparser.get("Settings", "resolution")
+
+Resolution = [int(string.split("x")[0]),
+              int(string.split("x")[1])]
 panchor = [round(Resolution[0] / 2),
            round(Resolution[1] / 2)]
 playerMinimap = [Resolution[0] / 100 * 93.04,
@@ -445,7 +449,7 @@ def swamp_daily():
     #         # Tossing at Sentinel
     #         complete_quest = Daily + "Walling Swamp\\Finished\\Completed_quest.png"
     #         print(f)
-    #         ready = imagesearch_fast_area(f, precision=0.65)
+    #         ready = im_search(f, precision=0.65)
     #         complete = Searchimage_return_position(complete_quest, 1, precision=0.87)
     #         if ready != [-1, -1]:
     #             pydirectinput.moveTo(ready[0],
@@ -1736,7 +1740,7 @@ class ChaosDungeon:
                 occurances = str(count_occurrance) + str(split_string)
                 # print(g)
                 # RESOLUTION Searching
-                search = im_search_in_area(g, occurances, look_for="HPbar", precision=0.86,
+                search = im_processing(g, occurances, look_for="HPbar", precision=0.86,
                                            x1=startx, y1=starty, y2=round(Resolution[1] / 100 * 83))  # - 180)
                 if search == [-1, -1]:
                     123
@@ -1775,7 +1779,7 @@ class ChaosDungeon:
                 count_occurrance = count_occurrance + 1
                 occurances = str(count_occurrance) + str(split_string)
                 # MINIMAP Searching
-                search = im_search_in_area(g, occurances, looking_for,
+                search = im_processing(g, occurances, looking_for,
                                            x1=MiniMCOORD[0], y1=MiniMCOORD[1],
                                            x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.65)
                 # print(count_occurrance, search, g)
@@ -1850,7 +1854,7 @@ class ChaosDungeon:
                                     # Counts attempts it tried to enter in portal
                                     countingportattempt = countingportattempt + 1
                                     fportal = (countingportattempt, " Found portal")
-                                    search = im_search_in_area(g, str(fportal), look_for=looking_for,
+                                    search = im_processing(g, str(fportal), look_for=looking_for,
                                                                x1=MiniMCOORD[0], y1=MiniMCOORD[1],
                                                                x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.7)
                                     print("Searching for portal", search)
@@ -1920,9 +1924,9 @@ class ChaosDungeon:
                 count_occurrance = count_occurrance + 1
                 occurances = str(count_occurrance) + str(split_string)
 
-                search = im_search_in_area(f, occurances, look_for="Red",
-                                           x1=MiniMCOORD[0], y1=MiniMCOORD[1],
-                                           x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.6)
+                search = im_processing(f, occurances, look_for="Red",
+                                       x1=MiniMCOORD[0], y1=MiniMCOORD[1],
+                                       x2=MiniMCOORD[2], y2=MiniMCOORD[3], precision=0.6)
 
                 if search != [-1, -1]:
                     x1, y1 = self.process_search(search, process_search_inc)
@@ -1939,7 +1943,7 @@ class ChaosDungeon:
         ok_button = Buttons + '\\ChaosMisc\\ok_button.png'
         repair_all = Buttons + '\\ChaosMisc\\Repair all.png'
 
-        position = imagesearch_fast_area(repair_gear, precision=0.7)
+        position = im_search(repair_gear, precision=0.7)
         print("Repairing stuff", position)
         if position != [-1, -1]:
             print("REPAIRING")
@@ -2020,7 +2024,7 @@ class ChaosDungeon:
         while not self.all_event.is_set():
             for y in check_if_clear:
                 counting_state += 1
-                position = imagesearch_fast_area(y, precision=0.7)
+                position = im_search(y, precision=0.7)
                 if position != [-1, -1]:
                     try:
                         self.stop_combat()

@@ -72,6 +72,10 @@ Source = 'D:\\BLostArk\\LOSTARKB\\Source\\'
 
 configparser = ConfigParser()
 configparser.read("myapp.ini")
+string = configparser.get("Settings", "resolution")
+
+Resolution = [int(string.split("x")[0]),
+              int(string.split("x")[1])]
 
 # if Config.getint('graphics', 'borderless') == 0:
 #     Config.write()
@@ -88,20 +92,20 @@ battery_state = "Charging"
 battery_capacity = "100"
 
 stop_threads = False
-Resolution = [2560, 1080]
+# Resolution = [2560, 1080]
 
 
 def callbackTo2(instance):
-    Window.size = (2560, 150)
+    Window.size = (Resolution[0], Resolution[1]/10)
     Window.top = 930  # 930
     Window.left = 0
     sm.current = "MainMenu"
 
 
 def callbackTo1(instance):
-    Window.size = (2560, 250 * 2)
-    Window.top = 355
-    Window.left = 0
+    Window.size = (Resolution[0]*8/10, Resolution[1]*2/4)
+    Window.top = Resolution[1]*2/10
+    Window.left = Resolution[0]/10
     sm.current = "Settings"
     123  # This is what is being changed
     # Settings = Thread(target=sm)
@@ -900,7 +904,7 @@ class DailyQuests(Screen):
 
         # GRID LAYOUT [ Exchange pirate ]
         self.misc_grid = GridLayout(cols=2,
-                                        row_force_default=True, row_default_height=60, col_default_width=60)
+                                    row_force_default=True, row_default_height=60, col_default_width=60)
         self.MAIN_GRID.add_widget(self.misc_grid)
 
         self.exchange_lbl = Label(text='Misc:',
@@ -1788,10 +1792,51 @@ class Settings(Screen):
         ButtonY = 0.5
         SizeH = 0.2
         SizeW = 0.1
-        PosX = .65
-        # Checkbox
-        CheckH = 0.1
-        CheckW = 0.1
+        resolutions = ["2560x1080", "1920x1080", "Coop", "FFA"]
+
+        self.tittle_grid = GridLayout(pos_hint={'x': 0.0575, 'y': -0.05}, rows=4, cols=2,
+                                      size_hint=(0.1, 1),
+                                      row_force_default=True, row_default_height=30, col_default_width=120)
+        self.add_widget(self.tittle_grid)
+        self.tittle_1 = Label(text='SCREEN SETTINGS', font_size=20,bold=True,
+                              halign="center", valign="middle")
+        self.tittle_grid.add_widget(self.tittle_1)
+
+        self.main_grid = GridLayout(pos_hint={'x': 0.025, 'y': -0.15}, rows=4, cols=2,
+                                    size_hint=(0.1, 1),
+                                    row_force_default=True, row_default_height=30, col_default_width=120)
+        self.add_widget(self.main_grid)
+        self.lbl_resolution = Label(text='Resolution:')
+        self.main_grid.add_widget(self.lbl_resolution)
+
+        # create a dropdown with 10 buttons
+        self.dropdown = DropDown()
+        self.dropdown.bind(on_select=self.on_dropdown)
+        for index in resolutions:
+            # When adding widgets, we need to specify the height manually
+            # (disabling the size_hint_y) so the dropdown can calculate
+            # the area it needs.
+            self.btn = Button(text=index, size_hint_y=None, height=44)
+            # for each button, attach a callback that will call the select() method
+            # on the dropdown. We'll pass the text of the button as the data of the
+            # selection.
+            self.btn.bind(on_release=lambda btn: self.dropdown.select(btn.text))
+            # then add the BUTTON INSIDE the dropdown
+            self.dropdown.add_widget(self.btn)
+        # create a big MAIN BUTTON 1280x720,1280x1024,1360x768,1440x900,1600x900,1920x1080
+        self.mainbutton = Button(text='Resolution',
+                                 border=(0, 0, 0, 0),
+                                 size_hint=(0.07, 0.05),
+                                 pos_hint={'x': .29, 'y': 0.86})
+        # show the dropdown menu when the main button is released
+        # note: all the bind() calls pass the instance of the caller (here, the
+        # mainbutton instance) as the first argument of the callback (here,
+        # dropdown.open.).
+        self.mainbutton.bind(on_release=self.dropdown.open)
+        # one last thing, listen for the selection in the dropdown list and
+        # assign the data to the button text.
+        self.dropdown.bind(on_select=lambda instance, x: setattr(self.mainbutton, 'text', x))
+        self.main_grid.add_widget(self.mainbutton)
 
         self.mainmenu = Button(background_normal=LoAImages + 'Yellow.jpg',
                                border=(0, 0, 0, 0),
@@ -1813,7 +1858,7 @@ class Settings(Screen):
         self.on_start()
 
     def update(self, *args):
-        123
+        self.mainbutton.text = configparser.get('Settings', "resolution")
         # print(selected_character)
         # self.dropdown.reload()
         # self.lbl_pirate.text = str(PirateCoins * NumberofChar)
@@ -1824,11 +1869,17 @@ class Settings(Screen):
         # print("this is global labe", GlobalLabel, "test")
 
     def on_dropdown(self, checkboxinstance, checkboxvalue):
-        global selected_character
-        print(checkboxinstance, checkboxvalue)
+        global Resolution
+        # print(checkboxinstance, checkboxvalue)
         self.mainbutton.text = checkboxvalue
-        selected_character = checkboxvalue
-        print(selected_character)
+        Resolution = checkboxvalue
+        print(Resolution)
+        try:
+            configparser.get('Settings', "resolution")
+        except:
+            configparser.add_section('Settings')
+        configparser.set('Settings', "resolution", Resolution)
+        configparser.write()
         # Based on selected character add values of selected tasks and other things to config file
 
     def on_text(self, instance):

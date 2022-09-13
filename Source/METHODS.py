@@ -16,6 +16,7 @@ import mss.tools
 import win32gui
 import re
 import matplotlib.pyplot as plt
+from kivy.config import ConfigParser
 
 # from skimage import io
 from multiprocessing import Manager, Process, Pool
@@ -29,7 +30,13 @@ pytesseract.tesseract_cmd = path_to_tesseract
 sys.path.insert(0, 'E:\Hello wolrd Python\LOSTARKB')
 
 Buttons = "Buttons\\"
-Resolution = [2560, 1080]
+
+configparser = ConfigParser()
+configparser.read("myapp.ini")
+string = configparser.get("Settings", "resolution")
+
+Resolution = [int(string.split("x")[0]),
+              int(string.split("x")[1])]
 MiniMCOORD = [Resolution[0] / 100 * 86,
               Resolution[1] / 100 * 4.17,
               Resolution[0] / 100 * 98.7,
@@ -111,6 +118,9 @@ ProcessProxy = type("ProcessProxy", (ObjProxy,), attributes)
 
 
 def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Resolution[1]):
+    """
+    Taking screenshots in specific folder
+        """
     with mss.mss() as sct:
         # The screen part to capture
         region = {'left': x1, 'top': y1, 'width': x2, 'height': y2}
@@ -134,15 +144,12 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
         print("ERROR READING IMAGE FROM SCREENSHOT")
     return img_rgb
 
-'''
-Searchs for an image on the screen
-im : a PIL image, usefull if you intend to search the same unchanging region for several elements
-returns:
-top left corner coordinates of the element if found as an array [x,y] or [-1,-1] if not
-'''
-
 
 def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_value="center", precision=0.7):
+    """
+        Searches for an image on the screen
+        Return = coordinates
+    """
     file_name = "im_search"
     img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
     number_of_channels, w, h = img_rgb.shape[::-1]
@@ -151,8 +158,20 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(image, 0)
     w, h = template.shape[::-1]
+
     res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+
+    if return_value == "count":
+        count = 0
+        loc = np.where(res >= precision)
+        for pt in zip(*loc[::-1]):  # Swap columns and rows
+            cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
+                          2)  # // Uncomment to draw boxes around found occurances
+            count = count + 1
+            cv2.imwrite('RESULT' + image + '.png',
+                        img_rgb)  # // Uncomment to write output image with boxes drawn around occurances
+        return count
     if max_val < precision:
         return [-1, -1]
     if return_value == "top_left":
@@ -167,84 +186,53 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
         return average
 
 
-# im_search_area_fast
-def imagesearch_fast_area(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], precision=0.8):
-    file_name = "imagesearch_fast_area"
-    img_rgb = im_screenshot(file_name, x1, y1, x2, y2)
+def search_click_image(image, action, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], timestamp=0.1,
+                       offset=5, precision=0.7, click_all="no"):
+    """
+    Searches for an image on the screen
+    Clicks on image with some offset, CAN click on all occurances
+    Return = coordinates
+    """
+    pos = im_search(image, x1=x1, y1=y1, x2=x2, y2=y2, precision=precision)
 
-    img_rgb = np.array(img_rgb)
-    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-
-    template = cv2.imread(image, 0)
-    template.shape[::-1]
-
-    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
-    # avg_x = (min_loc[0] + max_loc[0]) / 2
-    # avg_y = (min_loc[1] + max_loc[1]) / 2
-    #
-    # center_of_image = [max_loc[0], max_loc[1]]
-    if max_val < precision:
-        return [-1, -1]
-    # return max_loc
-    return max_loc
-
-'''
-Searches for an image on the screen and counts the number of occurrences.
-'''
-# imagesearch_count
-def im_search_count(image, precision=0.9):
-    # Take screenshot
-    img_rgb = im_screenshot("imagesearch_count")
-    # img_rgb = pyautogui.screenshot()
-    img_rgb = np.array(img_rgb)
-    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-    template = cv2.imread(image, 0)
-    w, h = template.shape[::-1]
-    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-    loc = np.where(res >= precision)
-    count = 0
-    for pt in zip(*loc[::-1]):  # Swap columns and rows
-        cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
-                      2)  # // Uncomment to draw boxes around found occurances
-        count = count + 1
-        cv2.imwrite('RESULT' + image + '.png',
-                    img_rgb)  # // Uncomment to write output image with boxes drawn around occurances
-
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
-    if max_val < precision:
-        return [-1, -1], count
-    return max_loc, count
-
-
-def im_search_until_found(image, time_sample=0.5, click="left", return_value="", max_samples=0, precision=0.8):
-    pos = im_search(image, precision=precision)
-    count = 0
-    while pos == [-1, -1]:
-        # print(image + " not found, waiting ")
-        time.sleep(time_sample)
-        pos = im_search(image, precision=precision)
-        count = count + 1
-        if max_samples >= 1:
-            if count > max_samples:
-                break
-    if return_value == "count":
-        return count
+    if pos == [-1, -1]:
+        return pos
     else:
-        if pos != [-1, -1]:
-            if click == "left":
-                pydirectinput.leftClick(pos[0], pos[1])
-            elif click == "right":
-                pydirectinput.rightClick(pos[0], pos[1])
+        if click_all == "yes":
+            img = cv2.imread(image)
+            height, width, channels = img.shape
+            pyautogui.moveTo(pos[0] + r(width / 2, offset) + x1,
+                             pos[1] + r(height / 2, offset) + y1)
+            pyautogui.click(button=action)
+            time.sleep(0.4)
+        else:
+            # clicking on image
+            img = cv2.imread(image)
+            height, width, channels = img.shape
+            # Added +x1 and +y1 IF YOU GET ERROR remove?
+            pyautogui.moveTo(pos[0] + r(width / 2, offset) + x1,
+                             pos[1] + r(height / 2, offset) + y1,
+                             timestamp)
+            pyautogui.click(button=action)
         return pos
 
 
-def im_processing(template_image, file_name, look_for,
-                  x1, y1, rgb_screenshot, return_value="center", precision=0.7):
-    img_rgb = rgb_screenshot
-    file_name = file_name + ".png"
+def im_processing(template_image, look_for="None", count=0,
+                  x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_value="center", precision=0.7):
+    """
+    processing image with masks for better matching
+    Return = coordinates
+    """
+    #im_search_in_area im processing
+    file_name = str(count) + str(look_for) + ".png"
+    img_rgb = im_screenshot(file_name, x1, y1, x2, y2)
+    if img_rgb is None:
+        print(img_rgb, "ERROR reading image")
+    else:
+        try:
+            os.remove(file_name)
+        except IOError:
+            123
     if look_for == "None":
         print("without mask mask")
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
@@ -334,65 +322,25 @@ def im_processing(template_image, file_name, look_for,
             return max_loc
 
 
-def im_search_in_area(image, count, look_for="None",
-                      x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], precision=0.7, im=None):
-    countx = 0
-    return_value = "center"
-    file_name = str(count) + str(look_for)
-    # Take screenshot
-    img_rgb = im_screenshot(file_name, x1, y1, x2, y2)
-    if img_rgb is None:
-        print(img_rgb, "ERROR reading image")
+def im_search_until_found(image, time_sample=0.5, click="left", return_value="", max_samples=0, precision=0.8):
+    pos = im_search(image, precision=precision)
+    count = 0
+    while pos == [-1, -1]:
+        # print(image + " not found, waiting ")
+        time.sleep(time_sample)
+        pos = im_search(image, precision=precision)
+        count = count + 1
+        if max_samples >= 1:
+            if count > max_samples:
+                break
+    if return_value == "count":
+        return count
     else:
-        try:
-            os.remove(file_name)
-        except IOError:
-            123
-            # print("ERROR!")
-            result = im_processing(image, file_name, look_for,
-                                   x1, y1, img_rgb, return_value,  precision)
-            return result
-
-
-def search_click_image(image, action, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], timestamp=0.1,
-                       offset=5, precision=0.7, click_all="no"):
-    file_name = "search_click_image"
-    img_rgb = im_screenshot(file_name, x1, y1, x2, y2)
-
-    img_rgb = np.array(img_rgb)
-    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-    template = cv2.imread(image, 0)
-    w, h = template.shape[::-1]
-
-    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-    loc = np.where(res >= precision)
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
-    if max_val < precision:
-        pos = [-1, -1]
-        return pos
-    else:
-        pos = max_loc
-        if click_all == "yes":
-            for pt in zip(*loc[::-1]):  # Swap columns and rows
-                cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)  # drawing rectangles
-                cv2.imwrite("0 RECTANGLES.png", img_rgb)
-                img = cv2.imread(image)
-                height, width, channels = img.shape
-                pyautogui.moveTo(pt[0] + r(width / 2, offset) + x1,
-                                 pt[1] + r(height / 2, offset) + y1,
-                                 timestamp)
-                pyautogui.click(button=action)
-                time.sleep(0.4)
-        else:
-            # clicking on image
-            img = cv2.imread(image)
-            height, width, channels = img.shape
-            # Added +x1 and +y1 IF YOU GET ERROR remove?
-            pyautogui.moveTo(pos[0] + r(width / 2, offset) + x1,
-                             pos[1] + r(height / 2, offset) + y1,
-                             timestamp)
-            pyautogui.click(button=action)
+        if pos != [-1, -1]:
+            if click == "left":
+                pydirectinput.leftClick(pos[0], pos[1])
+            elif click == "right":
+                pydirectinput.rightClick(pos[0], pos[1])
         return pos
 
 
@@ -476,7 +424,7 @@ def casting_skills(skill_dictionary, my_class):
         identity = "Arcana"
     elif my_class == "Artillerist":
         picture = Buttons + "Class\\Identity\\Artillerist_identity.png"
-        position = imagesearch_fast_area(picture, x1=1100, y1=800, x2=300, y2=200, precision=0.9)
+        position = im_search(picture, x1=1100, y1=800, x2=300, y2=200, precision=0.9)
         print(position)
         if position != [-1, -1]:
             print("CASTING IDENTITY")
@@ -503,7 +451,7 @@ def casting_skills(skill_dictionary, my_class):
         middle_y = round(Resolution[1] / 10 * 8.5)
         for x in stances:
             print(x)
-            what_stance = imagesearch_fast_area(x, x1=middle_x - 25, y1=middle_y, x2=50, y2=75, precision=0.9)
+            what_stance = im_search(x, x1=middle_x - 25, y1=middle_y, x2=50, y2=75, precision=0.9)
             if what_stance != [-1, -1]:
                 print(x)
                 split_string = x.rsplit('\\')[4]
@@ -622,3 +570,118 @@ def casting_skills(skill_dictionary, my_class):
             pydirectinput.mouseUp(button='right')
             count += 1
     print("FINISHED")
+
+
+# use it for bigger pictures with more details
+def im_search_keypoint(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1],
+                       matchmaking_method=3, precision=0.7):
+    file_name = "im_search_keypoint"
+    img1 = cv2.imread(image, cv2.IMREAD_UNCHANGED)
+    img2 = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)  # trainImage
+    # img_gray = cv2.imread('Temp_files\\Screenshot[' + file_name + '].png', cv2.IMREAD_GRAYSCALE)
+    # plt.imshow(img2)
+    # plt.show()
+
+    # print(img_gray,"OTHER IMAGE",img1)
+    if matchmaking_method == 1:
+        # Initiate ORB detector
+        orb = cv2.ORB_create()
+        # find the keypoints and descriptors with ORB
+        kp1, des1 = orb.detectAndCompute(img1, None)
+        kp2, des2 = orb.detectAndCompute(img2, None)
+        # create BFMatcher object
+        bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+        # Match descriptors.
+        matches = bf.match(des1, des2)
+        # Sort them in the order of their distance.
+        matches = sorted(matches, key=lambda x: x.distance)
+        # Draw first 10 matches.
+        img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches[:10], None,
+                               flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+        plt.imshow(img3), plt.show()
+    if matchmaking_method == 2:
+        list_of_cords = []
+        # Initiate SIFT detector
+        sift = cv2.SIFT_create()
+        # find the keypoints and descriptors with SIFT
+        kp1, des1 = sift.detectAndCompute(img1, None)
+        kp2, des2 = sift.detectAndCompute(img2, None)
+        # BFMatcher with default params
+        bf = cv2.BFMatcher()
+        matches = bf.knnMatch(des1, des2, k=2)
+        # Apply ratio test
+        good = []
+        for m, n in matches:
+            if m.distance < precision * n.distance:
+                # Get the matching keypoints for each of the images
+                img2_idx = m.trainIdx
+                # Get the coordinates x - columns y - rows
+                (x2, y2) = kp2[img2_idx].pt
+                # Append to each list
+                list_of_cords.append((x2, y2))
+                # THESE ARE COORDINATES OF KEYPOINTS
+                good.append([m])
+            else:
+                123
+        print("Number of good matches:", len(good))
+        # cv2.drawMatchesKnn expects list of lists as matches.
+        # DEBUGGING
+        # img3 = cv2.drawMatchesKnn(img1, kp1,
+        #                           img2, kp2, good, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
+        # plt.imshow(img3), plt.show()
+        if len(good) < 1:
+            return [-1, -1]
+        else:
+            average = [sum(x) / len(x) for x in zip(*list_of_cords)]
+            return average
+    if matchmaking_method == 3:
+        list_of_cords = []
+        # Initiate SIFT detector
+        sift = cv2.SIFT_create()
+        # find the keypoints and descriptors with SIFT
+        kp1, des1 = sift.detectAndCompute(img1, None)
+        kp2, des2 = sift.detectAndCompute(img2, None)
+
+        # FLANN parameters
+        FLANN_INDEX_KDTREE = 1
+        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+        # FLANN_INDEX_LSH = 5
+        # index_params = dict(algorithm=FLANN_INDEX_LSH,
+        #                     table_number=6,  # 12
+        #                     key_size=12,  # 20
+        #                     multi_probe_level=1)  # 2
+
+        search_params = dict(checks=50)  # or pass empty dictionary
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+        matches = flann.knnMatch(des1, des2, k=2)
+        # Need to draw only good matches, so create a mask
+        matches_Mask = [[0, 0] for i in range(len(matches))]
+        # ratio test as per Lowe's paper
+        for i, (m, n) in enumerate(matches):
+            if m.distance < precision * n.distance:
+                # Get the matching keypoints for each of the images
+                img2_idx = m.trainIdx
+                # Get the coordinates x - columns y - rows
+                (x2, y2) = kp2[img2_idx].pt
+                # Append to each list
+                list_of_cords.append((x2, y2))
+                matches_Mask[i] = [1, 0]
+        print("Number of good matches:", len(list_of_cords))
+        # Debugging
+        # draw_params = dict(matchColor=(0, 255, 0),
+        #                    singlePointColor=(255, 0, 0),
+        #                    matchesMask=matches_Mask,
+        #                    flags=cv2.DrawMatchesFlags_DEFAULT)
+        # img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
+        # plt.imshow(img3, ), plt.show()
+        if len(matches) < 1:
+            return [-1, -1]
+        else:
+            average = [sum(x) / len(x) for x in zip(*list_of_cords)]
+
+            if len(average) < 1:
+                average = [-1, -1]
+            return average
+
+
+

@@ -3,7 +3,7 @@ import keyboard
 from threading import Thread
 from METHODS import im_search_until_found
 from METHODS import search_click_image
-from METHODS import imagesearch_fast_area
+from METHODS import im_search
 import time
 
 Buttons = "Buttons\\"
@@ -99,7 +99,7 @@ class ChaosDungeon:
         # print("ITS MY TURN!")
         # while True:
         #     my_turn = Buttons + "Daily Quest\\Misc\\PVP_myturn_HPBAR.png"
-        #     position = imagesearch_fast_area(my_turn, x1=700, y1=300, x2=1500, y2=780, precision=0.8)
+        #     position = im_search(my_turn, x1=700, y1=300, x2=1500, y2=780, precision=0.8)
         #     print("looking for OWN hp bar")
         #     if position != [-1, -1]:
         #         # im_search_until_found(pvp_hp_bar, click="right", precision=0.6)
@@ -107,7 +107,7 @@ class ChaosDungeon:
         #         break
         #     print("looking for enemy hp bar")
         #     pvp_hp_bar = "C:\\Users\\Ggjustice\\Pictures\\Buttons\\Daily Quest\\Misc\\PVP_enemy_hpbar.png"
-        #     position = imagesearch_fast_area(pvp_hp_bar, x1=700, y1=300, x2=1500, y2=780, precision=0.7)
+        #     position = im_search(pvp_hp_bar, x1=700, y1=300, x2=1500, y2=780, precision=0.7)
         #     time.sleep(1)
         #     if position != [-1, -1]:
         #         # im_search_until_found(pvp_hp_bar, click="right", precision=0.6)
@@ -363,7 +363,7 @@ class ChaosDungeon:
         while not self.all_event.is_set():
             for y in check_if_clear:
                 counting_state += 1
-                position = imagesearch_fast_area(y, precision=0.7)
+                position = im_search(y, precision=0.7)
                 if position != [-1, -1]:
                     # checking for % in top left corner
                     stage_percent = image2text(x1=107, y1=186, x2=55, y2=19,

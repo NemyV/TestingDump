@@ -1,10 +1,12 @@
 
 import pydirectinput
-from METHODS_OLD_BACKUP import imagesearch
-from METHODS_OLD_BACKUP import searchimageinarea
-from METHODS_OLD_BACKUP import imagesearch_fast_area
+from METHODS import im_processing
+from METHODS import im_search
+from METHODS import im_search_keypoint
+from METHODS import focus_window
 import time
 import glob
+from kivy.config import ConfigParser
 import datetime
 
 Buttons = "Buttons\\"
@@ -21,9 +23,14 @@ repaircheck = [x for x in glob.glob(repair + "**/*.png")]
 Lifeskillopen = [x for x in glob.glob(lifeskills + "**/*.png")]
 Emptyenergy = [x for x in glob.glob(energy + "**/*.png")]
 
-Resolution = [2560, 1080]
+configparser = ConfigParser()
+configparser.read("myapp.ini")
+string = configparser.get("Settings", "resolution")
 
-x1 = round(Resolution[0]*46.7/100)
+Resolution = [int(string.split("x")[0]),
+              int(string.split("x")[1])]
+
+x1 = round(Resolution[0]*45.7/100)
 y1 = round(Resolution[1]*38.9/100)
 
 x2 = round(Resolution[0]*52.73/100)
@@ -34,9 +41,9 @@ start = time.time()
 def Statecheck():
     for f in repaircheck:
         print(f)
-        pos = searchimageinarea(f, "fishingtest",
-                                x1=round(Resolution[0]*74.2/100), y1=round(Resolution[0]*0.46/100),
-                                x2=round(Resolution[0]*84.7/100), y2=round(Resolution[1]*14.9/100))
+        pos = im_processing(f,
+                            x1=round(Resolution[0]*74.2/100), y1=round(Resolution[0]*0.46/100),
+                            x2=round(Resolution[0]*84.7/100), y2=round(Resolution[1]*14.9/100))
         time.sleep(0.7)
         print(pos)
         if pos != [-1, -1]:
@@ -64,16 +71,17 @@ def Statecheck():
     for f in Lifeskillopen:
         print(f)
         time.sleep(2.5)
-        pos = searchimageinarea(f, "fishing-test",
-                                x1=x1-20, y1=900, x2=250, y2=50
-                                , precision=0.5)
-        print("Life skill bar pos: ", pos)
         while pos == [-1, -1]:
-            print("Opening skills bar")
+            focus_window('LOST ARK')
             time.sleep(2.5)
+            pos = im_search_keypoint(f,
+                                     x1=round(Resolution[0] * 44 / 100),
+                                     y1=round(Resolution[1] * 83.5 / 100), x2=250, y2=50, precision=0.3)
+            if pos != [-1, -1]:
+                break
+            print("Opening skills bar")
             pydirectinput.press('b')
-            pos = searchimageinarea(f, "fishing-test", x1=x1-20, y1=900, x2=250, y2=50
-                                    , precision=0.5)
+            print("Life skill bar pos: ", pos)
 
 
 def fishing():
@@ -84,7 +92,7 @@ def fishing():
 
         for f in Emptyenergy:
             print(f)
-            pos = searchimageinarea(f, "fishing-test", precision=0.9)
+            pos = im_search(f, precision=0.9)
             time.sleep(0.7)
             print(pos)
             if pos != [-1, -1]:
@@ -109,8 +117,7 @@ def fishing():
         # time.sleep(2.4)
         # Check if you can cast NET/Possibly same as normal one with priority of finding net
         net = Buttons + 'Fishing\\Minigame\\Net_throwing.png'
-        pos = imagesearch_fast_area(net, x1=x1-250, y1=y1+530, x2=300, y2=130,
-                                    precision=0.7)
+        pos = im_search(net, x1=x1-250, y1=y1+530, x2=300, y2=130, precision=0.7)
         print("Net throwing Postiong", pos)
         # pydirectinput.moveTo(int(pos[0]),int(pos[1]))
         if pos == [-1, -1]:
@@ -122,12 +129,12 @@ def fishing():
             perfect_mini = Buttons + 'Fishing\\Minigame\\Perfect2.png'
             start_time = time.time()
             for i in range(0, 60, 1):
-                pos = imagesearch_fast_area(perfect_mini, precision=0.55, x1=415, y1=110, x2=690, y2=690)
+                pos = im_search(perfect_mini, precision=0.55, x1=415, y1=110, x2=690, y2=690)
                 # pos = imagesearch(perfect_mini, 0.65)
                 print(pos)
                 if pos != [-1, -1]:
-                    print("Playing mini game!!! pressed 3")
-                    pydirectinput.press('SPACE', presses=3)
+                    print("Playing mini game!!! pressed 7")
+                    pydirectinput.press('SPACE', presses=9)
                     count_good = count_good+1
                 # end_time = time.time()
                 # result = end_time - start_time
@@ -140,12 +147,8 @@ def fishing():
         # search for exclamation mark
         for f in FINDFishingCATCH:
             # search for exclamation mark
-            #time.sleep(5)
-            print(f)
-            # pos = imagesearch_loop(f, 0.1)
-            #pos = imagesearch_region_loop(f, x1, y1, x2, y2, 0.5)
-            pos = searchimageinarea(f, str(count_good), x1=x1, y1=y1, x2=x2-x1, y2=y2-y1, precision=0.8)
-            time.sleep(0.5)
+            pos = im_search(f, x1=x1, y1=y1, x2=x2-x1, y2=y2-y1, precision=0.8)
+            time.sleep(0.1)
             print(pos)
             if pos != [-1, -1]:
                 count_good = count_good + 1
@@ -156,3 +159,5 @@ def fishing():
 
         print("finished fishing loop")
     print("Had this many net games finished:", count_good)
+
+# fishing()
