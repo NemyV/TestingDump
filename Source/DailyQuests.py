@@ -1,5 +1,6 @@
 import multiprocessing
 from threading import Thread
+import threading
 import keyboard
 import pydirectinput
 from METHODS import im_processing
@@ -10,22 +11,21 @@ from METHODS import casting_skills
 from METHODS import im_search_until_found
 from METHODS import im_search
 from Lifeskills import fishing
-
+from datetime import datetime, timedelta
 from kivy.config import ConfigParser
 import numpy as np
 import re
 import pyautogui
-
 from multiprocessing import Manager, Process, Pool
 from multiprocessing.managers import NamespaceProxy, BaseManager
 import inspect  # part of multiprocessing stuff
-
 import random
 import time
 import glob
 import os
 import sys
 import signal
+lock = threading.Lock()
 global loading_screen_time
 loading_screen_time = 30
 
@@ -52,10 +52,10 @@ Daily = Buttons + 'Daily Quest\\'
 esc_menu = Daily + "Misc\\Game_menu.png"
 
 repair = Buttons + 'FISHING\\BrokenTool'
-lifeskills = Buttons + 'FISHING\\OPENSkills'
-energy = Buttons + 'FISHING\\Noenergy'
 repaircheck = [x for x in glob.glob(repair + "**/*.png")]
+lifeskills = Buttons + 'FISHING\\OPENSkills'
 Lifeskillopen = [x for x in glob.glob(lifeskills + "**/*.png")]
+energy = Buttons + 'FISHING\\Noenergy'
 Emptyenergy = [x for x in glob.glob(energy + "**/*.png")]
 
 DailySwampLoc = Daily + 'Walling Swamp'
@@ -127,6 +127,35 @@ total_time = 0.0
 # Ghost ship , World boss , Chaos gate , ISLAND
 
 
+def calculate_weekly(current_character):
+    current_date = datetime.now()
+    set_date = datetime(2022, 8, 3, 12, 0, 0)  # Setting hour and day of the week for weekly to calculate
+    c = current_date - set_date
+    current_week = int(c.days/7)
+    # minutes = c.total_seconds() / 60
+    # hours = minutes / 60
+    # print("Number of days:", c.days)
+    # print("Number of weeks:", int(hours/168)) # 7 days = 168 h
+    try:
+        last_week = configparser.get(current_character, 'Last_week')
+    except:
+        configparser.add_section(current_character)
+        configparser.set(current_character, 'Last_week', current_week)
+        last_week = configparser.get(current_character, 'Last_week')
+
+    print(current_week, last_week)
+    if current_week > int(last_week):
+        # INSERT THINGS TO DO HERE
+        # Accept weeklies ...
+        accepting_quest("ALL", target="weekly")
+        time.sleep(3)
+        accepting_quest("ALL", target="guild_request")
+
+        print("Accepting weeklies")
+        configparser.set(current_character, 'Last_week', current_week)
+    configparser.write()
+
+
 def daily_state_check():
     # starting time MESURING
     stopwatch_start = time.time()
@@ -188,11 +217,11 @@ def daily_state_check():
         pydirectinput.press('ESC')
         time.sleep(1)
         for i in range(1, 10, 1):
-            ready = im_search(esc_menu, 1, precision=0.84)
+            ready = im_search(esc_menu, 1, precision=0.75)
             if ready != [-1, -1]:
                 break
             else:
-                time.sleep(1)
+                time.sleep(1.2)
                 i += 1
                 pydirectinput.press('ESC')
         # IMPORTANT for using 2 methods/colors to find match with tesseract
@@ -215,6 +244,8 @@ def daily_state_check():
         generator_expression = (x for x in np.unique(list_of_workers) if x in text)
         for x in generator_expression:
             print("Found ", x, "")
+            calculate_weekly(x)
+            time.sleep(1)
             global pet_status
             pet_status = "no"
             if x not in finished_char:
@@ -223,7 +254,8 @@ def daily_state_check():
                     # print(f)
                     global combat
                     # Tossing at Sentinel
-                    what_class = im_search(f, 1, precision=0.85)
+                    what_class = im_search(f, precision=0.8)
+                    print(what_class)
                     if what_class != [-1, -1]:
                         split_string = f.rsplit('\\')[2]
                         print(split_string)
@@ -464,17 +496,17 @@ def swamp_daily():
         # teleporting
         print("completed quest")
         pydirectinput.press('m')
-        time.sleep(0.7)
+        time.sleep(1.5)
         pydirectinput.click(round(Resolution[0] / 2),
                             round(Resolution[1] / 2), button="right")
         time.sleep(0.7)
         turn_in = Daily + "Walling Swamp\\Navigation\\Kalaja.png"
-        turning = im_search(turn_in, 1, precision=0.86)
+        turning = im_search_until_found(turn_in, precision=0.83)
         pydirectinput.click(turning[0],
                             turning[1])
         time.sleep(0.7)
         turn_in = Daily + "Walling Swamp\\Navigation\\Teleport.png"
-        turning = im_search(turn_in, 1, precision=0.90)
+        turning = im_search_until_found(turn_in, precision=0.90)
         pydirectinput.click(turning[0] + 10,
                             turning[1] + 10)
         time.sleep(0.7)
@@ -489,6 +521,9 @@ def swamp_daily():
     time.sleep(1.6)
     pydirectinput.click(455,
                         727, button="right")
+    time.sleep(1)
+    pydirectinput.click(300,
+                        500, button="right")
     # FAIL SAFE
     success_log = open("success_log.txt", "a+")
     success_log.write("\r\n Good ones: \r\n")
@@ -721,7 +756,7 @@ def nameless_daily():
         fight_mobs(combat)
         time.sleep(1)
         pydirectinput.press('g')
-        time.sleep(3)
+        time.sleep(3.7)
         step = im_search(step_2, 1, precision=0.90)
     teleported = "no"
     while teleported != "yes":
@@ -730,17 +765,17 @@ def nameless_daily():
         # teleporting
         print("completed quest")
         pydirectinput.press('m')
-        time.sleep(0.7)
+        time.sleep(1.5)
         pydirectinput.click(round(Resolution[0] / 2),
                             round(Resolution[1] / 2), button="right")
         time.sleep(0.7)
         turn_in = Daily + "Walling Swamp\\Navigation\\Kalaja.png"
-        turning = im_search(turn_in, 1, precision=0.86)
+        turning = im_search_until_found(turn_in, precision=0.82)
         pydirectinput.click(turning[0],
                             turning[1])
         time.sleep(0.7)
         turn_in = Daily + "Walling Swamp\\Navigation\\Teleport.png"
-        turning = im_search(turn_in, 1, precision=0.90)
+        turning = im_search_until_found(turn_in, precision=0.90)
         pydirectinput.click(turning[0] + 10,
                             turning[1] + 10)
         time.sleep(0.7)
@@ -755,6 +790,9 @@ def nameless_daily():
     time.sleep(1.6)
     pydirectinput.click(455,
                         727, button="right")
+    time.sleep(2)
+    pydirectinput.click(300,
+                        500, button="right")
     # FAIL SAFE
     success_log = open("success_log.txt", "a+")
     success_log.write("\r\n Good ones: \r\n")
@@ -1121,13 +1159,14 @@ def hope_daily():
 
 
 def accepting_quest(name, target="daily"):
-    # focus_window('LOST ARK')
+    focus_window('LOST ARK')
     time.sleep(1)
     pydirectinput.keyDown('alt')
     time.sleep(0.2)
     pydirectinput.press('j')
     time.sleep(0.2)
     pydirectinput.keyUp('alt')
+    time.sleep(1.5)
     if target == "daily":
         daily_button = Daily + "Misc\\Daily_button.png"
         search_click_image(daily_button, "left")
@@ -1143,67 +1182,78 @@ def accepting_quest(name, target="daily"):
 
         if name == "Wailling Swamp":
             swamp = Daily + "Walling Swamp\\Accepting\\Accepting_swamp.png"
-            ready = im_search(swamp, 1, precision=0.82)
+            ready = im_search(swamp, precision=0.82)
             if ready != [-1, -1]:
                 pydirectinput.click(ready[0] + 855,
                                     ready[1] + 18)
         elif name == "Nameless Valley":
             nameless = Daily + "Nameless Valley\\Accepting\\Accepting_nameless.png"
-            ready = im_search(nameless, 1, precision=0.82)
+            ready = im_search(nameless, precision=0.82)
             if ready != [-1, -1]:
                 pydirectinput.click(ready[0] + 855,
                                     ready[1] + 18)
         elif name == "Hope Island":
             hope = Daily + "Hope Island\\Accepting\\Accepting_Hope.png"
-            ready = im_search(hope, 1, precision=0.82)
+            ready = im_search(hope, precision=0.82)
             if ready != [-1, -1]:
                 pydirectinput.click(ready[0] + 855,
                                     ready[1] + 18)
-    elif target == "weekly":
+    if target == "weekly":
         daily_button = Daily + "Misc\\Weekly_button.png"
-        search_click_image(daily_button, "left")
+        im_search(daily_button, action="left", click="yes")
+        time.sleep(0.1)
+        daily_button = Daily + "Misc\\Weekly_button2.png"
+        im_search(daily_button, action="left", click="yes")
         time.sleep(1)
         menu = Daily + "Misc\\menu.png"
-        search_click_image(menu, "left")
+        im_search(menu, action="left", click="yes")
 
         favorites = Daily + "Misc\\Favorites.png"
-        search_click_image(favorites, "left")
-
+        im_search(favorites, action="left", click="yes")
         if name == "ALL":
             accept_all = Daily + "Misc\\Accept_quest.png"
-            search_click_image(accept_all, "left", click_all="yes")
+            im_search(accept_all, action="left", click="all")
 
-    elif target == "guild_request":
+    if target == "guild_request":
         guild_request_button = Daily + "Misc\\Guild_request_button.png"
-        search_click_image(guild_request_button, "left")
+        im_search(guild_request_button, action="left", click="yes")
+        time.sleep(0.1)
+        guild_request_button = Daily + "Misc\\Guild_request_button2.png"
+        im_search(guild_request_button, action="left", click="yes")
         # could be difficult to do
-        for x in range(0, 2, 1):
-            for w in weekly_tasks:
-                guild_req_right = Daily + "Misc\\Guild_request_far_right.png"
-                search_click_image(guild_req_right, "left", precision=0.8)
-                position = im_search(w, 1, precision=0.90)
-                if position != [-1, -1]:
-                    print("THIS IS POSITION ", position)
-                    pydirectinput.leftClick(position[0] + 550,
-                                            position[1] + 10)
-                    time.sleep(1)
-                    break
         for w in weekly_tasks:
-            guild_req_left = Daily + "Misc\\Guild_request_far_left.png"
-            search_click_image(guild_req_left, "left")
-            position = im_search(w, 1, precision=0.90)
+            guild_req_right = Daily + "Misc\\Guild_request_far_right.png"
+            im_search(guild_req_right, action="left", click="yes", precision=0.8)
+            position = im_search(w, precision=0.90)
             if position != [-1, -1]:
                 pydirectinput.leftClick(position[0] + 550,
                                         position[1] + 10)
-                time.sleep(1)
+                time.sleep(2)
                 break
-
+        for x in range(0, 2, 1):
+            for w in weekly_tasks:
+                guild_req_left = Daily + "Misc\\Guild_request_far_left.png"
+                im_search(guild_req_left, action="left", click="yes")
+                position = im_search(w, precision=0.90)
+                if position != [-1, -1]:
+                    pydirectinput.leftClick(position[0] + 550,
+                                            position[1] + 10)
+                    time.sleep(2)
+                    break
     time.sleep(1)
     pydirectinput.keyDown('alt')
     time.sleep(0.2)
     pydirectinput.press('j')
     time.sleep(0.2)
     pydirectinput.keyUp('alt')
+    # STOP TRACKING THE QEUSTS
+    if target == "guild_request" or target == "weekly":
+        time.sleep(1)
+        pydirectinput.press('j')
+        stop_tracking = Daily + "Misc\\Weekly_Stop_tracking.png"
+        im_search(stop_tracking, action="left", click="all", precision=0.8)
+        time.sleep(0.5)
+        pydirectinput.press('j')
 
 
 def bifrost_teleportation(name):
@@ -1714,7 +1764,6 @@ class ChaosDungeon:
     def drinking_potions(self):
         search = image2text(x1=947, y1=954, x2=225, y2=20,
                             method='--psm 7 --oem 3 -c tessedit_char_whitelist=/0123456789')
-        print(search)
         first, second = 1, 1
         try:
             first, second = search.rsplit('/', 1)
@@ -1728,9 +1777,10 @@ class ChaosDungeon:
             second = str(second).replace(' /', '')
             try:
                 result = int(first) / int(second)
-                print(round(result, 2))
+                # print(round(result, 2))
             except:
-                print("Error with HP potion number")
+                123
+                # print("Error with HP potion number")
             if 0.70 >= result > 0:
                 global potions_used
                 potions_used += 1
@@ -2373,7 +2423,7 @@ if __name__ == '__main__':
     # daily_state_check()
     # ChaosDungeon().minimap_detection()
     # ChaosDungeon().centeral_detection()
-
+    # ChaosDungeon().start_combat()
     # waiting_for_loading_screen()
     # accepting_quest(name="ALL", target="guild_request")
     # accepting_quest(name="ALL", target="weekly")

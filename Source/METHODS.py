@@ -10,6 +10,8 @@ from datetime import datetime
 from numpy import asarray
 from os import path
 import threading
+# Declraing a lock
+lock = threading.Lock()
 import os
 import sys
 import glob
@@ -50,9 +52,10 @@ Enemies = 0
 Bosses = 0
 Portals = 0
 Towers = 0
-global w, h
-w = Resolution[0]
-h = Resolution[1]
+# MAYBE THESE GLOBAL VARIABLES MESSING WITH EVERYTHING
+# global w, h
+# w = Resolution[0]
+# h = Resolution[1]
 hwnd = None
 window_name = "LOST ARK (64-bit, DX9) v.2.7.0.1"
 hwnd = win32gui.FindWindow(None, window_name)
@@ -138,7 +141,7 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
     Taking screenshots in specific folder
         """
     im = ImageGrab.grab(bbox=(x1, y1, x1+x2, y1+y2))
-    file_path = r'Temp_files/Screenshot[' + filename + '].jpg'
+    file_path = 'Temp_files/Screenshot[T:' + str(threading.get_ident()) + '|' + filename + '].jpg'
     im.save(file_path)
     # with mss.mss() as sct:
     #     # The screen part to capture
@@ -162,11 +165,14 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
     # NEW SOLUTION DELETE IF IT DOESNT WORK  = , cv2.IMREAD_UNCHANGED)
 
     img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
-    img_rgb = img_rgb[..., :3]  # POSSIBLY FIX ERRORS
     if img_rgb is None:
-        # print(test)
         print("ERROR READING IMAGE FROM SCREENSHOT")
         print("FILE PATCH is:" + file_path)
+        print("TRYING TO SALVAGE")
+        file_path = r'Temp_files/ScreenshotFIX[' + filename + '].jpg'
+        im.save(file_path)
+        img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
+    img_rgb = img_rgb[..., :3]  # POSSIBLY FIX ERRORS
     return img_rgb
     # # get the window image data
     # global w, h
@@ -225,7 +231,15 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
     # y1 = h
     img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
     template = cv2.imread(image, 0)
+    xtres, img_rgb_w, img_rgb_h = img_rgb.shape[::-1]
     w, h = template.shape[::-1]
+    if img_rgb_w < w or img_rgb_h < h:
+        print(template.shape)
+        print("TEMPLATE SAVED")
+        # file_path = r'Temp_files/Screenshot[' + "im_search" + '].jpg'
+        cv2.imwrite("FCKING IMAGE.jpg", img_rgb)
+        print("TEMPLATE IS", image)
+        print(img_rgb.shape)
 
     res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
@@ -251,32 +265,33 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
         return count
     if max_val < precision:
         return [-1, -1]
-    if return_value == "top_left":
-        if click == "yes":
-            img = cv2.imread(image)
-            height, width, channels = img.shape
-            pyautogui.moveTo(max_loc[0] + r(width / 2, offset) + x1,
-                             max_loc[1] + r(height / 2, offset) + y1,
-                             duration=0.4)
-            pyautogui.click(button=action)
-            time.sleep(delay)
-        return max_loc
-    if return_value == "center":
-        top_left = max_loc  # can change to min_loc or max_loc
-        bottom_right = (top_left[0] + w, top_left[1] + h)
-        avg_x = round((bottom_right[0] + top_left[0]) / 2)
-        avg_y = round((bottom_right[1] + top_left[1]) / 2)
-        average = [avg_x, avg_y]
+    else:
+        if return_value == "top_left":
+            if click == "yes":
+                img = cv2.imread(image)
+                height, width, channels = img.shape
+                pyautogui.moveTo(max_loc[0] + r(width / 2, offset) + x1,
+                                 max_loc[1] + r(height / 2, offset) + y1,
+                                 duration=0.4)
+                pyautogui.click(button=action)
+                time.sleep(delay)
+            return max_loc
+        if return_value == "center":
+            top_left = max_loc  # can change to min_loc or max_loc
+            bottom_right = (top_left[0] + w, top_left[1] + h)
+            avg_x = round((bottom_right[0] + top_left[0]) / 2)
+            avg_y = round((bottom_right[1] + top_left[1]) / 2)
+            average = [avg_x, avg_y]
 
-        if click == "yes":
-            img = cv2.imread(image)
-            height, width, channels = img.shape
-            pyautogui.moveTo(average[0] + r(width / 2, offset) + x1,
-                             average[1] + r(height / 2, offset) + y1,
-                             duration=0.4)
-            pyautogui.click(button=action)
-            time.sleep(delay)
-        return average
+            if click == "yes":
+                img = cv2.imread(image)
+                height, width, channels = img.shape
+                pyautogui.moveTo(average[0] + r(width / 2, offset) + x1,
+                                 average[1] + r(height / 2, offset) + y1,
+                                 duration=0.4)
+                pyautogui.click(button=action)
+                time.sleep(delay)
+            return average
 
 
 def search_click_image(image, action, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], timestamp=0.1,
@@ -421,7 +436,7 @@ def im_search_until_found(image, time_sample=0.5, click="left", return_value="",
     pos = im_search(image, precision=precision)
     count = 0
     while pos == [-1, -1]:
-        # print(image + " not found, waiting ")
+        print(image + " not found, waiting ")
         time.sleep(time_sample)
         pos = im_search(image, precision=precision)
         count = count + 1
@@ -491,6 +506,7 @@ def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 
 
 
 def casting_skills(skill_dictionary, my_class):
+    lock.acquire()
     template_1 = Buttons + "skill_S.png"
     x1_base = 960
     x1 = x1_base
@@ -498,7 +514,7 @@ def casting_skills(skill_dictionary, my_class):
     x2 = 40
     y2 = 42
     count = 0
-    print(skill_dictionary)
+    # print(skill_dictionary)
     dictionary_values = list(skill_dictionary.values())
     dictionary_keys = list(skill_dictionary.keys())
     precision = 0.8
@@ -520,7 +536,6 @@ def casting_skills(skill_dictionary, my_class):
     elif my_class == "Artillerist":
         picture = Buttons + "Class\\Identity\\Artillerist_identity.png"
         position = im_search(picture, x1=1100, y1=800, x2=300, y2=200, precision=0.9)
-        print(position)
         if position != [-1, -1]:
             print("CASTING IDENTITY")
             pydirectinput.press("z")
@@ -545,10 +560,8 @@ def casting_skills(skill_dictionary, my_class):
         middle_x = round(Resolution[0] / 2)
         middle_y = round(Resolution[1] / 10 * 8.5)
         for x in stances:
-            print(x)
-            what_stance = im_search(x, x1=middle_x - 25, y1=middle_y, x2=50, y2=75, precision=0.9)
+            what_stance = im_search(x, x1=middle_x - 27, y1=middle_y, x2=57, y2=75, precision=0.8)
             if what_stance != [-1, -1]:
-                print(x)
                 split_string = x.rsplit('\\')[4]
                 print("My stance is: " + split_string)
                 if "Pistol" in split_string:
@@ -589,8 +602,14 @@ def casting_skills(skill_dictionary, my_class):
                     pydirectinput.press("a")
                     time.sleep(0.5)
                     pydirectinput.press("s")
-                    time.sleep(0.4)
-                    pydirectinput.click()
+                    time.sleep(0.2)
+                    pydirectinput.leftClick()
+                    time.sleep(0.1)
+                    pydirectinput.leftClick()
+                    time.sleep(0.1)
+                    pydirectinput.press("s")
+                    time.sleep(0.1)
+                    pydirectinput.leftClick()
                     time.sleep(2)
                     pydirectinput.press("d")
                     time.sleep(2.5)
@@ -664,7 +683,8 @@ def casting_skills(skill_dictionary, my_class):
             time.sleep(0.5)
             pydirectinput.mouseUp(button='right')
             count += 1
-    print("FINISHED")
+    lock.release()
+    time.sleep(1)
 
 
 # use it for bigger pictures with more details

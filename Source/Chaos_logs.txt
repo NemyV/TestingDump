@@ -1228,4 +1228,70 @@
  Deaths :5
  Clears :0
  Potions :252
- Failed stages :2
+ Failed stages :2
+ WORKER name :Alexagg
+ Deaths :12
+ Clears :0
+ Potions :32
+ Failed stages :1
+ WORKER name :Alexagg
+ Deaths :22
+ Clears :0
+ Potions :35
+ Failed stages :2
+ Time to enter PORTAL in seconds:8.331815958023071
+ Time to enter PORTAL in seconds:3.6604440212249756
+ Time to enter PORTAL in seconds:3.7618868350982666
+ WORKER name :Alexagg
+ Deaths :9
+ Clears :0
+ Potions :19
+ Failed stages :1
+ Time to enter PORTAL in seconds:5.522119522094727
+ WORKER name :Mesmashy
+ Deaths :1
+ Clears :0
+ Potions :85
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.000997304916381836
+ Time to enter PORTAL in seconds:0.000997304916381836
+ WORKER name :Mesmashy
+ Deaths :1
+ Clears :1
+ Potions :189
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0009975433349609375
+ WORKER name :Ggwarlord
+ Deaths :5
+ Clears :0
+ Potions :302
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.001001596450805664
+ WORKER name :Ggwarlord
+ Deaths :13
+ Clears :0
+ Potions :368
+ Failed stages :2
+ Time to enter PORTAL in seconds:0.0009975433349609375
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Ggsor
+ Deaths :3
+ Clears :0
+ Potions :508
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.000997781753540039
+ Time to enter PORTAL in seconds:0.000997304916381836
+ WORKER name :Ggsor
+ Deaths :5
+ Clears :0
+ Potions :589
+ Failed stages :2
+ Time to enter PORTAL in seconds:0.0019986629486083984
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Stringsy
+ Deaths :3
+ Clears :1
+ Potions :67
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.002992391586303711
+ Time to enter PORTAL in seconds:0.0

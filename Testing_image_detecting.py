@@ -118,30 +118,6 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
     return img_rgb
 
 
-def im_search_count(image, precision=0.9):
-    # Take screenshot
-    img_rgb = im_screenshot("imagesearch_count.png")
-    # img_rgb = pyautogui.screenshot()
-    img_rgb = np.array(img_rgb)
-    img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
-    template = cv2.imread(image, 0)
-    w, h = template.shape[::-1]
-    res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-    loc = np.where(res >= precision)
-    count = 0
-    for pt in zip(*loc[::-1]):  # Swap columns and rows
-        cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
-                      2)  # // Uncomment to draw boxes around found occurances
-        count = count + 1
-        cv2.imwrite('RESULT' + image + '.png',
-                    img_rgb)  # // Uncomment to write output image with boxes drawn around occurances
-
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-
-    if max_val < precision:
-        return [-1, -1] , count
-    return max_loc, count
-
 
 class ObjProxy(NamespaceProxy):
     """Returns a proxy instance for any user defined data-type. The proxy instance will have the namespace and
@@ -349,7 +325,7 @@ def im_search_until_found(image, time_sample=0.5, click="left", return_value="",
     pos = im_search(image, precision=precision)
     count = 0
     while pos == [-1, -1]:
-        # print(image + " not found, waiting ")
+        print(image + " not found, waiting ")
         time.sleep(time_sample)
         pos = im_search(image, precision=precision)
         count = count + 1
@@ -624,12 +600,12 @@ if __name__ == '__main__':
     # # search_click_image(ok, action="left", precision=0.7)
     # pydirectinput.press("ENTER")
     # pydirectinput.press("i")
-    lopang = Daily + "Lopang\\Bifrost\\BIFROST_lopang.png"
-    ready = im_search(lopang, 1, precision=0.91)  # 95 HAD SOME ERRORS teleporting to wrong
-    if ready != [-1, -1]:
-        # Clicking position to the right of it where Move button is
-        pydirectinput.click(ready[0] + 400,
-                            ready[1])
+    # lopang = Daily + "Lopang\\Bifrost\\BIFROST_lopang.png"
+    # ready = im_search(lopang, 1, precision=0.91)  # 95 HAD SOME ERRORS teleporting to wrong
+    # if ready != [-1, -1]:
+    #     # Clicking position to the right of it where Move button is
+    #     pydirectinput.click(ready[0] + 400,
+    #                         ready[1])
     # count = 0
     # esc_menu = Daily + "Misc\\Game_menu.png"
     # char_loop = 9
@@ -690,23 +666,15 @@ if __name__ == '__main__':
     # target = "weekly"
     # name = "ALL"
     # # focus_window('LOST ARK')
+    # # focus_window('LOST ARK')
     # time.sleep(1)
     # pydirectinput.keyDown('alt')
     # time.sleep(0.2)
     # pydirectinput.press('j')
     # time.sleep(0.2)
     # pydirectinput.keyUp('alt')
-    # if target == "weekly":
-    #     daily_button = Daily + "Misc\\Guild_request_button.png"
-    #     search_click_image(daily_button, "left", precision=0.8)
-    #     print("PRESSING GUILD REQUEST")
-    #     time.sleep(1)
-    #     for x in weekly_tasks:
-    #         weekly_task_pos = Searchimage_return_position(x, 1, precision=0.92)
-    #         pydirectinput.leftClick(weekly_task_pos[0]+500,
-    #                                 weekly_task_pos[1])
-    #     print("pressing weekly button")
-    #     daily_button = Daily + "Misc\\Weekly_button.png"
+    # if target == "daily":
+    #     daily_button = Daily + "Misc\\Daily_button.png"
     #     search_click_image(daily_button, "left")
     #     time.sleep(1)
     #     menu = Daily + "Misc\\menu.png"
@@ -714,10 +682,82 @@ if __name__ == '__main__':
     #
     #     favorites = Daily + "Misc\\Favorites.png"
     #     search_click_image(favorites, "left")
+    #     if name == "ALL":
+    #         accept_all = Daily + "Misc\\Accept_quest.png"
+    #         im_search(accept_all, action="left", click="all")
+    #
+    #     if name == "Wailling Swamp":
+    #         swamp = Daily + "Walling Swamp\\Accepting\\Accepting_swamp.png"
+    #         ready = im_search(swamp, precision=0.82)
+    #         if ready != [-1, -1]:
+    #             pydirectinput.click(ready[0] + 855,
+    #                                 ready[1] + 18)
+    #     elif name == "Nameless Valley":
+    #         nameless = Daily + "Nameless Valley\\Accepting\\Accepting_nameless.png"
+    #         ready = im_search(nameless, precision=0.82)
+    #         if ready != [-1, -1]:
+    #             pydirectinput.click(ready[0] + 855,
+    #                                 ready[1] + 18)
+    #     elif name == "Hope Island":
+    #         hope = Daily + "Hope Island\\Accepting\\Accepting_Hope.png"
+    #         ready = im_search(hope, precision=0.82)
+    #         if ready != [-1, -1]:
+    #             pydirectinput.click(ready[0] + 855,
+    #                                 ready[1] + 18)
+    # elif target == "weekly":
+    #     daily_button = Daily + "Misc\\Weekly_button.png"
+    #     im_search(daily_button, action="left", click="yes")
+    #     time.sleep(1)
+    #     menu = Daily + "Misc\\menu.png"
+    #     im_search(menu, action="left", click="yes")
+    #
+    #     favorites = Daily + "Misc\\Favorites.png"
+    #     im_search(favorites, action="left", click="yes")
     #
     #     if name == "ALL":
     #         accept_all = Daily + "Misc\\Accept_quest.png"
-    #         search_click_image(accept_all, "left", click_all="yes")
+    #         im_search(accept_all, action="left", click="all")
+    #
+    # elif target == "guild_request":
+    #     guild_request_button = Daily + "Misc\\Guild_request_button.png"
+    #     im_search(guild_request_button, action="left", click="yes")
+    #     # could be difficult to do
+    #     for w in weekly_tasks:
+    #         guild_req_right = Daily + "Misc\\Guild_request_far_right.png"
+    #         im_search(guild_req_right, action="left", click="yes", precision=0.8)
+    #         position = im_search(w, precision=0.90)
+    #         if position != [-1, -1]:
+    #             pydirectinput.leftClick(position[0] + 550,
+    #                                     position[1] + 10)
+    #             time.sleep(2)
+    #             break
+    #     for x in range(0, 2, 1):
+    #         for w in weekly_tasks:
+    #             guild_req_left = Daily + "Misc\\Guild_request_far_left.png"
+    #             im_search(guild_req_left, action="left", click="yes")
+    #             position = im_search(w, precision=0.90)
+    #             if position != [-1, -1]:
+    #                 pydirectinput.leftClick(position[0] + 550,
+    #                                         position[1] + 10)
+    #                 time.sleep(2)
+    #                 break
+    #     # STOP TRACKING THE QEUSTS
+    # time.sleep(1)
+    # pydirectinput.keyDown('alt')
+    # time.sleep(0.2)
+    # pydirectinput.press('j')
+    # time.sleep(0.2)
+    # pydirectinput.keyUp('alt')
+    # # STOP TRACKING THE QEUSTS
+    # time.sleep(1)
+    # pydirectinput.press('j')
+    # stop_tracking = Daily + "Misc\\Weekly_Stop_tracking.png"
+    # im_search(stop_tracking, action="left", click="all", precision=0.8)
+    # time.sleep(0.5)
+    # pydirectinput.press('j')
+    # focus_window('LOST ARK')
+    # teleporting
+    123
 
     # if search != [-1, -1]:
     #     x1, y1 = process_search(search)
