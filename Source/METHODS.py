@@ -267,9 +267,6 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
     if max_val < precision:
         return [-1, -1]
     else:
-        imgx = cv2.imread(image)
-        plt.imshow(imgx)
-        plt.show()
         if return_value == "top_left":
             if click == "yes":
                 img = cv2.imread(image)
@@ -791,12 +788,12 @@ def im_search_keypoint(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1],
                 matches_Mask[i] = [1, 0]
         print("Number of good matches:", len(list_of_cords))
         # Debugging
-        draw_params = dict(matchColor=(0, 255, 0),
-                           singlePointColor=(255, 0, 0),
-                           matchesMask=matches_Mask,
-                           flags=cv2.DrawMatchesFlags_DEFAULT)
-        img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
-        plt.imshow(img3, ), plt.show()
+        # draw_params = dict(matchColor=(0, 255, 0),
+        #                    singlePointColor=(255, 0, 0),
+        #                    matchesMask=matches_Mask,
+        #                    flags=cv2.DrawMatchesFlags_DEFAULT)
+        # img3 = cv2.drawMatchesKnn(img1, kp1, img2, kp2, matches, None, **draw_params)
+        # plt.imshow(img3, ), plt.show()
         if len(matches) < 1:
             return [-1, -1]
         else:

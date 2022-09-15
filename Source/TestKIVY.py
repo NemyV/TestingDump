@@ -58,6 +58,10 @@ Enemies = 'enemies imported'
 GlobalLabel = '123'
 GlobalLabel2 = 'GlobalLabel2'
 
+global start_time
+start_time = 0
+
+
 PirateCoins = 20200
 CoinOfCourage = 42760
 Bloodstones = 11000
@@ -164,6 +168,8 @@ def startfishing(instance):
 def start_work(instance):
     callbackTo7()
     focus_window('LOST ARK')
+    global start_time
+    start_time = time.time()
     startla = Thread(target=daily_state_check)
     startla.daemon = True
     startla.start()
@@ -406,7 +412,7 @@ class Minimalistic(Screen):
         # self.layoutImage.add_widget(self.layoutImage.Enemy)
 
         # Misc/AUTOMATED THINGS TO START
-        Clock.schedule_interval(self.update, 2)
+        Clock.schedule_interval(self.update, 0.1)
         self.on_start()
 
     def on_start(self, *args):
@@ -431,13 +437,6 @@ class Minimalistic(Screen):
             print("pressed CTRL + Q")
 
     def update(self, *args):
-        from METHODS_OLD_BACKUP import Elites
-        from METHODS_OLD_BACKUP import Bosses
-        from METHODS_OLD_BACKUP import Towers
-        from METHODS_OLD_BACKUP import Enemies
-        from METHODS_OLD_BACKUP import Portals
-        from DailyQuests import execution_time
-        from DailyQuests import current_work
         global Enemies
         global Portals
         global Elites
@@ -448,16 +447,31 @@ class Minimalistic(Screen):
         # TURN DEBUGING ON IF YOU WANT TO CHECK STUFF ON SCREEN
         # debugging()
         # self.layoutImage.Enemy.reload()
-        self.run_time.text = str(execution_time)
-        self.current_working.text = str(current_work)
         # self.layoutCheckbox.lbl_statBoss.text = "Bosses :" + str(Bosses)
         # self.layoutCheckbox.lbl_statEnemy.text = "Enemies :" + str(Enemies)
         # self.layoutCheckbox.lbl_statPort.text = "Portals :" + str(Portals)
         # self.layoutCheckbox.lbl_statElite.text = "Elites :" + str(Elites)
-
         # self.lbl_stat.text = str(GlobalLabel2)
         # print("this is global labe", GlobalLabel, "test")
 
+        global start_time
+        from DailyQuests import current_work
+        from DailyQuests import stop_count
+        if stop_count != "yes":
+            end_time = time.time()
+            time_lapsed = end_time - start_time
+            self.run_time.text = str(self.time_convert(time_lapsed))
+
+        self.current_working.text = str(current_work)
+
+    def time_convert(self, sec):
+        mins = sec // 60
+        sec = sec % 60
+        hours = mins // 60
+        mins = mins % 60
+        # print("Time Lapsed = {0}:{1}:{2}".format(int(hours), int(mins), sec))
+        return_value = "Time Lapsed = {0}:{1}:{2}".format(int(hours), int(mins), round(sec, 1))
+        return return_value
 
 class Debugging(Screen):
     # @mainthread

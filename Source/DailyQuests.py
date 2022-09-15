@@ -118,6 +118,8 @@ global execution_time
 execution_time = "Run time..."
 global total_time
 total_time = 0.0
+global stop_count
+stop_count = "no"
 # x1 = round(Resolution[0]*46.9/100)
 # y1 = round(Resolution[1]*38.9/100)
 #
@@ -391,12 +393,14 @@ def daily_state_check():
         # FINiSHED ALL IF statement
 
     print("Finished Daily maybe waiting for chaos...")
-    stopwatch_end = time.time()
-    global execution_time
-    execution_time = stopwatch_end - stopwatch_start
-    global total_time
-    total_time += execution_time
-    print(f"Runtime of the program is {execution_time} and TOTAL is {total_time}")
+    global stop_count
+    stop_count = "yes"
+    # stopwatch_end = time.time()
+    # global execution_time
+    # execution_time = stopwatch_end - stopwatch_start
+    # global total_time
+    # total_time += execution_time
+    # print(f"Runtime of the program is {execution_time} and TOTAL is {total_time}")
 
 
 def integrated_presets(chosen_preset=1):
