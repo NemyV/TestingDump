@@ -245,10 +245,11 @@ def daily_state_check():
         pydirectinput.press('ESC')
         generator_expression = (x for x in np.unique(list_of_workers) if x in text)
         for x in generator_expression:
+            global current_work
+            global pet_status
             print("Found ", x, "")
             calculate_weekly(x)
             time.sleep(1)
-            global pet_status
             pet_status = "no"
             if x not in finished_char:
                 # WHAT CLASS AM I? checking image and then XXX
@@ -320,35 +321,39 @@ def daily_state_check():
                         print("WORK FOR ", x, " : ", work_array)
                         gen_expression = (x for x in work_array if "all_stronghold" in x)
                         for g in gen_expression:
+                            current_work = "Stronghold"
                             stronghold_daily()
                         gen_expression = (x for x in work_array if "pet_status" in x)
                         for g in gen_expression:
                             pet_status = "yes"
                         gen_expression = (x for x in work_array if "preset" in x)
                         for g in gen_expression:
+                            current_work = "Changing preset"
                             found = re.findall(r'\d+', g)
-                            print("PRESET is", found)
                             integrated_presets(int(found[0]))
                         gen_expression = (x for x in work_array if "guild_silver" in x)
-                        # if "guild_silver" in name:
                         for g in gen_expression:
+                            current_work = "Guild"
                             guild_daily()
                         gen_expression = (x for x in work_array if "all_silver" in x)
-                        # if "all_silver" in name:
                         for g in gen_expression:
+                            current_work = "Silver Dailies"
                             accepting_quest("ALL")
                             lopang_daily()
                         gen_expression = (x for x in work_array if "all_leapstone" in x)
                         for g in gen_expression:
+                            current_work = "Leapstone Dalies"
                             accepting_quest("ALL")
                             hope_daily()
                             swamp_daily()
                             nameless_daily()
                         gen_expression = (x for x in work_array if "fishing" in x)
                         for g in gen_expression:
+                            current_work = "Fishing"
                             fishing()
                         gen_expression = (x for x in work_array if "2_daily_chaos" in x)
                         for g in gen_expression:
+                            current_work = "Chaos Dungeon"
                             ChaosDungeon().start(x, combat, work="2_daily_chaos")
                             switch = 1
                             break
@@ -527,7 +532,7 @@ def swamp_daily():
                         727, button="right")
     time.sleep(1)
     pydirectinput.click(300,
-                        500, button="right")
+                        700, button="right")
     # FAIL SAFE
     success_log = open("success_log.txt", "a+")
     success_log.write("\r\n Good ones: \r\n")
@@ -739,7 +744,7 @@ def nameless_daily():
         fight_mobs(combat)
         time.sleep(1)
         pydirectinput.press('g')
-        time.sleep(3)
+        time.sleep(3.5)
         step = im_search(step_1, 1, precision=0.90)
     pydirectinput.click(1733,
                         913, button="right")
@@ -796,7 +801,7 @@ def nameless_daily():
                         727, button="right")
     time.sleep(2)
     pydirectinput.click(300,
-                        500, button="right")
+                        700, button="right")
     # FAIL SAFE
     success_log = open("success_log.txt", "a+")
     success_log.write("\r\n Good ones: \r\n")
