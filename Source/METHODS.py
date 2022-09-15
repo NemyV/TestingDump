@@ -237,47 +237,47 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
     res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
-    if return_value == "count" or click == "all":
-        count = 0
+    count = 0
+    loc = np.where(res >= precision)
+    print(len(loc[0]), loc)
+    if len(loc[0]) < 1:
+        print("LOC was less than 3")
+        image = resize_image(image)
+        template = cv2.imread(image, 0)
+        w, h = template.shape[::-1]
+        res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
         loc = np.where(res >= precision)
-        print(len(loc[0]),loc)
-        if len(loc[0]) < 1:
-            print("LOC was less than 3")
-            image = resize_image(image)
-            template = cv2.imread(image, 0)
-            w, h = template.shape[::-1]
-            res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-            loc = np.where(res >= precision)
-        for pt in zip(*loc[::-1]):  # Swap columns and rows
-            cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
-                          2)  # // Uncomment to draw boxes around found occurances
-            if click == "all":
-                print("CLICKING ALL")
-                img = cv2.imread(image)
-                height, width, channels = img.shape
-                pyautogui.moveTo(pt[0] + r(width / 2, offset) + x1,
-                                 pt[1] + r(height / 2, offset) + y1,
-                                 duration=0.2)
-                pyautogui.click(button=action)
-                time.sleep(delay)
-            count = count + 1
-        cv2.imwrite('0RESULT.png', img_rgb)  # // Uncomment to write output image with boxes drawn around occurances
+    for pt in zip(*loc[::-1]):  # Swap columns and rows
+        cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
+                      2)  # // Uncomment to draw boxes around found occurances
+        if click == "all":
+            print("CLICKING ALL")
+            img = cv2.imread(image)
+            height, width, channels = img.shape
+            pyautogui.moveTo(pt[0] + r(width / 2, offset) + x1,
+                             pt[1] + r(height / 2, offset) + y1,
+                             duration=0.2)
+            pyautogui.click(button=action)
+            time.sleep(delay)
+        count = count + 1
+    cv2.imwrite('0RESULT.png', img_rgb)  # // Uncomment to write output image with boxes drawn around occurances
+    if return_value == "count":
         return count
     if max_val < precision:
         return [-1, -1]
     else:
+        if return_value == "top_left" and click == "yes":
+            img = cv2.imread(image)
+            height, width, channels = img.shape
+            pyautogui.moveTo(max_loc[0] + r(width / 2, offset) + x1,
+                             max_loc[1] + r(height / 2, offset) + y1,
+                             duration=0.4)
+            pyautogui.click(button=action)
+            time.sleep(delay)
         if return_value == "top_left":
-            if click == "yes":
-                img = cv2.imread(image)
-                height, width, channels = img.shape
-                pyautogui.moveTo(max_loc[0] + r(width / 2, offset) + x1,
-                                 max_loc[1] + r(height / 2, offset) + y1,
-                                 duration=0.4)
-                pyautogui.click(button=action)
-                time.sleep(delay)
             return max_loc
-        if return_value == "center":
+        if return_value == "center" and click == "yes":
             top_left = max_loc  # can change to min_loc or max_loc
             bottom_right = (top_left[0] + w, top_left[1] + h)
             avg_x = round((bottom_right[0] + top_left[0]) / 2)
@@ -292,6 +292,7 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
                                  duration=0.4)
                 pyautogui.click(button=action)
                 time.sleep(delay)
+        if return_value == "center":
             return average
 
 
