@@ -159,4 +159,4 @@ def fishing():
         print("finished fishing loop")
     print("Had this many net games finished:", count_good)
 
-fishing()
+# fishing()
