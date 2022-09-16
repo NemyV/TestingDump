@@ -100,8 +100,8 @@ stop_threads = False
 
 
 def callbackTo2(instance):
-    Window.size = (Resolution[0], Resolution[1]/10)
-    Window.top = 930  # 930
+    Window.size = (Resolution[0], Resolution[1]/7)
+    Window.top = Resolution[1]/7*6.1  # 930
     Window.left = 0
     sm.current = "MainMenu"
 
@@ -111,10 +111,6 @@ def callbackTo1(instance):
     Window.top = Resolution[1]*2/10
     Window.left = Resolution[0]/10
     sm.current = "Settings"
-    123  # This is what is being changed
-    # Settings = Thread(target=sm)
-    # Settings.daemon = True
-    # Settings.start()
 
 
 def callbackTo3(instance):
@@ -122,7 +118,6 @@ def callbackTo3(instance):
     Window.top = 955
     Window.left = 1800
     sm.current = "Debugging"
-    123
 
 
 def callbackTo4(instance):
@@ -138,7 +133,6 @@ def callbackTo5(instance):
     Window.left = 0
     Window.top = 930
     sm.current = "Lifeskills"
-    123
 
 
 def callbackTo6(instance):
@@ -146,7 +140,6 @@ def callbackTo6(instance):
     Window.left = Resolution[0] / 10.5
     Window.top = Resolution[1] / 9
     sm.current = "DailyQuests"
-    123
 
 
 def callbackTo7(*args):
@@ -207,10 +200,9 @@ class MainMenu(Screen):
         threading.Thread.__init__(self)
         super(MainMenu, self).__init__(name='MainMenu')
         Window.bind(on_keyboard=self.on_keyboard)  # bind our handler
-        Window.size = (2560, 150)
-        Window.top = 930  # 930
+        Window.size = (Resolution[0], Resolution[1] / 7)
+        Window.top = Resolution[1] / 7 * 6.1  # 930
         Window.left = 0
-        123
 
         # Main Buttons
         ButtonY = 0.5
@@ -1806,7 +1798,7 @@ class Settings(Screen):
         ButtonY = 0.5
         SizeH = 0.2
         SizeW = 0.1
-        resolutions = ["2560x1080", "1920x1080", "Coop", "FFA"]
+        resolutions = ["2560x1080", "1920x1080", "1366x768", "1280x768", "1280x720"]
 
         self.tittle_grid = GridLayout(pos_hint={'x': 0.0575, 'y': -0.05}, rows=4, cols=2,
                                       size_hint=(0.1, 1),
@@ -1886,13 +1878,13 @@ class Settings(Screen):
         global Resolution
         # print(checkboxinstance, checkboxvalue)
         self.mainbutton.text = checkboxvalue
-        Resolution = checkboxvalue
-        print(Resolution)
+        Resolution = [int(checkboxvalue.split("x")[0]),
+                      int(checkboxvalue.split("x")[1])]
         try:
             configparser.get('Settings', "resolution")
         except:
             configparser.add_section('Settings')
-        configparser.set('Settings', "resolution", Resolution)
+        configparser.set('Settings', "resolution", checkboxvalue)
         configparser.write()
         # Based on selected character add values of selected tasks and other things to config file
 
