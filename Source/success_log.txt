@@ -366,4 +366,38 @@ Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ7I44.png
  Good ones: 
 
  position :(829, 512)
+Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ7I44.png
+ Good ones: 
+
+ position :(1387, 32)
+Buttons\Daily Quest\Misc\Feiton door\LOSTARK_huE6TdqEdn.png
+ position :(964, 197)
+Buttons\Daily Quest\Misc\Feiton door\LOSTARK_TuLkTixYZQ.png
+ Good ones: 
+
+ position :(836, 545)
+Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ7I44.png
+ position :(1387, 33)
+Buttons\Daily Quest\Misc\Feiton door\LOSTARK_huE6TdqEdn.png
+ position :(964, 199)
+Buttons\Daily Quest\Misc\Feiton door\LOSTARK_TuLkTixYZQ.png
+ Good ones: 
+
+ position :(837, 543)
+Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ7I44.png
+ position :(1368, 53)
+Buttons\Daily Quest\Misc\Feiton door\LOSTARK_huE6TdqEdn.png
+ position :(964, 199)
+Buttons\Daily Quest\Misc\Feiton door\LOSTARK_TuLkTixYZQ.png
+ Good ones: 
+
+ position :(1620, 14)
+Buttons\Daily Quest\Misc\Feiton door\LOSTARK_huE6TdqEdn.png
+ position :(969, 256)
+Buttons\Daily Quest\Misc\Feiton door\LOSTARK_TuLkTixYZQ.png
+ Good ones: 
+
+ Good ones: 
+
+ position :(729, 577)
 Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ7I44.png

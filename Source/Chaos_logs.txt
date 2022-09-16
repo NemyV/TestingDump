@@ -1378,4 +1378,31 @@
  Deaths :23
  Clears :0
  Potions :547
- Failed stages :2
+ Failed stages :2
+ Time to enter PORTAL in seconds:15.413460493087769
+ Time to enter PORTAL in seconds:0.0029926300048828125
+ Time to enter PORTAL in seconds:6.157279014587402
+ WORKER name :Mesmashy
+ Deaths :0
+ Clears :1
+ Potions :51
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Mesmashy
+ Deaths :0
+ Clears :1
+ Potions :96
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:6.402175426483154
+ WORKER name :Ggwarlord
+ Deaths :4
+ Clears :0
+ Potions :201
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:9.072235107421875
+ Time to enter PORTAL in seconds:2.738680601119995
+ Time to enter PORTAL in seconds:2.4512972831726074
+ Time to enter PORTAL in seconds:4.856042146682739
+ Time to enter PORTAL in seconds:0.0009970664978027344

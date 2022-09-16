@@ -239,9 +239,9 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
 
     count = 0
     loc = np.where(res >= precision)
-    print(len(loc[0]), loc)
-    if len(loc[0]) < 1:
-        print("LOC was less than 3")
+    # print(len(loc[0]), loc)
+    if len(loc[0]) < 1 and Resolution != [2560, 1080]:
+        # print("LOC was less than 3")
         image = resize_image(image)
         template = cv2.imread(image, 0)
         w, h = template.shape[::-1]
@@ -804,7 +804,7 @@ def im_search_keypoint(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1],
             return average
 
 
-def resize_image(image,more_or_less="less"):
+def resize_image(image, more_or_less="less"):
     img1 = cv2.imread(image, cv2.IMREAD_COLOR)
     template_y, template_x, tets = img1.shape
     # scale_percent = 70  # percent of original size

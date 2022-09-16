@@ -581,7 +581,6 @@ if __name__ == '__main__':
     #             time.sleep(0.15)
     #         return teleport
 
-    # waiting_for_loading_screen()
 
     # # # testing TEXT DETECTION
     # dismantle = 4

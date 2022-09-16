@@ -202,7 +202,7 @@ def daily_state_check():
     while switch == 0:
         unmounting = Buttons + "\\Daily Quest\\Misc\\Mounted_icon.png"
         pos = im_search(unmounting,
-                        x1=round(Resolution[0]/3), y1=680, x2=607, y2=400, precision=0.7)
+                        x1=round(Resolution[0]/3), y1=680, x2=607, y2=400, precision=0.8)
         if pos != [-1, -1]:
             pydirectinput.press("r")
             print("UNMOUNTED!")
@@ -534,15 +534,7 @@ def swamp_daily():
     pydirectinput.click(300,
                         700, button="right")
     # FAIL SAFE
-    success_log = open("success_log.txt", "a+")
-    success_log.write("\r\n Good ones: \r\n")
-    for k in fail_proof_faiton:
-        position = search_click_image(k, "right", precision=0.68)
-        time.sleep(0.9)
-        if position != [-1, -1]:
-            # ENTERING DATA INSIDE TEXT FILE
-            success_log.write("\r\n position :" + str(position) + "\r\n" + str(k))
-            success_log = open("success_log.txt", "a+")
+    fail_safe_faiton()
 
     pydirectinput.click(799,
                         191, button="right")
@@ -803,15 +795,7 @@ def nameless_daily():
     pydirectinput.click(300,
                         700, button="right")
     # FAIL SAFE
-    success_log = open("success_log.txt", "a+")
-    success_log.write("\r\n Good ones: \r\n")
-    for k in fail_proof_faiton:
-        position = search_click_image(k, "right", precision=0.68)
-        time.sleep(0.9)
-        if position != [-1, -1]:
-            # ENTERING DATA INSIDE TEXT FILE
-            success_log.write("\r\n position :" + str(position) + "\r\n" + str(k))
-            success_log = open("success_log.txt", "a+")
+    fail_safe_faiton()
 
     time.sleep(6)
     pydirectinput.click(840,
@@ -1671,6 +1655,18 @@ def stronghold_daily():
     waiting_for_loading_screen()
     # normal mission cast(priority Major missions else 540 300 195 90 rewards)
 
+def fail_safe_faiton():
+    # FAIL SAFE
+    success_log = open("success_log.txt", "a+")
+    success_log.write("\r\n Good ones: \r\n")
+    for k in fail_proof_faiton:
+        position = search_click_image(k, "right", precision=0.68)
+        time.sleep(0.9)
+        if position != [-1, -1]:
+            # ENTERING DATA INSIDE TEXT FILE
+            success_log.write("\r\n position :" + str(position) + "\r\n" + str(k))
+            success_log = open("success_log.txt", "a+")
+
 
 class ObjProxy(NamespaceProxy):
     """Returns a proxy instance for any user defined data-type. The proxy instance will have the namespace and
@@ -1745,22 +1741,14 @@ class ChaosDungeon:
         ps_x1 = round(panchor[0] + round(distance[0]) * process_search_inc)
         ps_y1 = round(panchor[1] + round(distance[1]) * process_search_inc)
 
-        if ps_x1 > round(Resolution[0]/100*90):
-            ps_x1 = round(Resolution[0]/100*90)
-        if ps_x1 < round(Resolution[0]/100*15):
-            ps_x1 = round(Resolution[0]/100*15)
-
-        if ps_y1 > round(Resolution[1]/100*72):
-            ps_y1 = round(Resolution[1]/100*72)
-        if ps_y1 < round(Resolution[1]/100*10):
-            ps_y1 = round(Resolution[1]/100*10)
+        ps_x1, ps_y1 = self.stay_within(ps_x1, ps_y1)
         # print("Distance is :", distance)
         # print(ps_x1, ps_y1)
         return ps_x1, ps_y1
 
     def stay_within(self, x_cord, y_cord):
-        if x_cord > round(Resolution[0] / 100 * 90):
-            x_cord = round(Resolution[0] / 100 * 90)
+        if x_cord > round(Resolution[0] / 100 * 87):
+            x_cord = round(Resolution[0] / 100 * 87)
         if x_cord < round(Resolution[0] / 100 * 15):
             x_cord = round(Resolution[0] / 100 * 15)
 
@@ -1768,7 +1756,7 @@ class ChaosDungeon:
             y_cord = round(Resolution[1] / 100 * 72)
         if y_cord < round(Resolution[1] / 100 * 10):
             y_cord = round(Resolution[1] / 100 * 10)
-        return x_cord , y_cord
+        return x_cord, y_cord
 
     def drinking_potions(self):
         search = image2text(x1=947, y1=954, x2=225, y2=20,
@@ -1986,6 +1974,7 @@ class ChaosDungeon:
                             if y1_tower > 800:
                                 print("ERROR WITH COORDINATES Y")
                                 exit()
+                            print("MOVING TO", x1_tower, y1_tower)
                             pydirectinput.moveTo(x1_tower, y1_tower)
                             # pydirectinput.mouseDown(x1, y1, button="right")
                             time.sleep(movementdelay)
@@ -2006,6 +1995,7 @@ class ChaosDungeon:
                 if search != [-1, -1]:
                     x1, y1 = self.process_search(search, process_search_inc)
                     print("Found red", x1, y1)
+                    # x1, y1 = self.stay_within(x1,y1)
                     pydirectinput.moveTo(x1, y1)
                     # pydirectinput.mouseDown(x1, y1, button="right")
                     time.sleep(movementdelay)
@@ -2149,6 +2139,7 @@ class ChaosDungeon:
                     else:
                         print("INFINITE CHAOS CONTINUES")
                     for u in restart_chaos:
+                        print("RESTARTING CHAOS")
                         time.sleep(0.7)
                         search_click_image(u, "left")
                     # print("APPENDED switch to ", switch)
@@ -2177,7 +2168,6 @@ class ChaosDungeon:
                     position = search_click_image(y, "left")
                 # check if timer is 0 then enter chaos
                 # CHeck if need to repair
-        return "Unlucky"
 
     def restating_stopped(self, count):
         restarting_dict = {"name": "thread"}
@@ -2398,7 +2388,6 @@ class ChaosDungeon:
             if key != '_processes':
                 state[key] = value
         return state
-
 
 class skills(object):
     def __init__(self, hotkey, skill_type, priority=None, cooldown=None):
