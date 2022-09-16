@@ -400,4 +400,8 @@ Buttons\Daily Quest\Misc\Feiton door\LOSTARK_TuLkTixYZQ.png
  Good ones: 
 
  position :(729, 577)
+Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ7I44.png
+ Good ones: 
+
+ position :(751, 567)
 Buttons\Daily Quest\Misc\Feiton door\aLOSTARK_6EqCMJ7I44.png

@@ -1405,4 +1405,21 @@
  Time to enter PORTAL in seconds:2.738680601119995
  Time to enter PORTAL in seconds:2.4512972831726074
  Time to enter PORTAL in seconds:4.856042146682739
- Time to enter PORTAL in seconds:0.0009970664978027344
+ Time to enter PORTAL in seconds:0.0009970664978027344
+ Time to enter PORTAL in seconds:5.455276966094971
+ Time to enter PORTAL in seconds:4.227816581726074
+ Time to enter PORTAL in seconds:0.0009975433349609375
+ Time to enter PORTAL in seconds:13.434595584869385
+ WORKER name :Sheeeshaa
+ Deaths :2
+ Clears :1
+ Potions :113
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Sheeeshaa
+ Deaths :4
+ Clears :2
+ Potions :224
+ Failed stages :0

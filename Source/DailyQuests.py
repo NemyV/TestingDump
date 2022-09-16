@@ -531,8 +531,8 @@ def swamp_daily():
     pydirectinput.click(455,
                         727, button="right")
     time.sleep(1)
-    pydirectinput.click(300,
-                        700, button="right")
+    pydirectinput.click(700,
+                        300, button="right")
     # FAIL SAFE
     fail_safe_faiton()
 
@@ -791,9 +791,9 @@ def nameless_daily():
     time.sleep(1.6)
     pydirectinput.click(455,
                         727, button="right")
-    time.sleep(2)
-    pydirectinput.click(300,
-                        700, button="right")
+    time.sleep(1)
+    pydirectinput.click(700,
+                        300, button="right")
     # FAIL SAFE
     fail_safe_faiton()
 
@@ -1308,12 +1308,14 @@ def bifrost_teleportation(name):
     else:
         print("ERROR: Unknown BIFROST location")
 
-    # checking if its asking for crystals to teleport
+    # checking if its asking for crystals to teleport TIME SLEEP NEEDED
+    time.sleep(1)
     crystalcheck = Daily + "Misc\\Cost_for_BIFROST.png"
-    pos_crystal = im_search(crystalcheck, 1, precision=precision)
+    pos_crystal = im_search(crystalcheck, precision=precision)
     time.sleep(1)
     # print(pos_crystal)
     if pos_crystal == [-1, -1]:
+
         print("Teleporting...")
         pydirectinput.press('ENTER')
     else:
@@ -1654,6 +1656,7 @@ def stronghold_daily():
     time.sleep(6.2)
     waiting_for_loading_screen()
     # normal mission cast(priority Major missions else 540 300 195 90 rewards)
+
 
 def fail_safe_faiton():
     # FAIL SAFE

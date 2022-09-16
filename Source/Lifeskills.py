@@ -29,8 +29,8 @@ string = configparser.get("Settings", "resolution")
 
 Resolution = [int(string.split("x")[0]),
               int(string.split("x")[1])]
-Resolution = [1366,
-              768]
+# Resolution = [1366,
+#               768]
 
 x1 = round(Resolution[0]*45.7/100)
 y1 = round(Resolution[1]*38.9/100)
@@ -69,15 +69,13 @@ def Statecheck():
             time.sleep(1)
             pydirectinput.press('9')
             time.sleep(20)
-
-    for f in Lifeskillopen:
-        print(f)
-        while pos == [-1, -1]:
+    while pos == [-1, -1]:
+        for f in Lifeskillopen:
+            print(f)
             focus_window('LOST ARK')
             time.sleep(2.5)
-            pos = im_search(f,
-                                     x1=round(Resolution[0] * 44 / 100),
-                                     y1=round(Resolution[1] * 83.5 / 100), x2=250, y2=50, precision=0.5)
+            pos = im_search(f, x1=round(Resolution[0] * 44 / 100),
+                            y1=round(Resolution[1] * 83.5 / 100), x2=250, y2=50, precision=0.5)
             if pos != [-1, -1]:
                 break
             print("Opening skills bar")
@@ -145,19 +143,20 @@ def fishing():
         # If you want to cast buffs
         # for f in FishingBUFFS:
         # search for exclamation mark
-        for f in FINDFishingCATCH:
-            # search for exclamation mark
-            pos = im_search(f, x1=x1, y1=y1, x2=x2-x1, y2=y2-y1, precision=0.7)
-            time.sleep(0.13)
-            print(pos)
-            if pos != [-1, -1]:
-                count_good = count_good + 1
-                print("FOUND MARK using:", f)
-                pydirectinput.press('w')
-                time.sleep(7)
-                break
+        for x in range(1, 9, 1):
+            for f in FINDFishingCATCH:
+                # search for exclamation mark
+                pos = im_search(f, x1=x1, y1=y1, x2=x2-x1, y2=y2-y1, precision=0.7)
+                time.sleep(0.13)
+                print(pos)
+                if pos != [-1, -1]:
+                    count_good = count_good + 1
+                    print("FOUND MARK using:", f)
+                    pydirectinput.press('w')
+                    time.sleep(7)
+                    break
 
         print("finished fishing loop")
     print("Had this many net games finished:", count_good)
 
-# fishing()
+fishing()

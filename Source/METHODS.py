@@ -7,6 +7,7 @@ import time
 import numpy as np, win32gui, win32ui, win32con, win32com
 from PIL import ImageGrab,Image
 import PIL
+import imutils
 from datetime import datetime
 from numpy import asarray
 from os import path
@@ -216,7 +217,7 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
     # # cropped_image = img[cropped_x:cropped_y, offset_x:offset_y]
     # # cv2.imwrite(img, cropped_image)
     # # img = cropped_image
-    return img
+    # return img
 
 
 def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_value="top_left",
@@ -239,15 +240,22 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
 
     count = 0
     loc = np.where(res >= precision)
-    # print(len(loc[0]), loc)
-    if len(loc[0]) < 1 and Resolution != [2560, 1080]:
-        # print("LOC was less than 3")
-        image = resize_image(image)
-        template = cv2.imread(image, 0)
-        w, h = template.shape[::-1]
-        res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
-        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-        loc = np.where(res >= precision)
+    if len(list(zip(*loc[::-1]))) < 1 and Resolution != [2560, 1080]:
+        for scale in np.linspace(0.2, 1.0, 100)[::-1]:
+            image = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+            resized = imutils.resize(template, width=int(template.shape[1] * scale))
+            res = cv2.matchTemplate(image, resized, cv2.TM_CCOEFF_NORMED)
+
+            loc = np.where(res >= precision)
+            if len(list(zip(*loc[::-1]))) > 0 or scale < 0.4:
+                break
+        # # print("LOC was less than 3")
+        # image = resize_image(image)
+        # template = cv2.imread(image, 0)
+        # w, h = template.shape[::-1]
+        # res = cv2.matchTemplate(img_gray, template, cv2.TM_CCOEFF_NORMED)
+        # min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+        # loc = np.where(res >= precision)
     for pt in zip(*loc[::-1]):  # Swap columns and rows
         cv2.rectangle(img_rgb, pt, (pt[0] + w, pt[1] + h), (0, 0, 255),
                       2)  # // Uncomment to draw boxes around found occurances
@@ -805,6 +813,7 @@ def im_search_keypoint(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1],
 
 
 def resize_image(image, more_or_less="less"):
+    # FIRST ATTEMPT
     img1 = cv2.imread(image, cv2.IMREAD_COLOR)
     template_y, template_x, tets = img1.shape
     # scale_percent = 70  # percent of original size
@@ -833,6 +842,39 @@ def resize_image(image, more_or_less="less"):
     # plt.imshow(imagexxx)
     # plt.show()
     return result_image
+
+
+# def resize_image(image, more_or_less="less"):
+#     # FIRST ATTEMPT
+#     img1 = cv2.imread(image, cv2.IMREAD_COLOR)
+#     template_y, template_x, tets = img1.shape
+#     # scale_percent = 70  # percent of original size
+#     asp_ratio = template_y/template_x
+#     print(asp_ratio)
+#     # FORCING ASPECT 21:9 helps with detection
+#     if more_or_less == "less":
+#         # x = int(template_x / (2560 / 1920))
+#         # y = int(template_y / (1080 / 1080))
+#         x = int(template_x / (2560 / 1366))
+#         y = int(template_y / (1080 / 768))
+#     if more_or_less == "more":
+#         # x = int(template_x * (2560 / 1920))
+#         # y = int(template_y * (1080 / 1080))
+#         x = int(template_x * 2560 / 1366)
+#         y = int(template_y * 1080 / 768)
+#     print(template_x, template_y)
+#     print(x, y)
+#     image = Image.open(image)
+#     size = [x, y]
+#     image.thumbnail(size, PIL.Image.Resampling.LANCZOS)
+#     image.save("0randomSAVE.png")
+#     result_image = "0randomSAVE.png"
+#
+#     # imagexxx = Image.open(result_image)
+#     # plt.imshow(imagexxx)
+#     # plt.show()
+#     return result_image
+
 
 # Testing shits from main thread
 # test123 = "D:\BLostArk\LOSTARKB\Source\Buttons\Daily Quest\Misc\Testingsomeshit.png"

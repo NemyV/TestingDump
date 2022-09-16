@@ -1,38 +1,84 @@
-from kivy.app import App
-from kivy.uix.label import Label
-from kivy.clock import Clock
-import time
+import numpy as np
+import cv2
+import imutils
+from PIL import ImageGrab
+import threading
+Resolution = [2560, 1080]
+# template = "D:\BLostArk\LOSTARKB\Source\Buttons\Daily Quest\Misc\Testingsomeshit.png"
+# template = "D:\BLostArk\LOSTARKB\Source\Buttons\Daily Quest\Misc\Accept_quest.png"
+template = "D:\BLostArk\LOSTARKB\Source\Buttons\Fishing\OPENSkills\old\Lifeskill_bar.png"
+# template = "D:\BLostArk\LOSTARKB\Source\Buttons\Fishing\OPENSkills\old\LOSTARK_eImXiUEdrJ.png"
 
-stopwatch_start = time.time()
-start_time = time.time()
+def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Resolution[1]):
+    """
+    Taking screenshots in specific folder
+        """
+    im = ImageGrab.grab(bbox=(x1, y1, x1+x2, y1+y2))
+    file_path = 'Temp_files/Screenshot[T:' + str(threading.get_ident()) + '|' + filename + '].jpg'
+    im.save(file_path)
+    # with mss.mss() as sct:
+    #     # The screen part to capture
+    #     region = {'left': x1, 'top': y1, 'width': x2, 'height': y2}
+    #     # Grab the data
+    #     image_screenshot = mss.mss().grab(region)
+    #     # try to remove
+    #     try:
+    #         os.remove(r'Temp_files\Screenshot[' + filename + '].png')
+    #         time.sleep(0.5)
+    #         print("REMOVED FILE")
+    #         test = "REMOVED"
+    #     except IOError:
+    #         print("DIDN T REMOVE FILE")
+    #         test = "NO REMOVE"
+    #     # Save to the picture file
+    #     mss.tools.to_png(image_screenshot.rgb, image_screenshot.size,
+    #                      output=(r'Temp_files\Screenshot[' + filename + '].png'))
+
+    #  VERY IMPORTANT so that multiple process don't conflict on same file name
+    # NEW SOLUTION DELETE IF IT DOESNT WORK  = , cv2.IMREAD_UNCHANGED)
+
+    img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
+    if img_rgb is None:
+        print("ERROR READING IMAGE FROM SCREENSHOT")
+        print("FILE PATCH is:" + file_path)
+        print("TRYING TO SALVAGE")
+        file_path = r'Temp_files/ScreenshotFIX[' + filename + '].jpg'
+        im.save(file_path)
+        img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
+    img_rgb = img_rgb[..., :3]  # POSSIBLY FIX ERRORS
+    return img_rgb
+    # return file_path
 
 
-class IncrediblyCrudeClock(Label):
-    def update(self, *args):
-        # stopwatch_end = time.time()
-        # execution_time = stopwatch_end - stopwatch_start
-        end_time = time.time()
-        time_lapsed = end_time - start_time
-        self.text = str(self.time_convert(time_lapsed))
-        # self.text = time.asctime()
+def resize_image(image, increment=0.2, precision=0.7):
+    template = cv2.imread(image)  # template image
+    img_screenshot = im_screenshot()  #x1=700, y1=700, x2=400, y2=150)
 
-    def time_convert(self, sec):
-        mins = sec // 60
-        sec = sec % 60
-        hours = mins // 60
-        mins = mins % 60
-        # print("Time Lapsed = {0}:{1}:{2}".format(int(hours), int(mins), sec))
-        return_value = "Time Lapsed = {0}:{1}:{2}".format(int(hours), int(mins), round(sec, 1))
-        return return_value
+    template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+    image = cv2.cvtColor(img_screenshot, cv2.COLOR_BGR2GRAY)
+    debugging = False
+    loc = False
+    w, h = template.shape[::-1]
+    for scale in np.linspace(increment, 1.0, 100)[::-1]:
+        print(scale)
+        resized = imutils.resize(template, width=int(template.shape[1] * scale))
+        w, h = resized.shape[::-1]
+        res = cv2.matchTemplate(image, resized, cv2.TM_CCOEFF_NORMED)
+
+        loc = np.where(res >= precision)
+        if len(list(zip(*loc[::-1]))) > 0 or scale < 0.4:
+            if len(list(zip(*loc[::-1]))) > 0:
+                debugging = True
+            break
+
+    if loc and len(list(zip(*loc[::-1]))) > 0:
+        for pt in zip(*loc[::-1]):
+            cv2.rectangle(img_screenshot, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+
+    if debugging:
+        cv2.imshow('Matched Template', img_screenshot)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 
-class TimeApp(App):
-    def build(self):
-        crudeclock = IncrediblyCrudeClock()
-        Clock.schedule_interval(crudeclock.update, 0.1)
-        return crudeclock
-
-
-if __name__ == "__main__":
-    TimeApp().run()
-
+resize_image(template)
