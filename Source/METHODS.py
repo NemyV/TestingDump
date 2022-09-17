@@ -1,25 +1,19 @@
 import cv2
-import numpy as np
 import pyautogui
 import pydirectinput
 import random
 import time
-import numpy as np, win32gui, win32ui, win32con, win32com
-from PIL import ImageGrab,Image
+import numpy as np
+from PIL import ImageGrab, Image
 import PIL
 import imutils
-from datetime import datetime
-from numpy import asarray
 from os import path
 import threading
 # Declraing a lock
 lock = threading.Lock()
-import os
+
 import sys
 import glob
-import keyboard
-import mss
-import mss.tools
 import win32gui
 import re
 import matplotlib.pyplot as plt
@@ -31,43 +25,107 @@ from multiprocessing.managers import NamespaceProxy, BaseManager
 import inspect  # part of multiprocessing stuff
 
 from pytesseract import pytesseract
+
 path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 pytesseract.tesseract_cmd = path_to_tesseract
 
 sys.path.insert(0, 'E:\Hello wolrd Python\LOSTARKB')
 
-Buttons = "Buttons\\"
-
 configparser = ConfigParser()
 configparser.read("myapp.ini")
 string = configparser.get("Settings", "resolution")
 
+selected_character = ""
+roster_list = []
+worker_list = []
+roster_array = np.array(roster_list)
+
+start_time = 0
+end_time = 0
+
+loading_screen_time = 30
+misc_dictionary = {"loading": "no"}
+last_cords = [0, 0]
+potions_used = 0
+pet_status = 0
+combat = ''
+list_of_workers = []
+current_work = "Chilling with da boiz..."
+execution_time = "Run time..."
+total_time = 0.0
+stop_count = "no"
+
 Resolution = [int(string.split("x")[0]),
               int(string.split("x")[1])]
+player_anchor = [round(Resolution[0] / 2),
+                 round(Resolution[1] / 2)]
+playerMinimap = [Resolution[0] / 100 * 93.04,
+                 Resolution[1] / 100 * 15.46]
 MiniMCOORD = [Resolution[0] / 100 * 86,
               Resolution[1] / 100 * 4.17,
               Resolution[0] / 100 * 98.7,
               Resolution[1] / 100 * 30.28]
 
-Elites = 0
-Enemies = 0
-Bosses = 0
-Portals = 0
-Towers = 0
-# MAYBE THESE GLOBAL VARIABLES MESSING WITH EVERYTHING
-# global w, h
-# w = Resolution[0]
-# h = Resolution[1]
-hwnd = None
-window_name = "LOST ARK (64-bit, DX9) v.2.7.0.1"
-hwnd = win32gui.FindWindow(None, window_name)
-if not hwnd:
-    raise Exception('Window not found: {}'.format(window_name))
+Buttons = "Buttons\\"
+Daily = Buttons + 'Daily Quest\\'
 
-cropped_x = 0
-cropped_y = 0
-offset_x = 0
-offset_y = 0
+# IMPORTANT MISC [ESC MENU]
+esc_menu = Daily + "Misc\\Game_menu.png"
+repair = Buttons + 'FISHING\\BrokenTool'
+repaircheck = [x for x in glob.glob(repair + "**/*.png")]
+
+FishingCATCH = Buttons + 'FISHING\\EXCLAMATION'
+lifeskills = Buttons + 'FISHING\\OPENSkills'
+fishing_mini = Buttons + 'FISHING\\Minigame'
+Fishing_minigame = [x for x in glob.glob(fishing_mini + "**/*.png")]
+FINDFishingCATCH = [x for x in glob.glob(FishingCATCH + "**/*.png")]
+Lifeskillopen = [x for x in glob.glob(lifeskills + "**/*.png")]
+energy = Buttons + 'FISHING\\Noenergy'
+Emptyenergy = [x for x in glob.glob(energy + "**/*.png")]
+
+DailySwampLoc = Daily + 'Walling Swamp'
+DailySwamp = [x for x in glob.glob(DailySwampLoc + "**/*.png")]
+
+feiton_fail_check = Daily + 'Misc\\Feiton door'
+fail_proof_faiton = [x for x in glob.glob(feiton_fail_check + "**/*.png")]
+feiton_fail_check_entrence = Daily + 'Misc\\Feiton inn'
+fail_proof_entrence = [x for x in glob.glob(feiton_fail_check_entrence + "**/*.png")]
+
+hope_fail_check = Daily + 'Misc\\Hope bricks'
+fail_safe_hope = [x for x in glob.glob(feiton_fail_check + "**/*.png")]
+class_check = Buttons + 'Class'
+Class_checker = [x for x in glob.glob(class_check + "**/*.png")]
+
+stronghold = Daily + "Stronghold"
+chosen_missions = [x for x in glob.glob(stronghold + '\\Chosen Missions' + "**/*.png")]
+pet_ranch = [x for x in glob.glob(stronghold + '\\Pet Ranch' + "**/*.png")]
+
+Weekly = Daily + "\\Weeklies"
+weekly_tasks = [x for x in glob.glob(Weekly + '\\Weekly tasks' + "**/*.png")]
+
+CDung = Buttons + "ChaosDungeon"
+Dead = Buttons + "Dead"
+passing = Buttons + "Passing"
+ReENTER = Buttons + "ReENTER"
+Portal_no_mini = Buttons + "PortalNoMinimap"
+Minimap = Buttons + "Minimap"
+stage_clear = Buttons + "CheckIFclear"
+stage_fail = Buttons + "CheckIFclear\\Failed"
+
+ChaosDung = [m for m in glob.glob(CDung + "**/*.png")]
+
+checkIFDEAD = [m for m in glob.glob(Dead + "**/*.png")]
+check_if_clear = [m for m in glob.glob(stage_clear + "/*.png")]
+check_if_failed = [m for m in glob.glob(stage_fail + "/*.png")]
+
+restart_chaos = [m for m in glob.glob(stage_clear + "\\Cleared" + "**/*.png")]
+
+passingthrough = [m for m in glob.glob(passing + "**/*.png")]
+ReENTERing = [m for m in glob.glob(ReENTER + "**/*.png")]
+PortalNOMINI = [m for m in glob.glob(Portal_no_mini + "**/*.png")]
+# SUPER NOTE "**/*.png" WILL CHECK DIRECTORIES AS WELL , But /*.png only checks inside specified one
+minimap_dir = [m for m in glob.glob(Minimap + "/*.png")]
+minimap_red = [m for m in glob.glob(Minimap + "\\Red" + "/*.png")]
 
 
 def r(num, rand):
@@ -77,7 +135,7 @@ def r(num, rand):
 class WindowMgr:
     """Encapsulates some calls to the winapi for window management"""
 
-    def __init__ (self):
+    def __init__(self):
         """Constructor"""
         self._handle = None
 
@@ -99,12 +157,19 @@ class WindowMgr:
         """put the window in the foreground"""
         win32gui.SetForegroundWindow(self._handle)
 
+    def get_rectangle(self):
+        window_rect = win32gui.GetWindowRect(self._handle)
+        client_rect = win32gui.GetClientRect(self._handle)
+        # print(window_rect[0]+window_rect[2])
+        # print(window_rect, client_rect)
+
 
 def focus_window(NameofWindow):
     print("FOCUS SWITCH to ", NameofWindow)
     w = WindowMgr()
     w.find_window_wildcard(NameofWindow)
     w.set_foreground()
+    w.get_rectangle()
 
 
 class ObjProxy(NamespaceProxy):
@@ -142,9 +207,15 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
     """
     Taking screenshots in specific folder
         """
-    im = ImageGrab.grab(bbox=(x1, y1, x1+x2, y1+y2))
-    file_path = 'Temp_files/Screenshot[T:' + str(threading.get_ident()) + '|' + filename + '].jpg'
-    im.save(file_path)
+    file_path = (r"Temp_files\Screenshot[" + str(threading.get_ident()) + "#" + filename + "].jpg")
+    import window_capture
+    wincapture = window_capture.WindowCapture('LOST ARK (64-bit, DX9) v.2.7.0.1', file_path)
+    img_rgb = wincapture.get_screenshot(x1=x1, y1=y1, x2=x2, y2=y2)
+
+    # im = ImageGrab.grab(bbox=(x1, y1, x1 + x2, y1 + y2))
+    # im.save(file_path)
+    # img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
+
     # with mss.mss() as sct:
     #     # The screen part to capture
     #     region = {'left': x1, 'top': y1, 'width': x2, 'height': y2}
@@ -162,18 +233,12 @@ def im_screenshot(filename='no_file_name', x1=0, y1=0, x2=Resolution[0], y2=Reso
     #     # Save to the picture file
     #     mss.tools.to_png(image_screenshot.rgb, image_screenshot.size,
     #                      output=(r'Temp_files\Screenshot[' + filename + '].png'))
-
-    #  VERY IMPORTANT so that multiple process don't conflict on same file name
-    # NEW SOLUTION DELETE IF IT DOESNT WORK  = , cv2.IMREAD_UNCHANGED)
-
-    img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
     if img_rgb is None:
         print("ERROR READING IMAGE FROM SCREENSHOT")
-        print("FILE PATCH is:" + file_path)
-        print("TRYING TO SALVAGE")
-        file_path = r'Temp_files/ScreenshotFIX[' + filename + '].jpg'
-        im.save(file_path)
-        img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
+        # print("TRYING TO SALVAGE")
+        # file_path = r'Temp_files/ScreenshotFIX[' + filename + '].jpg'
+        # # im.save(file_path)
+        # img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
     img_rgb = img_rgb[..., :3]  # POSSIBLY FIX ERRORS
     return img_rgb
     # # get the window image data
@@ -241,11 +306,13 @@ def im_search(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], return_valu
     count = 0
     loc = np.where(res >= precision)
     if len(list(zip(*loc[::-1]))) < 1 and Resolution != [2560, 1080]:
+        print("RESIZING")
         for scale in np.linspace(0.2, 1.0, 100)[::-1]:
             image = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
             resized = imutils.resize(template, width=int(template.shape[1] * scale))
+            w, h = resized.shape[::-1]
             res = cv2.matchTemplate(image, resized, cv2.TM_CCOEFF_NORMED)
-
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
             loc = np.where(res >= precision)
             if len(list(zip(*loc[::-1]))) > 0 or scale < 0.4:
                 break
@@ -343,16 +410,16 @@ def im_processing(template_image, look_for="None", count=0,
     processing image with masks for better matching
     Return = coordinates
     """
-    #im_search_in_area im processing
-    file_name = str(count) + str(look_for) + ".png"
+    # im_search_in_area im processing
+    file_name = str(count) + str(look_for) + ".jpg"
     img_rgb = im_screenshot(file_name, x1, y1, x2, y2)
-    if img_rgb is None:
-        print(img_rgb, "ERROR reading image")
-    else:
-        try:
-            os.remove(file_name)
-        except IOError:
-            123
+    # if img_rgb is None:
+    #     print(img_rgb, "ERROR reading image")
+    # else:
+    #     try:
+    #         os.remove(file_name)
+    #     except IOError:
+    #         123
     if look_for == "None":
         print("without mask mask")
         img_gray = cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
@@ -413,7 +480,8 @@ def im_processing(template_image, look_for="None", count=0,
             path1 = Buttons + 'Testing\\'
             raw_path = Buttons + 'Testing\\No filter\\'
             cv2.imwrite(raw_path + "MASK" + file_name, img_gray)  # uncomment FOR MASKS
-            cv2.imwrite(raw_path + file_name, img_rgb)  # Uncomment to write output image with boxes drawn around occurances
+            cv2.imwrite(raw_path + file_name,
+                        img_rgb)  # Uncomment to write output image with boxes drawn around occurances
             if "Tower" in file_name:
                 # print("drawing boxes", name)
                 cv2.imwrite(path2 + "\\Mask" + file_name, img_gray)
@@ -473,7 +541,13 @@ def PressKey_image(image):
 
 def image2text(x1=0, y1=0, x2=Resolution[0], y2=Resolution[1], method=' --oem 3 --psm 7', colors="normal"):
     file_name = "image2text"
-    img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
+    # Standard w32 screenshot taking
+    # img_rgb = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)
+    # taking screenshot with ImageGrab
+    file_path = (r"Temp_files\Screenshot[" + str(threading.get_ident()) + "#" + file_name + "].jpg")
+    img_rgb = ImageGrab.grab(bbox=(x1, y1, x1 + x2, y1 + y2))
+    img_rgb.save(file_path)
+    img_rgb = cv2.imread(file_path, cv2.IMREAD_COLOR)  # IMREAD_UNCHANGED
     # print(colors)
     # get grayscale image
     def get_grayscale(image):
@@ -705,8 +779,6 @@ def im_search_keypoint(image, x1=0, y1=0, x2=Resolution[0], y2=Resolution[1],
     img1 = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
     img2 = im_screenshot(file_name, x1=x1, y1=y1, x2=x2, y2=y2)  # trainImage
 
-
-
     # img_gray = cv2.imread('Temp_files\\Screenshot[' + file_name + '].png', cv2.IMREAD_GRAYSCALE)
     # plt.imshow(new_image)
     # plt.show()
@@ -817,7 +889,7 @@ def resize_image(image, more_or_less="less"):
     img1 = cv2.imread(image, cv2.IMREAD_COLOR)
     template_y, template_x, tets = img1.shape
     # scale_percent = 70  # percent of original size
-    asp_ratio = template_y/template_x
+    asp_ratio = template_y / template_x
     print(asp_ratio)
     # FORCING ASPECT 21:9 helps with detection
     if more_or_less == "less":
@@ -842,7 +914,6 @@ def resize_image(image, more_or_less="less"):
     # plt.imshow(imagexxx)
     # plt.show()
     return result_image
-
 
 # def resize_image(image, more_or_less="less"):
 #     # FIRST ATTEMPT
@@ -881,4 +952,3 @@ def resize_image(image, more_or_less="less"):
 # test123 = "D:\BLostArk\LOSTARKB\Source\Buttons\Daily Quest\Misc\Accept_quest.png"
 # # im_search_keypoint(test123)
 # im_search(test123, precision=0.77, return_value="count")
-

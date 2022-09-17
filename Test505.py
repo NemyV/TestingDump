@@ -8,7 +8,7 @@ from Source.window import Window
 from Source.ImgRec import click
 from Source.ImgRec import imginsideimg
 from Source.ImgRec import movemouseto
-from Source.GoGreen import gcolor
+from Testing.GoGreen import gcolor
 
 Topleftx = Window.WindowCoordArr[0]
 Toplefty = Window.WindowCoordArr[1]
@@ -120,7 +120,7 @@ test3 = r"E:\Hello wolrd Python\LOSTARKB\green.png"
 test45 = r"E:\Hello wolrd Python\LOSTARKB\testarea.png"
 print(Player)
 
-from Source.LostARKFOCUS import focus_window
+from Testing.LostARKFOCUS import focus_window
 
 focus_window('LOST ARK ')
 

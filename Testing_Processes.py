@@ -1,28 +1,18 @@
 import os
 import random
 import pydirectinput
-import pyautogui
 import time
-import threading
-from threading import Thread
-import dill
 import glob
-import concurrent.futures
 import keyboard
-import signal
 from multiprocessing.managers import NamespaceProxy, BaseManager
-from multiprocessing import Event
-import multiprocessing
 import inspect
-from multiprocessing import Manager, Process, Pool
+from multiprocessing import Manager, Process
 
 import logging
 
 logging.basicConfig(level=logging.INFO)
 
-from Source.METHODS import imagesearch
-from Source.METHODS import Searchimage_return_position
-from Source.lookforLOSTARK import Click_on_Image
+from Testing.lookforLOSTARK import Click_on_Image
 from Source.METHODS import im_search_in_area
 from Source.METHODS import WindowMgr
 

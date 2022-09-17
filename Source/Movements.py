@@ -104,7 +104,7 @@ test3 = r"E:\Hello wolrd Python\LOSTARKB\green.png"
 test45 = r"E:\Hello wolrd Python\LOSTARKB\testarea.png"
 print(Player)
 
-from LostARKFOCUS import focus_window
+from Testing.LostARKFOCUS import focus_window
 
 focus_window('LOST ARK ')
 

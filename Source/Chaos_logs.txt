@@ -1422,4 +1422,46 @@
  Deaths :4
  Clears :2
  Potions :224
- Failed stages :0
+ Failed stages :0
+ Time to enter PORTAL in seconds:5.563047409057617
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0009975433349609375
+ Time to enter PORTAL in seconds:5.610144138336182
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Speedpuncher
+ Deaths :1
+ Clears :0
+ Potions :114
+ Failed stages :1
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0009965896606445312
+ Time to enter PORTAL in seconds:4.800772666931152
+ WORKER name :Speedpuncher
+ Deaths :2
+ Clears :0
+ Potions :185
+ Failed stages :2
+ Time to enter PORTAL in seconds:0.0
+ Time to enter PORTAL in seconds:0.0010013580322265625
+ Time to enter PORTAL in seconds:0.000997304916381836
+ WORKER name :Arccards
+ Deaths :0
+ Clears :1
+ Potions :223
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.0019936561584472656
+ Time to enter PORTAL in seconds:0.0009970664978027344
+ WORKER name :Arccards
+ Deaths :0
+ Clears :2
+ Potions :235
+ Failed stages :0
+ Time to enter PORTAL in seconds:0.000997304916381836
+ Time to enter PORTAL in seconds:9.264503717422485
+ Time to enter PORTAL in seconds:7.4763360023498535
+ Time to enter PORTAL in seconds:0.0
+ WORKER name :Speedpuncher
+ Deaths :0
+ Clears :0
+ Potions :52
+ Failed stages :1

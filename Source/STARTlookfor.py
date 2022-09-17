@@ -2,17 +2,11 @@
 import sys
 sys.path.insert(0, 'E:\Hello wolrd Python\LOSTARKB')
 
-from LostARKFOCUS import checkIFDEAD
-from LostARKFOCUS import checklist
-from LostARKFOCUS import focus_window
-from LostARKFOCUS import StateCHECKimg
-from LostARKFOCUS import Click_on_Image
-from LostARKFOCUS import Skills_no_movement
-from LostARKFOCUS import DismantleBalls
-from LostARKFOCUS import GlobalLabel
-import threading
-from pywinauto import application
-from pywinauto.findwindows import WindowAmbiguousError, WindowNotFoundError
+from Testing.LostARKFOCUS import checkIFDEAD
+from Testing.LostARKFOCUS import checklist
+from Testing.LostARKFOCUS import focus_window
+from Testing.LostARKFOCUS import Skills_no_movement
+
 GlobalLabel= ''
 # t1 = threading.Thread(target=self.Loadbuttons)
 #         t2 = threading.Thread(target=self.my_callback)
@@ -66,9 +60,6 @@ def startlookfor():
                 #     # pyautogui.press('f1'
 
 #startlookfor()
-from pywinauto.application import Application
-import pywinauto.mouse as mouse
-import pywinauto.keyboard as keyboard
 # app = Application().connect(LA)
 # dlg = app['Untitled - Notepad']
 # dlg.print_control_identifiers()

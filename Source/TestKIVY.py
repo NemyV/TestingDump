@@ -4,62 +4,38 @@ sys.path.insert(0, 'E:\Hello wolrd Python\LOSTARKB')
 import threading
 from kivy.app import App
 from kivy.uix.button import Button
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.config import Config
-from kivy.config import ConfigParser
+from kivy.core.window import Window
 from KivyOnTop import register_topmost, unregister_topmost
-from kivy.clock import Clock, mainthread
-from kivy.properties import StringProperty
+from kivy.clock import Clock
 from kivy.uix.checkbox import CheckBox
-from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.image import Image
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
-from pynput.keyboard import Key, Listener
 import numpy as np
 import keyboard
 import os
-from kivy.base import runTouchApp
-import psutil
 import time
 from kivy.uix.dropdown import DropDown
 from threading import Thread
-from multiprocessing import Process
 
 # IMPORTS FROM LOOKFOR
-from LostARKFOCUS import GlobalLabel
-from STARTlookfor import startlookfor
+# from Testing.LostARKFOCUS import GlobalLabel
+# from STARTlookfor import startlookfor
 from Lifeskills import fishing
 from STATEcheck import debugging
-from METHODS import focus_window
+
+import METHODS
 from DailyQuests import daily_state_check
 
 # Imports from DailyQuests
-from DailyQuests import lopang_daily
-from DailyQuests import nameless_daily
-from DailyQuests import swamp_daily
-
-# CHARACTER SLECTION
-global selected_character
-selected_character = ""
-global roster_list
-roster_list = []
-global worker_list
-worker_list = []
-global roster_array
-roster_array = np.array(roster_list)
 
 # Overwatch
 global Enemies
 Enemies = 'enemies imported'
 GlobalLabel = '123'
 GlobalLabel2 = 'GlobalLabel2'
-
-global start_time
-start_time = 0
 
 
 PirateCoins = 20200
@@ -72,104 +48,73 @@ sm = ScreenManager()
 LoAImages = 'Buttons\\'
 Source = 'D:\\BLostArk\\LOSTARKB\\Source\\'
 
-# These changes need to be present !!!!BEFORE you import Window!!!!
-
-configparser = ConfigParser()
-configparser.read("myapp.ini")
-string = configparser.get("Settings", "resolution")
-
-Resolution = [int(string.split("x")[0]),
-              int(string.split("x")[1])]
-
-# if Config.getint('graphics', 'borderless') == 0:
-#     Config.write()
-
-from kivy.core.window import Window
-
-energy = 100
-hours = 4
-
-core_dict = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0}
-core_num = 8
-
-battery_state = "Charging"
-battery_capacity = "100"
-
 stop_threads = False
-# Resolution = [2560, 1080]
 
 
-def callbackTo2(instance):
-    Window.size = (Resolution[0], Resolution[1]/7)
-    Window.top = Resolution[1]/7*6.1  # 930
+def callback_to_2(instance):
+    Window.size = (METHODS.Resolution[0], METHODS.Resolution[1] / 7)
+    Window.top = METHODS.Resolution[1] / 7 * 6.1  # 930
     Window.left = 0
     sm.current = "MainMenu"
 
 
-def callbackTo1(instance):
-    Window.size = (Resolution[0]*8/10, Resolution[1]*2/4)
-    Window.top = Resolution[1]*2/10
-    Window.left = Resolution[0]/10
+def callback_to_1(instance):
+    Window.size = (METHODS.Resolution[0] * 8 / 10, METHODS.Resolution[1] * 2 / 4)
+    Window.top = METHODS.Resolution[1] * 2 / 10
+    Window.left = METHODS.Resolution[0] / 10
     sm.current = "Settings"
 
 
-def callbackTo3(instance):
+def callback_to_3(instance):
     Window.size = (760, 250 * 1 / 2)
     Window.top = 955
     Window.left = 1800
     sm.current = "Debugging"
 
 
-def callbackTo4(instance):
-    Window.size = (Resolution[0] / 1.2, Resolution[1] / 1.2)
-    Window.left = Resolution[0] / 10.5
-    Window.top = Resolution[1] / 9
+def callback_to_4(instance):
+    Window.size = (METHODS.Resolution[0] / 1.2, METHODS.Resolution[1] / 1.2)
+    Window.left = METHODS.Resolution[0] / 10.5
+    Window.top = METHODS.Resolution[1] / 9
     sm.current = "Skills"
-    123
 
 
-def callbackTo5(instance):
-    Window.size = (Resolution[0] / 4, Resolution[1] / 10)
+def callback_to_5(instance):
+    Window.size = (METHODS.Resolution[0] / 4, METHODS.Resolution[1] / 10)
     Window.left = 0
     Window.top = 930
     sm.current = "Lifeskills"
 
 
-def callbackTo6(instance):
-    Window.size = (Resolution[0] / 1.2, Resolution[1] / 1.2)
-    Window.left = Resolution[0] / 10.5
-    Window.top = Resolution[1] / 9
+def callback_to_6(instance):
+    Window.size = (METHODS.Resolution[0] / 1.2, METHODS.Resolution[1] / 1.2)
+    Window.left = METHODS.Resolution[0] / 10.5
+    Window.top = METHODS.Resolution[1] / 9
     sm.current = "DailyQuests"
 
 
-def callbackTo7(*args):
-    Window.size = (Resolution[0]/8, Resolution[1] / 10)
-    Window.left = Resolution[0]/9*4.8
-    Window.top = Resolution[1] / 10*9
+def callback_to_7(*args):
+    Window.size = (METHODS.Resolution[0] / 8, METHODS.Resolution[1] / 10)
+    Window.left = METHODS.Resolution[0] / 9 * 4.8
+    Window.top = METHODS.Resolution[1] / 10 * 9
     sm.current = "Minimalistic"
     # reading config file and what has be done this week or something like that
     # reading stats from screen like buffs on character?
 
 
 def startfishing(instance):
-    focus_window('LOST ARK')
+    METHODS.focus_window('LOST ARK')
     startla = Thread(target=fishing)
     startla.daemon = True
     startla.start()
 
 
 def start_work(instance):
-    callbackTo7()
-    focus_window('LOST ARK')
-    global start_time
-    start_time = time.time()
+    callback_to_7()
+    METHODS.focus_window('LOST ARK')
+
+    METHODS.start_time = time.time()
     startla = Thread(target=daily_state_check)
-    startla.daemon = True
-    startla.start()
-
-
-def startxxx(instance):
-    startla = Thread(target=startlookfor)
     startla.daemon = True
     startla.start()
 
@@ -200,8 +145,8 @@ class MainMenu(Screen):
         threading.Thread.__init__(self)
         super(MainMenu, self).__init__(name='MainMenu')
         Window.bind(on_keyboard=self.on_keyboard)  # bind our handler
-        Window.size = (Resolution[0], Resolution[1] / 7)
-        Window.top = Resolution[1] / 7 * 6.1  # 930
+        Window.size = (METHODS.Resolution[0], METHODS.Resolution[1] / 7)
+        Window.top = METHODS.Resolution[1] / 7 * 6.1  # 930
         Window.left = 0
 
         # Main Buttons
@@ -227,23 +172,23 @@ class MainMenu(Screen):
         self.food_button = Button(background_normal=LoAImages + 'Blue.jpg',
                                   border=(0, 0, 0, 0),
                                   text="Settings", size_hint=(SizeW, SizeH), pos_hint={'x': .335, 'y': ButtonY}
-                                  , on_press=callbackTo1)
+                                  , on_press=callback_to_1)
         self.add_widget(self.food_button)
 
         self.walk_button = Button(background_normal=LoAImages + 'Blue.jpg',
                                   border=(0, 0, 0, 0),
                                   text="Debugging", size_hint=(SizeW, SizeH), pos_hint={'x': .0, 'y': ButtonY}
-                                  , on_press=callbackTo3)
+                                  , on_press=callback_to_3)
         self.add_widget(self.walk_button)
         self.help_button = Button(background_normal=LoAImages + 'Blue.jpg',
                                   border=(0, 0, 0, 0),
                                   text="Life_skills", size_hint=(SizeW, SizeH), pos_hint={'x': .67, 'y': 0}
-                                  , on_press=callbackTo5)
+                                  , on_press=callback_to_5)
         self.add_widget(self.help_button)
         self.go_button = Button(background_normal=LoAImages + 'Blue.jpg',
                                 border=(0, 0, 0, 0), text="Minimalistic",
                                 size_hint=(SizeW, SizeH), pos_hint={'x': .335, 'y': 0},
-                                on_press=callbackTo7)
+                                on_press=callback_to_7)
         self.add_widget(self.go_button)
 
         self.craft_button = Label(text=GlobalLabel, size_hint=(SizeW, SizeH), pos_hint={'x': -.45, 'y': -0.45})
@@ -270,9 +215,7 @@ class MainMenu(Screen):
             print("pressed CTRL + Q")
 
     def update(self, *args):
-        from LostARKFOCUS import GlobalLabel
-        self.craft_button.text = str(GlobalLabel)
-        self.lbl_stat.text = str(GlobalLabel2)
+        123
         # print("this is global labe", GlobalLabel, "test")
 
 
@@ -308,7 +251,7 @@ class Lifeskills(Screen):
         self.Return = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
                              text="Return",
                              size_hint=(SizeW, SizeH / 3), pos_hint={'x': .55, 'y': 0.50},
-                             on_press=callbackTo2)
+                             on_press=callback_to_2)
         self.add_widget(self.Return)
 
         self.Return = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
@@ -371,7 +314,7 @@ class Minimalistic(Screen):
         self.Return = Button(background_normal=LoAImages + 'Pink.png', border=(0, 0, 0, 0),
                              background_down=LoAImages + 'Pressed_Button.png',
                              text="Return",
-                             on_press=callbackTo2)
+                             on_press=callback_to_2)
         self.info_grid.add_widget(self.Return)
         self.current_working = Label(text='Work work...')
         self.info_grid.add_widget(self.current_working)
@@ -383,7 +326,7 @@ class Minimalistic(Screen):
         # self.Return = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
         #                      text="Return",
         #                      size_hint=(SizeW, SizeH / 3), pos_hint={'x': .75, 'y': 0.7},
-        #                      on_press=callbackTo2)
+        #                      on_press=callback_to_2)
         # self.add_widget(self.Return)
         #
         # self.start_work = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
@@ -434,8 +377,6 @@ class Minimalistic(Screen):
         global Elites
         global Bosses
         global Towers
-        global execution_time
-        global current_work
         # TURN DEBUGING ON IF YOU WANT TO CHECK STUFF ON SCREEN
         # debugging()
         # self.layoutImage.Enemy.reload()
@@ -446,15 +387,12 @@ class Minimalistic(Screen):
         # self.lbl_stat.text = str(GlobalLabel2)
         # print("this is global labe", GlobalLabel, "test")
 
-        global start_time
-        from DailyQuests import current_work
-        from DailyQuests import stop_count
-        if stop_count != "yes":
-            end_time = time.time()
-            time_lapsed = end_time - start_time
+        if METHODS.stop_count != "yes":
+            METHODS.end_time = time.time()
+            time_lapsed = METHODS.end_time - METHODS.start_time
             self.run_time.text = str(self.time_convert(time_lapsed))
 
-        self.current_working.text = str(current_work)
+        self.current_working.text = str(METHODS.current_work)
 
     def time_convert(self, sec):
         mins = sec // 60
@@ -464,6 +402,7 @@ class Minimalistic(Screen):
         # print("Time Lapsed = {0}:{1}:{2}".format(int(hours), int(mins), sec))
         return_value = "Time Lapsed = {0}:{1}:{2}".format(int(hours), int(mins), round(sec, 1))
         return return_value
+
 
 class Debugging(Screen):
     # @mainthread
@@ -513,7 +452,7 @@ class Debugging(Screen):
         self.Return = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
                              text="Return",
                              size_hint=(SizeW, SizeH / 5), pos_hint={'x': .75, 'y': 0.90},
-                             on_press=callbackTo2)
+                             on_press=callback_to_2)
         self.add_widget(self.Return)
 
         # Misc/AUTOMATED THINGS TO START
@@ -593,7 +532,7 @@ class Skills(Screen):
         self.Return = Button(background_normal=LoAImages + 'Yellow.jpg', border=(0, 0, 0, 0),
                              text="Return",
                              size_hint=(SizeW, SizeH / 5), pos_hint={'x': .75, 'y': 0.90},
-                             on_press=callbackTo2)
+                             on_press=callback_to_2)
         self.add_widget(self.Return)
 
         # Class as selection from drop down menu
@@ -765,7 +704,7 @@ class DailyQuests(Screen):
         self.silver_lbl = Label(text='Silver dailies:',
                                 pos_hint={'x': base_label_x + grid_step_x, 'y': +0.45})
         self.silver_grid.add_widget(self.silver_lbl)
-        self.silver_image = Image(source=LoAImages + 'Chest T2.png',size_hint=(0.5, 0.5),
+        self.silver_image = Image(source=LoAImages + 'Chest T2.png', size_hint=(0.5, 0.5),
                                   pos_hint={'x': base_image_x + grid_step_x, 'y': +0.70})
         self.silver_grid.add_widget(self.silver_image)
 
@@ -1013,7 +952,7 @@ class DailyQuests(Screen):
         self.Return = Button(background_normal=LoAImages + 'Blue.jpg', border=(0, 0, 0, 0),
                              text="Return",
                              size_hint=(SizeW / 5, SizeH / 5), pos_hint={'x': .65, 'y': 0.05},
-                             on_press=callbackTo2)
+                             on_press=callback_to_2)
         self.add_widget(self.Return)
 
         self.Return = Button(background_normal=LoAImages + 'Blue.jpg', border=(0, 0, 0, 0),
@@ -1035,39 +974,39 @@ class DailyQuests(Screen):
         self.add_widget(self.update_roster_button)
 
         self.skills = Button(background_normal=LoAImages + 'Blue.jpg', text="Skills",
-                             size_hint=(SizeW/4, SizeH / 4), pos_hint={'x': .90, 'y': 0.05},
-                             on_press=callbackTo4)
+                             size_hint=(SizeW / 4, SizeH / 4), pos_hint={'x': .90, 'y': 0.05},
+                             on_press=callback_to_4)
         self.add_widget(self.skills)
 
         self.on_start()
         Clock.schedule_interval(self.update, 2)
 
     def update(self, *args):
-        self.lbl_pirate.text = "Your CHARACTERS:" + str(roster_list)
+        self.lbl_pirate.text = "Your CHARACTERS:" + str(METHODS.roster_list)
         # updating workers
         count_checkbox = 0
         # for x in self.worker_grid.children:
         #     count_checkbox += 1
-        for x in np.unique(roster_list):
+        for x in np.unique(METHODS.roster_list):
             for n in self.worker_grid.children:
-                if x not in worker_list:
+                if x not in METHODS.worker_list:
                     # if n.ids.get("name") != x:
                     # print(n.ids.get("name"), x)
                     self.worker_grid.character = Label(text=str(x))
                     self.worker_grid.add_widget(self.worker_grid.character)
                     self.worker_grid.character = CheckBox(ids=({'name': x}))
                     self.worker_grid.add_widget(self.worker_grid.character)
-                    worker_list.append(x)
+                    METHODS.worker_list.append(x)
         # CONFIG - > CHECKBOX WORKER LIST [PROBLEM IS IT UPDATES too often and not checkbox ->config ]
         # checkbox_instances = [self.worker_grid]
         # for box_instance in checkbox_instances:
         #     # READING STATUS FROM CONFIG
-        #     for section_name in configparser.sections():
+        #     for section_name in METHODS.configparser.sections():
         #         # print('Section:', section_name)
         #         # print('  Options:', ConfigParser.options(section_name))
-        #         option = configparser.options(section_name)
+        #         option = METHODS.configparser.options(section_name)
         #         # print("STATUS IS", section_name)
-        #         for name, value in configparser.items(section_name):
+        #         for name, value in METHODS.configparser.items(section_name):
         #             # print('  %s = %s' % (name, value))
         #             config_name = name
         #             config_value = value
@@ -1078,7 +1017,7 @@ class DailyQuests(Screen):
         #                     # CONFIG 2 CHECKBOX
         #                     # print(n)
         #                     # print("CONFIG NAME:", config_name)
-        #                     # if section_name == selected_character:
+        #                     # if section_name == METHODS.selected_character:
         #                     # print(n, n.ids.get("name"))
         #                     if "label" in str(n) or "image" in str(n):
         #                         123
@@ -1099,16 +1038,17 @@ class DailyQuests(Screen):
         #                                     print("DISABLE NOT A CHECKBOX")
 
     def clear_finished(self, *args):
-        for name, value in configparser.items("Finished_Characters"):
+        print("Cleared finished")
+        for name, value in METHODS.configparser.items("Finished_Characters"):
             if value == "yes":
-                configparser.set("Finished_Characters", name, "no")
-                configparser.write()
+                METHODS.configparser.set("Finished_Characters", name, "no")
+                METHODS.configparser.write()
 
     def start_tasks(self, unusedarg):
         for n in self.silver_checkbox.children:
             if n.active and n.ids.get("name") == "ALL":
                 print("Doing Lopang Daily...")
-                callbackTo2(self)
+                callback_to_2(self)
                 # lopang_daily()
                 print(n.ids.get("name"))
 
@@ -1145,22 +1085,22 @@ class DailyQuests(Screen):
     #         count = count + 1
 
     def status_of_checkboxes(self, checkboxInstance):
-        configparser.read("myapp.ini")
-        if selected_character != '':
+        METHODS.configparser.read("myapp.ini")
+        if METHODS.selected_character != '':
             # READING STATUS FROM CONFIG
-            for section_name in configparser.sections():
+            for section_name in METHODS.configparser.sections():
                 # print('Section:', section_name)
                 # print('  Options:', ConfigParser.options(section_name))
-                option = configparser.options(section_name)
+                option = METHODS.configparser.options(section_name)
                 # print("STATUS IS", section_name)
-                for name, value in configparser.items(section_name):
+                for name, value in METHODS.configparser.items(section_name):
                     # print('  %s = %s' % (name, value))
                     config_name = name
                     config_value = value
                 for n in checkboxInstance.children:
                     # print(option, "OPTION AND CHECKED IS : ", value)
                     # print(checkboxInstance.children)
-                    if section_name == selected_character:
+                    if section_name == METHODS.selected_character:
                         if n.ids.get("name") == config_name:
                             if config_value == "yes":
                                 try:
@@ -1179,10 +1119,10 @@ class DailyQuests(Screen):
                               self.chaos_grid, self.worker_grid, self.misc_grid]
         # ADD CODE HERE IF SELECTED CHARACTER IS "ALL" then change value for all characters in database to the
         # checkbox values of "ALL"
-        if selected_character != '':
+        if METHODS.selected_character != '':
             for box_instance in checkbox_instances:
                 # For Work grid
-                configparser.read("myapp.ini")
+                METHODS.configparser.read("myapp.ini")
                 # Looking at CHECKBOXES
                 for n in box_instance.children:
                     # CHECKBOX to->> config
@@ -1192,25 +1132,25 @@ class DailyQuests(Screen):
                         if box_instance == self.worker_grid:
                             if n.active:
                                 try:
-                                    Config.set("Workers", n.ids.get("name"), "yes")
+                                    METHODS.configparser.set("Workers", n.ids.get("name"), "yes")
                                 except:
                                     123
-                                    # print(selected_character, "Already in section")
-                                configparser.set("Workers", n.ids.get("name"), "yes")
+                                    # print(METHODS.selected_character, "Already in section")
+                                METHODS.configparser.set("Workers", n.ids.get("name"), "yes")
                             elif not n.active:
-                                configparser.set("Workers", n.ids.get("name"), "no")
+                                METHODS.configparser.set("Workers", n.ids.get("name"), "no")
                         else:
                             if n.active:
                                 try:
-                                    Config.add_section(selected_character)
+                                    METHODS.configparser.add_section(METHODS.selected_character)
                                 except:
                                     123
-                                    # print(selected_character, "Already in section")
-                                configparser.set(selected_character, n.ids.get("name"), "yes")
+                                    # print(METHODS.selected_character, "Already in section")
+                                METHODS.configparser.set(METHODS.selected_character, n.ids.get("name"), "yes")
                                 print(n.ids.get("name"))
                             elif not n.active:
-                                configparser.set(selected_character, n.ids.get("name"), "no")
-                configparser.write()
+                                METHODS.configparser.set(METHODS.selected_character, n.ids.get("name"), "no")
+                METHODS.configparser.write()
             print("SAVED TO CONFIG")
         else:
             print("Write your character name")
@@ -1232,33 +1172,32 @@ class DailyQuests(Screen):
             print("lopang daily off")
 
     def on_dropdown(self, checkboxinstance, checkboxvalue):
-        global selected_character
         self.mainbutton.text = checkboxvalue
-        selected_character = checkboxvalue
-        print("SELECTED CHARACTER : ", selected_character)
+        METHODS.selected_character = checkboxvalue
+        print("SELECTED CHARACTER : ", METHODS.selected_character)
         checkbox_instances = [self.silver_grid, self.leapstone_grid, self.guild_grid,
                               self.presets_grid, self.weekly_grid, self.stronghold_grid,
                               self.chaos_grid, self.worker_grid, self.misc_grid]
         for box_instance in checkbox_instances:
             # READING STATUS FROM CONFIG
-            for section_name in configparser.sections():
+            for section_name in METHODS.configparser.sections():
                 # print('Section:', section_name)
                 # print('  Options:', ConfigParser.options(section_name))
-                option = configparser.options(section_name)
+                option = METHODS.configparser.options(section_name)
                 # print("STATUS IS", section_name)
-                for name, value in configparser.items(section_name):
+                for name, value in METHODS.configparser.items(section_name):
                     # print('  %s = %s' % (name, value))
                     config_name = name
                     config_value = value
                     # Looking at CHECKBOXES
-                    if section_name == selected_character:
+                    if section_name == METHODS.selected_character:
                         for n in box_instance.children:
                             # print(option, "OPTION AND CHECKED IS : ", value)
                             # print(checkboxInstance.children)
                             # CONFIG 2 CHECKBOX
                             # print(n.ids.get("name"))
                             # print("CONFIG NAME:", config_name)
-                            # if section_name == selected_character:
+                            # if section_name == METHODS.selected_character:
                             # print(n, n.ids.get("name"))
                             if n.ids.get("name") == config_name:
                                 # print("ENTERED ", n.ids.get("name"), config_name)
@@ -1278,66 +1217,64 @@ class DailyQuests(Screen):
         # Based on selected character add values of selected tasks and other things to config file
 
     def on_text(self, instance):
-        print(roster_array, roster_list)
-        roster_list.append(self.textinput_add.text)
-        # roster_array.append(self.textinput_add.text)
+        print(METHODS.roster_array, METHODS.roster_list)
+        METHODS.roster_list.append(self.textinput_add.text)
+        # METHODS.roster_array.append(self.textinput_add.text)
         self.textinput_add.text = ''
         self.update_roster()
         # adding character to config?
 
     def remove_on_text(self, instance):
         count = 0
-        configparser.read('myapp.ini')
+        METHODS.configparser.read('myapp.ini')
         try:
-            for x in np.array(roster_list):
+            for x in np.array(METHODS.roster_list):
                 character = 'character'
                 count = count + 1
                 character = "" + character + str(count)
                 print(character, x)
                 if x == self.textinput_remove.text:
                     print("removing this ", x)
-                    configparser.remove_option('account', character)
-            configparser.remove_section(self.textinput_remove.text)
-            roster_list.remove(self.textinput_remove.text)
-            configparser.write()
+                    METHODS.configparser.remove_option('account', character)
+            METHODS.configparser.remove_section(self.textinput_remove.text)
+            METHODS.roster_list.remove(self.textinput_remove.text)
+            METHODS.configparser.write()
         except:
             print("No character with that name!")
         self.textinput_remove.text = ''
         self.update_roster()
-        configparser.write()
+        METHODS.configparser.write()
 
         # adding character to config?
 
     def update_roster(self, *args):
         print("UPDATING roster")
-        global roster_list
-        global roster_array
         self.dropdown.clear_widgets()
         count = 0
-        for x in np.unique(roster_list):
+        for x in np.unique(METHODS.roster_list):
             character = 'character'
             count = count + 1
             character = "" + character + str(count)
             # print(character, x)
-            configparser.set('account', character, x)
-            if x not in configparser.sections():
-                configparser.add_section(x)
-            configparser.write()
-        roster_list.clear()
+            METHODS.configparser.set('account', character, x)
+            if x not in METHODS.configparser.sections():
+                METHODS.configparser.add_section(x)
+            METHODS.configparser.write()
+        METHODS.roster_list.clear()
 
-        # Building roster_list from CONFIG
+        # Building METHODS.roster_list from CONFIG
         for i in range(1, 24, 1):
             character = 'character'
             character = "" + character + str(i)
             # print(character)
             try:
-                roster_list.append(configparser.get('account', character))
+                METHODS.roster_list.append(METHODS.configparser.get('account', character))
             except:
                 123
                 # print("no option")
-        # print(roster_list)
+        # print(METHODS.roster_list)
 
-        for index in roster_list:
+        for index in METHODS.roster_list:
             # When adding widgets, we need to specify the height manually
             # (disabling the size_hint_y) so the dropdown can calculate
             # the area it needs.
@@ -1355,8 +1292,8 @@ class DailyQuests(Screen):
     def on_start(self, *args):
         self.update_roster()
         # self.leapstone_checkbox
-        configparser.read("myapp.ini")
-        # if selected_character != '':
+        METHODS.configparser.read("myapp.ini")
+        # if METHODS.selected_character != '':
         # self.status_of_checkboxes(self.guild_checkbox)
         # print("printing guild checkbox from on_start", self.guild_checkbox)
         # self.status_of_checkboxes(self.guild_checkbox)
@@ -1640,17 +1577,17 @@ class Calculate(Screen):
         self.mainmenu = Button(background_normal=LoAImages + 'Yellow.jpg',
                                border=(0, 0, 0, 0),
                                text="Main Menu", size_hint=(SizeW, SizeH / 2), pos_hint={'x': .0, 'y': 0.1}
-                               , on_press=callbackTo2)
+                               , on_press=callback_to_2)
         self.add_widget(self.mainmenu)
 
         self.skills = Button(background_normal=LoAImages + 'Blue.jpg', border=(0, 0, 0, 0),
                              text="Skills", size_hint=(SizeW, SizeH / 2), pos_hint={'x': .80, 'y': 0.1},
-                             on_press=callbackTo4)
+                             on_press=callback_to_4)
         self.add_widget(self.skills)
 
         self.DailyQuests = Button(background_normal=LoAImages + 'Blue.jpg', border=(0, 0, 0, 0),
                                   text="Tasks", size_hint=(SizeW, SizeH / 2), pos_hint={'x': .80, 'y': 0.22},
-                                  on_press=callbackTo6)
+                                  on_press=callback_to_6)
         self.add_widget(self.DailyQuests)
 
         Clock.schedule_interval(self.update, 0.3)
@@ -1798,13 +1735,13 @@ class Settings(Screen):
         ButtonY = 0.5
         SizeH = 0.2
         SizeW = 0.1
-        resolutions = ["2560x1080", "1920x1080", "1366x768", "1280x768", "1280x720"]
+        resolutions = ["2560x1080", "1920x1080", "1366x768", "1280x1024", "1280x768", "1280x720"]
 
         self.tittle_grid = GridLayout(pos_hint={'x': 0.0575, 'y': -0.05}, rows=4, cols=2,
                                       size_hint=(0.1, 1),
                                       row_force_default=True, row_default_height=30, col_default_width=120)
         self.add_widget(self.tittle_grid)
-        self.tittle_1 = Label(text='SCREEN SETTINGS', font_size=20,bold=True,
+        self.tittle_1 = Label(text='SCREEN SETTINGS', font_size=20, bold=True,
                               halign="center", valign="middle")
         self.tittle_grid.add_widget(self.tittle_1)
 
@@ -1847,25 +1784,25 @@ class Settings(Screen):
         self.mainmenu = Button(background_normal=LoAImages + 'Yellow.jpg',
                                border=(0, 0, 0, 0),
                                text="Main Menu", size_hint=(SizeW, SizeH / 2), pos_hint={'x': .0, 'y': 0.1}
-                               , on_press=callbackTo2)
+                               , on_press=callback_to_2)
         self.add_widget(self.mainmenu)
 
         self.skills = Button(background_normal=LoAImages + 'Blue.jpg', border=(0, 0, 0, 0),
                              text="Skills", size_hint=(SizeW, SizeH / 2), pos_hint={'x': .80, 'y': 0.1},
-                             on_press=callbackTo4)
+                             on_press=callback_to_4)
         self.add_widget(self.skills)
 
         self.DailyQuests = Button(background_normal=LoAImages + 'Blue.jpg', border=(0, 0, 0, 0),
                                   text="Tasks", size_hint=(SizeW, SizeH / 2), pos_hint={'x': .80, 'y': 0.22},
-                                  on_press=callbackTo6)
+                                  on_press=callback_to_6)
         self.add_widget(self.DailyQuests)
 
         Clock.schedule_interval(self.update, 0.3)
         self.on_start()
 
     def update(self, *args):
-        self.mainbutton.text = configparser.get('Settings', "resolution")
-        # print(selected_character)
+        self.mainbutton.text = METHODS.configparser.get('Settings', "resolution")
+        # print(METHODS.selected_character)
         # self.dropdown.reload()
         # self.lbl_pirate.text = str(PirateCoins * NumberofChar)
         # self.pirate_gold.text = str(PirateGold * NumberofChar)
@@ -1875,23 +1812,22 @@ class Settings(Screen):
         # print("this is global labe", GlobalLabel, "test")
 
     def on_dropdown(self, checkboxinstance, checkboxvalue):
-        global Resolution
         # print(checkboxinstance, checkboxvalue)
         self.mainbutton.text = checkboxvalue
-        Resolution = [int(checkboxvalue.split("x")[0]),
-                      int(checkboxvalue.split("x")[1])]
         try:
-            configparser.get('Settings', "resolution")
+            METHODS.configparser.get('Settings', "resolution")
         except:
-            configparser.add_section('Settings')
-        configparser.set('Settings', "resolution", checkboxvalue)
-        configparser.write()
+            METHODS.configparser.add_section('Settings')
+        METHODS.configparser.set('Settings', "resolution", checkboxvalue)
+        METHODS.configparser.write()
+        METHODS.Resolution = [int(checkboxvalue.split("x")[0]),
+                              int(checkboxvalue.split("x")[1])]
         # Based on selected character add values of selected tasks and other things to config file
 
     def on_text(self, instance):
-        print(roster_array, roster_list)
-        roster_list.append(self.textinput_add.text)
-        # roster_array.append(self.textinput_add.text)
+        print(METHODS.roster_array, METHODS.roster_list)
+        METHODS.roster_list.append(self.textinput_add.text)
+        # METHODS.roster_array.append(self.textinput_add.text)
         self.textinput_add.text = ''
         self.update_roster()
         # adding character to config?
@@ -1899,19 +1835,19 @@ class Settings(Screen):
     def remove_on_text(self, instance):
         count = 0
         try:
-            print(roster_list)
-            for x in np.array(roster_list):
+            print(METHODS.roster_list)
+            for x in np.array(METHODS.roster_list):
                 character = 'character'
                 count = count + 1
                 character = "" + character + str(count)
                 print(character, x)
-                configparser.set('account', character, x)
-                configparser.write()
+                METHODS.configparser.set('account', character, x)
+                METHODS.configparser.write()
                 if x == self.textinput_remove.text:
                     print("removing this shit", x)
-                    roster_list.remove(self.textinput_remove.text)
-                    configparser.remove_option('account', character)
-            roster_list.remove(self.textinput_remove.text)
+                    METHODS.roster_list.remove(self.textinput_remove.text)
+                    METHODS.configparser.remove_option('account', character)
+            METHODS.roster_list.remove(self.textinput_remove.text)
         except:
             print("No character with that name!")
         self.textinput_remove.text = ''
@@ -1919,8 +1855,7 @@ class Settings(Screen):
 
         # adding character to config?
 
-
-        for index in roster_list:
+        for index in METHODS.roster_list:
             # When adding widgets, we need to specify the height manually
             # (disabling the size_hint_y) so the dropdown can calculate
             # the area it needs.
