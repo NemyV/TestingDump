@@ -150,8 +150,7 @@ def daily_state_check():
         text = METHODS.image2text(x1=there_is_no_hope_x, y1=there_is_no_hope_y,
                                   x2=200, y2=no_hope_y2, method=' --oem 3 --psm 7', colors="threshold")
         found_it = False
-        print("I was here ", text, METHODS.Resolution)
-        exit()
+        
         for y in np.unique(METHODS.list_of_workers):
             if y in text:
                 found_it = True
@@ -165,8 +164,7 @@ def daily_state_check():
                 if y in text:
                     print("FOUND IT USING rgb")
                     break
-        print("I was here ", text)
-        exit()
+        print("I was here ", text, METHODS.Resolution)
         # CLOSING ESC MENU
         pydirectinput.press('ESC')
         generator_expression = (x for x in np.unique(METHODS.list_of_workers) if x in text)
